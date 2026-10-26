@@ -3,5 +3,5 @@
    Secret / service_role kľúč sem NIKDY nepatrí. */
 window.BRAIN_CONFIG = {
   url: "https://nnjaaccymahxxvontnqy.supabase.co",
-  key: "VLOZ_PUBLISHABLE_KEY"
+  key: "sb_publishable_ucRhxuRL7-i8vQrzmJe0dQ_TTNvTa2e"
 };
