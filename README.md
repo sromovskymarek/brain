@@ -23,4 +23,6 @@ a funguje aj offline. Dáta sú v Supabase (databáza v EÚ), prístup má iba p
 
 ## Úprava aplikácie
 Zmeny rob v `src/brain-artifact.html` a potom spusti `python3 tools/build.py src/brain-artifact.html index.html`.
-Pri každej zmene `sw.js` alebo súborov appky zvýš verziu `V` v `sw.js`, aby sa zariadenia aktualizovali.
+Build automaticky zvýši verziu `V` v `sw.js`. Appka na ploche (iPhone, iPad, Mac) pri návrate do popredia,
+pri zaostrení okna a každých 15 minút zistí novú verziu a sama sa obnoví; ak práve píšeš alebo máš otvorený formulár,
+počká na najbližšie prepnutie späť do appky.

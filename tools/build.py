@@ -9,6 +9,7 @@ Použitie:  python3 tools/build.py src/brain-artifact.html index.html
 - fotky cez relatívnu cestu _blob/<id> (obsluhuje sw.js),
 - nová sekcia Účet (prihlásenie, synchronizácia, záloha),
 - texty, ktoré odkazovali na otvorenie v Claude.
+- pri každom zostavení nová verzia V v sw.js (automatická aktualizácia zariadení).
 """
 import re, sys, pathlib
 
@@ -87,4 +88,14 @@ HEAD = """<!doctype html>
 <body>
 """
 out.write_text(HEAD + src.strip() + "\n</body>\n</html>\n", encoding="utf-8")
+
+# Nová verzia service workera pri každom zostavení → zariadenia so zástupcom na ploche sa samy aktualizujú
+import datetime
+sw = out.parent / "sw.js"
+if sw.exists():
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
+    t = sw.read_text(encoding="utf-8")
+    t = re.sub(r'const V = "brain-v[^"]*";', f'const V = "brain-v{stamp}";', t, count=1)
+    sw.write_text(t, encoding="utf-8")
+    print(f"sw.js → brain-v{stamp}")
 print(f"OK → {out} ({out.stat().st_size // 1024} kB)")

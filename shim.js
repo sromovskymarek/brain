@@ -246,7 +246,20 @@ function postSW() {
   if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage(msg);
 }
 if ("serviceWorker" in navigator && location.protocol === "https:") {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  /* Automatická aktualizácia: pri návrate do appky skontroluje novú verziu; nová verzia → appka sa obnoví
+     (ak práve píšeš, počká, kým appku zavrieš alebo prepneš). */
+  const hadCtrl = !!navigator.serviceWorker.controller; let pendingReload = false;
+  const typing = () => { const a = document.activeElement; return !!(a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.tagName === "SELECT" || a.isContentEditable)) || !!document.querySelector("#formPanel,#cdPanel,.drawer"); };
+  const doReload = () => { if (typing()) { pendingReload = true; return; } location.reload(); };
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    const check = () => reg.update().catch(() => {});
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") { if (pendingReload && !typing()) location.reload(); else check(); }
+    });
+    window.addEventListener("focus", check);
+    setInterval(check, 15 * 60 * 1000);
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadCtrl) doReload(); });
   navigator.serviceWorker.addEventListener("message", async e => {
     if (e.data && e.data.type === "need-auth" && sb) { const { data } = await sb.auth.getSession(); if (data && data.session) { session = data.session; postSW(); } }
   });
