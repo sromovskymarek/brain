@@ -1704,7 +1704,8 @@ const monthKey=d=>String(d||"").slice(0,7);
 const curMonth=()=>S.exp.month||today().slice(0,7);
 function shiftMonth(m,n){ const [y,mm]=m.split("-").map(Number); const d=new Date(y,mm-1+n,1); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
 const monthName=m=>{ const [y,mm]=m.split("-").map(Number); return MONTHS_N[mm-1]+" "+y; };
-const expenses=()=>items().filter(i=>i.type==="vydavok"&&i.amount!=null&&Number.isFinite(+i.amount)&&ISO_RE.test(i.date||""));
+const expensesReal=()=>items().filter(i=>i.type==="vydavok"&&i.amount!=null&&Number.isFinite(+i.amount)&&ISO_RE.test(i.date||""));
+const expenses=()=>{ const r=expensesReal(); return C.subs.length?r.concat(subExpenses(r)):r; };
 const sumC=arr=>arr.reduce((s,i)=>s+Math.round(+i.amount*100),0)/100;
 function expStats(m){
   const all=expenses();
@@ -1743,7 +1744,7 @@ function viewVydavky(){
   let lastD="", rows="";
   for(const i of st.list){
     if(i.date!==lastD){ lastD=i.date; const dt=pd(i.date); rows+=`<li class="expday"><span>${DAYS[dt.getDay()]} ${dt.getDate()}. ${dt.getMonth()+1}.</span><span class="amt">${eur(sumC(st.list.filter(x=>x.date===i.date)))}</span></li>`; }
-    rows+=`<li class="li" data-open="${esc(i.id)}">${dot("vydavok")}<div class="li-main"><div class="li-title">${esc(i.title||"Výdavok")}</div><div class="li-meta"><span>${EXPCAT[i.expcat]||"Iné"}</span>${i.pay?`<span>${PAY[i.pay]}</span>`:""}${(i.attachments||[]).length?"<span>doklad priložený</span>":""}</div></div><span class="amt">${eur(i.amount)}</span></li>`;
+    rows+=`<li class="li" ${openAttr(i)}>${dot("vydavok")}<div class="li-main"><div class="li-title">${esc(i.title||"Výdavok")}</div><div class="li-meta"><span>${EXPCAT[i.expcat]||"Iné"}</span>${i._sub?"<span>pravidelné predplatné</span>":""}${i.pay?`<span>${PAY[i.pay]}</span>`:""}${(i.attachments||[]).length?"<span>doklad priložený</span>":""}</div></div><span class="amt">${eur(i.amount)}</span></li>`;
   }
   return `<div style="display:flex;flex-direction:column;gap:22px">
   <div class="actions"><label class="btn primary" for="exFile">${ICONS.vydavky}Odfotiť bloček</label><button class="btn" id="exManual" type="button">Pridať výdavok ručne</button></div>
@@ -2182,7 +2183,7 @@ Odpovedz IBA JSON: {"tags":["..."],"related":[{"id":"...","why":"krátke zdôvod
 }
 
 /* ========== Spoločné: kolekcie, formuláre ========== */
-const C={budget:[],bizcf:[],income:[],loans:[],cars:[],trips:[],goals:[],journal:[],habits:[],settings:[],verse:[],reminders:[],assets:[],measures:[],workouts:[],wplans:[],meals:[],selfcare:[],care:[],hday:[],people:[],waiting:[],inbox:[],reviews:[],wheel:[]};
+const C={subs:[],budget:[],bizcf:[],income:[],loans:[],cars:[],trips:[],goals:[],journal:[],habits:[],settings:[],verse:[],reminders:[],assets:[],measures:[],workouts:[],wplans:[],meals:[],selfcare:[],care:[],hday:[],people:[],waiting:[],inbox:[],reviews:[],wheel:[]};
 const VIEW_DEPS={kontakty:1,prehlad:1,financie:1,auta:1,vylety:1,ciele:1,dennik:1,kalendar:1,posta:1,firma:1,zdravie:1,ludia:1,revizia:1};
 let rrq=0;
 function onData(){ if(rrq) return; rrq=requestAnimationFrame(()=>{ rrq=0; if(cdHold()){ S.cdStale=true; return; } if(VIEW_DEPS[S.view]) renderView(); }); }
@@ -2245,6 +2246,8 @@ function virtualEvents(from,to){
   for(const u of units()){ const sh=uShort(u), cal=u.kind==="firma"?"biznis":"financie";
     for(const o of bzOut(u.id)) for(const d of bzOcc(o,from,to)) out.push({d,it:{id:"bz-"+o.id+"-"+d,type:"udalost",title:`${sh} · ${o.title||BZ_OUT[o.kind]||"platba"} · ${eur(o.amount)}`,cal,area:u.kind==="firma"?"biznis":"financie",time:"",_go:"financie/"+u.id}});
     for(const x of bzOpen(u.id)) if(ISO_RE.test(x.due||"")&&x.due>=from&&x.due<=to) out.push({d:x.due,it:{id:"bzi-"+x.id,type:"udalost",title:`${sh} · ${x.inv?"splatnosť":"očakávaná úhrada"}: ${x.title||"faktúra"}${x.inv?" "+x.inv:""} · ${eur(x.amount)}`,cal,area:u.kind==="firma"?"biznis":"financie",time:"",_go:"financie/"+u.id}}); }
+  for(const s of C.subs){ if(subPayer(s)==="osobne") for(const d of subOcc(s,from,to)) out.push({d,it:{id:"sub-"+s.id+"-"+d,type:"udalost",title:"Predplatné: "+(s.name||"")+" · "+eur(s.amount),cal:"financie",area:"financie",time:"",_go:"financie/predplatne"}});
+    if(subActive(s)&&ISO_RE.test(s.cancelBy||"")&&s.cancelBy>=from&&s.cancelBy<=to) out.push({d:s.cancelBy,it:{id:"subc-"+s.id,type:"udalost",title:"Zrušiť / rozhodnúť: "+(s.name||"predplatné"),cal:subPayer(s)==="osobne"?"financie":"biznis",time:"",_go:"financie/predplatne"}}); }
   out.push(...peopleEvents(from,to));
   return out;
 }
@@ -2257,12 +2260,14 @@ function dueItems(from,to){ const out=[];
     const f0=String(l.created||"").slice(0,10), f=f0&&f0>from?f0:from, end=l.endDate||"9999-12-31"; let d=nextPayDate(l.payDay,f), g=0;
     while(d&&d<=to&&d<=end&&g<40){ out.push({key:`l-${l.id}-${d}`,d,t:`${LOAN_KIND[l.kind]||"Splátka"}: ${l.name||"úver"} · ${eur(l.payment)}`,amount:num(l.payment),go:"financie/uvery"}); d=nextPayDate(l.payDay,addDays(d,1)); g++; } }
   for(const it of S.items.values()) if(it.type==="udalost"&&(it.cal==="financie"||it.area==="financie")){ const f0=String(it.created||"").slice(0,10), f=f0&&f0>from?f0:from; for(const d of occurrences(it,f,to)) out.push({key:`e-${it.id}-${d}`,d,t:it.title||"Platba",open:it.id,amount:num(it.amount)}); }
-  for(const u of units()) for(const o of bzOut(u.id)){ const f0=String(o.created||"").slice(0,10), f=f0&&f0>from?f0:from; for(const d of bzOcc(o,f,to)) out.push({key:`bz-${o.id}-${d}`,d,t:`${uShort(u)} · ${BZ_OUT[o.kind]||"Platba"}: ${o.title||""} · ${eur(o.amount)}`,amount:num(o.amount),biz:true,co:u.id,go:"financie/"+u.id}); }
+  for(const u of units()) for(const o of bzOut(u.id)){ const f0=String(o.created||"").slice(0,10), f=f0&&f0>from?f0:from; for(const d of bzOcc(o,f,to)) out.push({key:`bz-${o.id}-${d}`,d,t:`${uShort(u)} · ${BZ_OUT[o.kind]||"Platba"}: ${o.title||""} · ${eur(o.amount)}`,amount:num(o.amount),biz:true,co:u.id,auto:!!o.auto,go:o._sub?"financie/predplatne":"financie/"+u.id}); }
+  for(const s of C.subs){ if(subPayer(s)==="osobne") for(const d of subOcc(s,from,to)) out.push({key:`s-${s.id}-${d}`,d,t:`Predplatné: ${s.name||""} · ${eur(s.amount)}${s.freq&&s.freq!=="m"?" ("+(SUB_FREQ[s.freq]||"").toLowerCase()+")":""}`,amount:num(s.amount),auto:s.freq!=="y"&&s.freq!=="h",go:"financie/predplatne"});
+    if(subActive(s)&&ISO_RE.test(s.cancelBy||"")&&s.cancelBy>=from&&s.cancelBy<=to) out.push({key:`sc-${s.id}-${s.cancelBy}`,d:s.cancelBy,t:`Zrušiť / rozhodnúť: ${s.name||"predplatné"}${s.status==="skusobne"?" (koniec skúšobného obdobia)":""}`,info:true,go:"financie/predplatne"}); }
   return out.sort((a,b)=>a.d.localeCompare(b.d));
 }
 const isDone=key=>C.reminders.some(r=>r.id===key&&r.done);
-function pendingDue(){ const td=today(); return dueItems(addDays(td,-60),addDays(td,7)).filter(x=>!isDone(x.key)); }
-function weekPay(){ const ws=weekStart(today()), we=addDays(ws,6); const L=dueItems(ws,we).filter(x=>!x.car&&!x.biz&&!isDone(x.key)); return {list:L,total:L.reduce((s,x)=>s+(x.amount||0),0),count:L.length,ws,we}; }
+function pendingDue(){ const td=today(); return dueItems(addDays(td,-60),addDays(td,7)).filter(x=>!x.auto&&!isDone(x.key)); }
+function weekPay(){ const ws=weekStart(today()), we=addDays(ws,6); const L=dueItems(ws,we).filter(x=>!x.car&&!x.biz&&!x.info&&!isDone(x.key)); return {list:L,total:L.reduce((s,x)=>s+(x.amount||0),0),count:L.length,ws,we}; }
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-confirm]"); if(!b) return; e.preventDefault(); e.stopPropagation(); if(b.disabled) return; b.disabled=true;
   put("reminders",b.dataset.confirm,{done:true,doneAt:new Date().toISOString(),label:String(b.dataset.clabel||"").slice(0,200)}).then(ok=>{ if(!ok){ b.disabled=false; return; }
     toast("Potvrdené: "+(b.dataset.clabel||"hotovo"));
@@ -2306,11 +2311,11 @@ function jarsCards(jb){ const jc=jarsCfg();
   return `<div class="jars">${jc.map(j=>{ const b=jb[j.id]||{alloc:0,spent:0}; const left=Math.round((b.alloc-b.spent)*100)/100; const pct=b.alloc>0?Math.max(0,Math.min(100,left/b.alloc*100)):0;
     return `<div class="jar" title="${esc(j.desc||"")}"><span class="nm">${esc(j.name)}</span><span class="pc">${+j.pct} % z príjmu</span><span class="bal ${left<0?"neg":""}">${eur(left)}</span><div class="fill"><i style="width:${pct.toFixed(1)}%"></i></div><span class="pc">pridelené ${eur(b.alloc)} · minuté ${eur(b.spent)}</span></div>`; }).join("")}</div>
   ${jarsOk()?"":`<div style="color:var(--warn);font-size:13px;margin-top:8px">Súčet percent je ${Math.round(jarsSum()*100)/100} %, musí byť 100 %.</div>`}`; }
-const FIN_BASE=[["prehlad","Prehľad"],["prijmy","Príjmy"],["vydavky","Výdavky"],["rozpocet","Rozpočet"],["dzbany","7 džbánov"],["uvery","Úvery a leasingy"],["majetok","Majetok"]];
+const FIN_BASE=[["prehlad","Prehľad"],["prijmy","Príjmy"],["vydavky","Výdavky"],["predplatne","Predplatné"],["rozpocet","Rozpočet"],["dzbany","7 džbánov"],["uvery","Úvery a leasingy"],["majetok","Majetok"]];
 function viewFinancie(){
   let t=S.fin.tab||"prehlad"; const u=FIN_BASE.some(x=>x[0]===t)?null:(units().find(x=>x.id===t)||null); if(!u&&!FIN_BASE.some(x=>x[0]===t)) t="prehlad";
-  const body=u?finUnit(u):t==="rozpocet"?finRozpocet():t==="prijmy"?finPrijmy():t==="dzbany"?finDzbany():t==="vydavky"?viewVydavky():t==="uvery"?finUvery():t==="majetok"?finMajetok():finPrehlad();
-  const head=u?`<div class="eyebrow">${esc(UNIT_KIND[u.kind]||"Modul")} · príjmy, výdaje, cash flow · sumy v hrubom${u.vatPayer?" s DPH":""}</div><h1>${esc(u.name)}</h1>`:`<div class="eyebrow">Bilancia · príjmy · výdavky · rozpočet · džbány · úvery · majetok · firmy</div><h1>Financie</h1>`;
+  const body=u?finUnit(u):t==="rozpocet"?finRozpocet():t==="prijmy"?finPrijmy():t==="dzbany"?finDzbany():t==="vydavky"?viewVydavky():t==="predplatne"?finPredplatne():t==="uvery"?finUvery():t==="majetok"?finMajetok():finPrehlad();
+  const head=u?`<div class="eyebrow">${esc(UNIT_KIND[u.kind]||"Modul")} · príjmy, výdaje, cash flow · sumy v hrubom${u.vatPayer?" s DPH":""}</div><h1>${esc(u.name)}</h1>`:`<div class="eyebrow">Bilancia · príjmy · výdavky · predplatné · rozpočet · džbány · úvery · majetok · firmy</div><h1>Financie</h1>`;
   const acts=u?`<button class="btn primary" type="button" id="uAddIn">+ Príjem</button><button class="btn" type="button" id="uAddExp">+ Výdaj</button>`:`<button class="btn primary" type="button" id="finAddInc">+ Príjem</button><label class="btn" for="exFile">${ICONS.vydavky}Bloček</label><input type="file" id="exFile" accept="image/*,application/pdf" hidden><button class="btn" type="button" id="finAddLoan">+ Úver</button>`;
   return `<div class="view"><div class="band" style="--b1:var(${u?"--wn-1":"--wt-1"});--b2:var(${u?"--wn-2":"--wt-2"})"><div>${head}</div><div class="actions">${acts}</div></div>
     ${stateBanner()}
@@ -2330,7 +2335,7 @@ function finPrehlad(){
   const srcArr=Object.entries(srcs).map(([k,c])=>[k,c/100]).sort((a,b)=>b[1]-a[1]);
   const rows=[]; for(let k=5;k>=0;k--){ const mk=shiftMonth(m,-k); rows.push([mk,sumAmt(incMonth(mk)),expStats(mk).total]); }
   const mx=Math.max(1,...rows.map(r=>Math.max(r[1],r[2])));
-  const up=dueItems(today(),addDays(today(),30)).filter(x=>!x.car&&!x.biz);
+  const up=dueItems(today(),addDays(today(),30)).filter(x=>!x.car&&!x.biz&&!x.info);
   const wsTxt=`${pd(wp.ws).getDate()}. ${pd(wp.ws).getMonth()+1}. – ${pd(wp.we).getDate()}. ${pd(wp.we).getMonth()+1}.`;
   return `${monthNav(m,isCur)}
   <div class="fhero"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end"><div><div class="lbl">Bilancia · ${monthName(m)}</div><div class="big">${bal>=0?"+":""}${eur(bal)}</div></div><div class="lbl">${incT+st.total===0?"Zatiaľ bez pohybov":bal>=0?"Príjmy prevyšujú výdavky":"Výdavky prevyšujú príjmy"}</div></div>
@@ -2342,6 +2347,7 @@ function finPrehlad(){
     <div class="fc fc-gold" style="--g1:var(--wy-1);--g2:var(--wy-2)" data-fintab="majetok" role="button" tabindex="0"><span class="k">Úspory, zlato, investície</span><span class="v">${eur(assetsT)}</span><span class="s">${C.assets.length?`${C.assets.length} ${plural(C.assets.length,"položka","položky","položiek")}`:"Doplň v karte Majetok"}</span></div>
     <div class="fc" style="--g1:var(--ws-1);--g2:var(--ws-2)" data-fintab="uvery" role="button" tabindex="0"><span class="k">Úvery a leasingy</span><span class="v">${eur(debt)}</span><span class="s">splátky ${eur(payM)} mesačne</span></div>
     ${(()=>{ const b=budSummary(m); return `<div class="fc" style="--g1:var(--wc-1);--g2:var(--wc-2)" data-fintab="rozpocet" role="button" tabindex="0"><span class="k">Rozpočet · ${esc(monthName(m))}</span><span class="v">${b.has?eur(b.actTot):"—"}</span><span class="s">${b.has?`minuté z ${eur(b.planTot)} (${b.planTot>0?Math.round(b.actTot/b.planTot*100):0} %)`:"Naplánuj si mesiac v karte Rozpočet"}</span></div>`; })()}
+    ${(()=>{ const A=C.subs.filter(s=>subActive(s)&&subPayer(s)==="osobne"), mo=subsMonthlyOsobne(), nx=A.map(s=>[subNext(s),s]).filter(x=>x[0]).sort((a,b)=>a[0].localeCompare(b[0]))[0]; return `<div class="fc" style="--g1:var(--wv-1);--g2:var(--wv-2)" data-fintab="predplatne" role="button" tabindex="0"><span class="k">Predplatné · mesačne</span><span class="v">${A.length?eur(mo):"—"}</span><span class="s">${A.length?`${A.length} ${plural(A.length,"služba","služby","služieb")} · ročne ${eur(r2(mo*12))}${nx?` · ďalšia ${esc(nx[1].name)} ${pd(nx[0]).getDate()}. ${pd(nx[0]).getMonth()+1}.`:""}`:"Netflix, Spotify, cloud… pridaj v karte Predplatné"}</span></div>`; })()}
     ${units().map(u=>{ const m0=today().slice(0,7), s=bzMonth(m0,u.id), od=bzOpen(u.id).filter(x=>x.due&&x.due<today()); return `<div class="fc" style="--g1:var(--wn-1);--g2:var(--wn-2)" data-fintab="${esc(u.id)}" role="button" tabindex="0"><span class="k">${esc(u.name)} · cash flow</span><span class="v">${s.net>=0?"+":""}${eur(s.net)}</span><span class="s">${monthName(m0)}: príjmy ${eur(r2(s.recv+s.exp))} · výdaje ${eur(s.costs)}${od.length?` · po splatnosti ${eur(sumAmt(od))}`:""}</span></div>`; }).join("")}
     <div class="fc" style="--g1:var(--wm-1);--g2:var(--wm-2)"><span class="k">Čistý majetok</span><span class="v">${eur(assetsT-debt)}</span><span class="s">majetok mínus úvery</span></div>
   </div>
@@ -2387,7 +2393,7 @@ const workOpts=u=>u&&u.kind!=="firma"?INC_KIND_P:BZ_WORK;
 let BZ_CO="safety";
 const coOf=x=>x.co||"safety";
 const bzIn=(co=BZ_CO)=>C.bizcf.filter(x=>coOf(x)===co&&x.dir==="in");
-const bzOut=(co=BZ_CO)=>C.bizcf.filter(x=>coOf(x)===co&&x.dir==="out");
+const bzOut=(co=BZ_CO)=>C.bizcf.filter(x=>coOf(x)===co&&x.dir==="out").concat(subBizOut(co));
 const bzExp=(co=BZ_CO)=>C.bizcf.filter(x=>coOf(x)===co&&x.dir==="exp"&&ISO_RE.test(x.date||""));
 const bzOpen=(co=BZ_CO)=>bzIn(co).filter(x=>x.status!=="prijaty");
 const bzPaid=(co=BZ_CO)=>bzIn(co).filter(x=>x.status==="prijaty"&&ISO_RE.test(x.paidDate||""));
@@ -2550,7 +2556,7 @@ function bindUnit(){
   const bk=$("#bzBalK"); if(bk){ bk.onclick=bzBalForm; bk.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); bzBalForm(); } }; }
   document.querySelectorAll("[data-bzin]").forEach(r=>r.onclick=e=>{ if(e.target.closest("[data-bzpaid]")) return; const x=byId("bizcf",r.dataset.bzin); if(x) bzInForm(x,false); });
   document.querySelectorAll("[data-bzexp]").forEach(r=>r.onclick=()=>{ const x=byId("bizcf",r.dataset.bzexp); if(x) bzExpForm(x); });
-  document.querySelectorAll("[data-bzout]").forEach(r=>r.onclick=()=>{ const o=byId("bizcf",r.dataset.bzout); if(o) bzOutForm(o); });
+  document.querySelectorAll("[data-bzout]").forEach(r=>r.onclick=()=>{ if(r.dataset.bzout.startsWith("sub-")){ S.fin.tab="predplatne"; S.form=null; renderView(); return; } const o=byId("bizcf",r.dataset.bzout); if(o) bzOutForm(o); });
   document.querySelectorAll("[data-bzpaid]").forEach(b=>b.onclick=async e=>{ e.stopPropagation(); b.disabled=true; const x=byId("bizcf",b.dataset.bzpaid); if(!x){ b.disabled=false; return; }
     const ok=await put("bizcf",x.id,{status:"prijaty",paidDate:today(),updated:nowIso()},true); if(ok) toast("Prijaté: "+(x.title||"platba")+" · "+eur(x.amount)); else b.disabled=false; });
   document.querySelectorAll("[data-bzper]").forEach(b=>b.onclick=()=>{ S.bz.per=b.dataset.bzper; renderView(); });
@@ -2575,7 +2581,7 @@ function finRozpocet(){ const td=today(), m=S.bud.m||td.slice(0,7);
   const planArr=[...Object.entries(D.cats).map(([k,v])=>[k,num(v)||0]).filter(x=>x[1]>0),...(loans?[["_loans",loans]]:[])].sort((a,b)=>b[1]-a[1]);
   const actArr=[...st.catArr,...(loans?[["_loans",loans]]:[])].sort((a,b)=>b[1]-a[1]); const LBL={...EXPCAT,_loans:"Splátky úverov"};
   const row=k=>{ const p=num(D.cats[k])||0, a=act[k]||0, pc=p>0?a/p*100:(a>0?100:0), over=p>0?a>p:a>0;
-    return `<div class="bud-row"><span class="lbl">${esc(EXPCAT[k])}</span><input type="number" inputmode="decimal" step="any" min="0" id="bp_${k}" data-bk="${k}" value="${esc(D.cats[k])}" placeholder="0" aria-label="Plán ${esc(EXPCAT[k])} €"><span class="mono val">${eur(a)}</span><span class="mono val ${over?"neg":""}" id="br_${k}">${p||a?(over?"−"+eur(a-p):eur(p-a)):"–"}</span><div class="bar" title="${Math.round(pc)} % z plánu"><i id="bb_${k}" style="width:${Math.min(100,pc).toFixed(1)}%;background:${over?"var(--crit)":pc>=85?"var(--warn)":"var(--ok)"}"></i></div></div>`; };
+    return `<div class="bud-row"><span class="lbl">${esc(EXPCAT[k])}</span><input type="number" inputmode="decimal" step="any" min="0" id="bp_${k}" data-bk="${k}" value="${esc(D.cats[k])}" placeholder="${k==="predplatne"&&subsMonthlyOsobne()>0?r2(subsMonthlyOsobne()):0}" aria-label="Plán ${esc(EXPCAT[k])} €"><span class="mono val">${eur(a)}</span><span class="mono val ${over?"neg":""}" id="br_${k}">${p||a?(over?"−"+eur(a-p):eur(p-a)):"–"}</span><div class="bar" title="${Math.round(pc)} % z plánu"><i id="bb_${k}" style="width:${Math.min(100,pc).toFixed(1)}%;background:${over?"var(--crit)":pc>=85?"var(--warn)":"var(--ok)"}"></i></div></div>`; };
   return `<div class="toolbar" style="justify-content:space-between"><div class="monthnav"><button class="btn sm" type="button" data-bnav="-1" aria-label="Predchádzajúci mesiac">‹</button><b>${monthName(m)}</b><button class="btn sm" type="button" data-bnav="1" aria-label="Nasledujúci mesiac">›</button></div><span class="count">${D.src==="mesiac"?"uložený rozpočet mesiaca":D.src==="sablona"?"podľa šablóny – uprav a ulož":"zatiaľ bez rozpočtu"}</span></div>
   <div class="kpis"><div class="kpi"><span class="k">Plánovaný príjem</span><span class="v" id="bkInc">${eur(inc)}</span><span class="s">skutočne prišlo ${eur(incAct)}</span></div>
     <div class="kpi"><span class="k">Plán výdavkov</span><span class="v" id="bkPlan">${eur(planTot)}</span><span class="s">${loans?`z toho splátky ${eur(loans)}`:"&nbsp;"}</span></div>
@@ -2588,7 +2594,7 @@ function finRozpocet(){ const td=today(), m=S.bud.m||td.slice(0,7);
     ${loans?`<div class="bud-row"><span class="lbl">Splátky úverov a leasingov</span><span class="mono val">${eur(loans)}</span><span class="mono val">${eur(loans)}</span><span class="mono val">automaticky</span><div></div></div>`:""}
     <label class="f">Poznámka k mesiacu<textarea id="bNote" rows="2">${esc(D.note||"")}</textarea></label>
     <div class="actions"><button class="btn primary" type="button" id="budSave">Uložiť rozpočet na ${esc(monthName(m))}</button><button class="btn" type="button" id="budTpl">Uložiť ako šablónu pre ďalšie mesiace</button><button class="btn ghost" type="button" id="budCopy">Skopírovať z minulého mesiaca</button></div>
-    <div style="font-size:12px;color:var(--muted)">Minuté = súkromné výdavky z karty Výdavky (bločky) v danom mesiaci + splátky úverov. Firemné peniaze sa sem nerátajú.</div></div></section>
+    <div style="font-size:12px;color:var(--muted)">Minuté = súkromné výdavky z karty Výdavky (bločky) v danom mesiaci + splátky úverov. Predplatné sa do kategórie Predplatné a služby pripočíta samo v deň platby${subsMonthlyOsobne()>0?` (pravidelne ${eur(subsMonthlyOsobne())} mesačne)`:""}. Firemné peniaze sa sem nerátajú.</div></div></section>
   <div class="twocol"><section class="panel"><div class="panel-h"><h2>Plán rozdelenia</h2><span class="count">${eur(planTot)}</span></div><div class="panel-b">${donut(planArr,LBL,{sub:"plán",aria:"Plán výdavkov "+monthName(m)})}</div></section>
     <section class="panel"><div class="panel-h"><h2>Skutočnosť</h2><span class="count">${eur(actTot)}</span></div><div class="panel-b">${donut(actArr,LBL,{sub:"minuté",aria:"Skutočné výdavky "+monthName(m)})}</div></section></div>`; }
 function bindRozpocet(){ const D=S.bud.draft; if(!D) return;
@@ -2647,6 +2653,86 @@ function loanForm(l){ openForm({title:l?"Upraviť úver / leasing":"Nový úver 
     const pdn=num(d.payDay); rec.payDay=pdn&&pdn>=1&&pdn<=31?Math.round(pdn):null; rec.updated=new Date().toISOString(); rec.created=l?.created||rec.updated;
     const ok=await put("loans",l?.id||rid(),rec); if(ok) toast("Úver uložený"); return ok; },
   onDelete:l?()=>delDoc("loans",l.id):null}); }
+/* ---------- Predplatné: Netflix, Spotify, cloud, AI… (kolekcia subs) ---------- */
+const SUB_CAT={streaming:"Filmy a seriály",hudba:"Hudba a audioknihy",tv:"TV a šport",cloud:"Cloud a úložisko",softver:"Softvér a aplikácie",ai:"AI nástroje",telefon:"Telefón a internet",noviny:"Noviny a časopisy",hry:"Hry",fitness:"Fitness a zdravie",vzdelavanie:"Vzdelávanie",clenstvo:"Členstvá",ine:"Iné"};
+const SUB_FREQ={m:"Mesačne",q:"Štvrťročne",h:"Polročne",y:"Ročne"};
+const SUB_ST={aktivne:"Aktívne",skusobne:"Skúšobné obdobie",zrusene:"Zrušené"};
+const SUB_PRESETS=[["Netflix","streaming"],["Disney+","streaming"],["HBO Max","streaming"],["SkyShowtime","streaming"],["Voyo","streaming"],["Amazon Prime","streaming"],["Apple TV+","streaming"],["Spotify","hudba"],["YouTube Premium","hudba"],["Apple Music","hudba"],["Audible","hudba"],["iCloud+","cloud"],["Google One","cloud"],["Dropbox","cloud"],["Microsoft 365","softver"],["Adobe","softver"],["Canva","softver"],["Claude","ai"],["ChatGPT","ai"]];
+const subPayer=s=>s&&s.payer&&s.payer!=="osobne"?s.payer:"osobne";
+const subStep=s=>BZ_STEP[s.freq]||1;
+const subMonthly=s=>(num(s.amount)||0)/subStep(s);
+const subSince=s=>ISO_RE.test(s.since||"")?s.since:(String(s.created||"").slice(0,7)?String(s.created).slice(0,7)+"-01":(ISO_RE.test(s.first||"")?s.first:"9999-12-31"));
+const subEnd=s=>ISO_RE.test(s.end||"")?s.end:(s.status==="zrusene"?(String(s.updated||"").slice(0,10)||today()):"");
+const subActive=s=>s.status!=="zrusene"&&!(subEnd(s)&&subEnd(s)<today());
+const subNorm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+/* Termíny platby v intervale <from,to>: od dátumu platby dozadu aj dopredu po kroku, ohraničené „počítať od“ a dátumom zrušenia */
+function subOcc(s,from,to){ const out=[]; if(!(num(s.amount)>0)||!ISO_RE.test(s.first||"")) return out;
+  const st=subStep(s), end=subEnd(s); let lo=from>subSince(s)?from:subSince(s); if(s.status==="skusobne"&&s.first>lo) lo=s.first; const hi=end&&end<to?end:to; if(lo>hi) return out;
+  const md=(a,b)=>(+b.slice(0,4)-+a.slice(0,4))*12+(+b.slice(5,7)-+a.slice(5,7));
+  let k=Math.floor(md(s.first,lo)/st)-1;
+  for(let g=0;g<400;g++,k++){ const d=addMonths(s.first,k*st); if(d>hi) break; if(d>=lo) out.push(d); }
+  return out; }
+const subNext=s=>{ const td=today(); return subActive(s)?(subOcc(s,td,addMonths(td,13))[0]||""):""; };
+/* Platba už je v evidencii ako bloček/mail (rovnaká suma ±3 %, ±6 dní, názov služby v texte) – nerátať dvakrát */
+function subMatched(s,d,real){ const a=num(s.amount)||0, keys=[subNorm(s.match).trim(),subNorm(s.name).split(/[\s+.]+/).find(w=>w.length>=3)||""].filter(Boolean);
+  const lo=addDays(d,-6), hi=addDays(d,6);
+  return real.some(e=>e.date>=lo&&e.date<=hi&&Math.abs((+e.amount||0)-a)<=Math.max(0.05,a*0.03)&&keys.some(k=>subNorm((e.title||"")+" "+(e.merchant||"")+" "+(e.body||"")+" "+(e.note||"")).includes(k))); }
+function subExpenses(real){ const td=today(), out=[];
+  for(const s of C.subs){ if(subPayer(s)!=="osobne") continue;
+    for(const d of subOcc(s,"2000-01-01",td)){ if(subMatched(s,d,real)) continue;
+      out.push({id:"sub-"+s.id+"-"+d,type:"vydavok",title:(s.name||"Predplatné")+" · predplatné",amount:r2(num(s.amount)||0),date:d,expcat:"predplatne",pay:PAY[s.pay]?s.pay:"karta",jar:s.jar||"",_sub:s.id,_go:"financie/predplatne",created:d}); } }
+  return out; }
+/* Predplatné platené firmou: pravidelná platba modulu (cash flow, kalendár Biznis) */
+function subBizOut(co){ return C.subs.filter(s=>subPayer(s)===co&&num(s.amount)>0&&ISO_RE.test(s.first||"")).map(s=>{ const sn=subSince(s), f=subOcc(s,sn,addMonths(sn,13))[0]||subOcc(s,sn,"2100-12-31")[0]||"";
+  return {id:"sub-"+s.id,_sub:s.id,auto:s.freq!=="y"&&s.freq!=="h",co,dir:"out",title:(s.name||"Predplatné")+" · predplatné",kind:s.cat==="telefon"?"telekom":"softver",payee:s.name||"",amount:num(s.amount),freq:SUB_FREQ[s.freq]?s.freq:"m",first:f,end:subEnd(s),created:s.created||"",note:"Z karty Predplatné"}; }).filter(o=>o.first); }
+const subsMonthlyOsobne=()=>C.subs.filter(s=>subActive(s)&&subPayer(s)==="osobne").reduce((a,s)=>a+subMonthly(s),0);
+function subPayerName(s){ const p=subPayer(s); return p==="osobne"?"osobne":"firma · "+uShort(unitById(p)||{name:p}); }
+function finPredplatne(){ const td=today(), A=C.subs.filter(subActive).sort((a,b)=>subMonthly(b)-subMonthly(a)), Z=C.subs.filter(s=>!subActive(s)).sort((a,b)=>(subEnd(b)||"").localeCompare(subEnd(a)||""));
+  const P=A.filter(s=>subPayer(s)==="osobne"), F=A.filter(s=>subPayer(s)!=="osobne");
+  const mP=P.reduce((a,s)=>a+subMonthly(s),0), mF=F.reduce((a,s)=>a+subMonthly(s),0);
+  const up=[]; for(const s of A) for(const d of subOcc(s,td,addDays(td,30))) up.push({d,s}); up.sort((a,b)=>a.d.localeCompare(b.d));
+  const upSum=r2(up.reduce((a,x)=>a+(num(x.s.amount)||0),0));
+  const warn=A.filter(s=>ISO_RE.test(s.cancelBy||"")&&s.cancelBy<=addDays(td,30)).sort((a,b)=>a.cancelBy.localeCompare(b.cancelBy));
+  const byCat={}; for(const s of A){ const k=SUB_CAT[s.cat]?s.cat:"ine"; byCat[k]=(byCat[k]||0)+Math.round(subMonthly(s)*100); }
+  const catArr=Object.entries(byCat).map(([k,c])=>[k,c/100]).sort((a,b)=>b[1]-a[1]);
+  const fr=s=>" · "+(SUB_FREQ[s.freq]||"Mesačne").toLowerCase();
+  const row=s=>{ const nx=subNext(s), n=nx?dayDiff(nx):null; return `<tr data-sub="${esc(s.id)}" style="cursor:pointer${subActive(s)?"":";opacity:.55"}"><td style="min-width:140px"><b style="font-weight:600">${esc(s.name||"—")}</b>${s.status==="skusobne"?' <span class="chip" style="font-size:11px">skúšobné</span>':""}<div style="font-size:12px;color:var(--muted)">${esc(SUB_CAT[s.cat]||"Iné")} · ${esc(subPayerName(s))}${s.account?" · "+esc(s.account):""}</div></td><td class="n">${eur(s.amount)}<div style="font-size:11px;color:var(--muted)">${esc((SUB_FREQ[s.freq]||"Mesačne").toLowerCase())}</div></td><td class="n">${eur(subMonthly(s))}</td><td class="n">${subActive(s)?(nx?`<span class="due ${n<=3?"soon":""}">${fmtDate(nx)}</span><div style="font-size:11px;color:var(--muted)">${esc(daysTxt(n))}</div>`:"—"):`zrušené${subEnd(s)?" k "+fmtDate(subEnd(s)):""}`}</td></tr>`; };
+  const tbl=L=>`<div class="tblwrap"><table class="tbl"><thead><tr><th>Služba</th><th class="n">Suma</th><th class="n">Mesačne</th><th class="n">Ďalšia platba</th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></div>`;
+  return `<div class="actions"><button class="btn primary" type="button" id="subAdd">+ Predplatné</button></div>
+  <div class="kpis">
+    <div class="kpi"><span class="k">Mesačne · osobné</span><span class="v">${eur(mP)}</span><span class="s">${P.length} ${plural(P.length,"aktívne","aktívne","aktívnych")} · ročne ${eur(r2(mP*12))}</span></div>
+    <div class="kpi"><span class="k">Ročne spolu</span><span class="v">${eur(r2((mP+mF)*12))}</span><span class="s">osobné aj firemné</span></div>
+    <div class="kpi"><span class="k">Platí firma</span><span class="v">${eur(mF)}</span><span class="s">${F.length?`mesačne · ${F.length} ${plural(F.length,"služba","služby","služieb")}`:"žiadne firemné predplatné"}</span></div>
+    <div class="kpi"><span class="k">Najbližších 30 dní</span><span class="v">${eur(upSum)}</span><span class="s">${up.length} ${plural(up.length,"platba","platby","platieb")}</span></div></div>
+  ${warn.length?`<section class="panel stripe-warn"><div class="panel-h"><h2>Zrušiť alebo rozhodnúť</h2><span class="count">do 30 dní</span></div><ul class="list">${warn.map(s=>`<li class="li" data-sub="${esc(s.id)}">${dot("udalost")}<div class="li-main"><div class="li-title">${esc(s.name)}${s.status==="skusobne"?" – koniec skúšobného obdobia":""}</div><div class="li-meta"><span class="due ${s.cancelBy<td?"late":"soon"}">${fmtDate(s.cancelBy)} · ${esc(daysTxt(dayDiff(s.cancelBy)))}</span><span>potom ${eur(s.amount)}${esc(fr(s))}</span>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">spravovať</a>`:""}</div></div></li>`).join("")}</ul></section>`:""}
+  <section class="panel"><div class="panel-h"><h2>Aktívne predplatné</h2><span class="count">${eur(r2(mP+mF))} mesačne</span></div>${A.length?tbl(A):`<div class="empty">Zatiaľ žiadne predplatné. Ťukni na službu nižšie alebo na + Predplatné a doplň sumu, ktorá ti odchádza z účtu, a dátum platby.</div>`}</section>
+  <section class="panel"><div class="panel-h"><h2>Rýchlo pridať</h2><span class="count">sumu doplníš podľa výpisu</span></div><div class="panel-b"><div class="mtabs">${SUB_PRESETS.map(([n],i)=>`<button type="button" data-subpre="${i}">${esc(n)}</button>`).join("")}</div></div></section>
+  <div class="twocol">
+    <section class="panel"><div class="panel-h"><h2>Podľa druhu · mesačne</h2><span class="count">${eur(r2(mP+mF))}</span></div><div class="panel-b">${donut(catArr,SUB_CAT,{sub:"mesačne",aria:"Predplatné podľa druhu"})}</div></section>
+    <section class="panel"><div class="panel-h"><h2>Platby na 30 dní</h2><span class="count">${eur(upSum)}</span></div><ul class="list">${up.map(x=>`<li class="li" data-sub="${esc(x.s.id)}">${dot("vydavok")}<div class="li-main"><div class="li-title">${esc(x.s.name)}</div><div class="li-meta"><span>${esc(daysTxt(dayDiff(x.d)))} · ${fmtDate(x.d)}</span><span>${esc(subPayerName(x.s))}</span></div></div><span class="amt">${eur(x.s.amount)}</span></li>`).join("")||'<li class="empty">Žiadne platby v najbližších 30 dňoch.</li>'}</ul></section></div>
+  ${Z.length?`<section class="panel"><div class="panel-h"><h2>Zrušené</h2><span class="count">${Z.length}</span></div>${tbl(Z)}</section>`:""}
+  <p style="margin:0;font-size:13px;color:var(--muted);max-width:78ch">Osobné predplatné sa v deň platby samo započíta do výdavkov (kategória Predplatné a služby), do bilancie, rozpočtu a 7 džbánov a ukáže sa v kalendári. Ak tú istú platbu zapíše aj mailový agent alebo bloček (rovnaká suma, ±6 dní, názov služby v texte), počíta sa iba raz. Ročné a polročné platby prídu 7 dní vopred medzi termíny na potvrdenie. Predplatné platené firmou ide do cash flow firmy, nie do osobnej bilancie.</p>`; }
+function subForm(s,pre){ const td=today(), jo={"":"—"}; for(const j of jarsCfg()) jo[j.id]=j.name;
+  const po={osobne:"Osobne (súkromné)"}; for(const u of units()) po[u.id]="Firma · "+u.name;
+  const fields=[{k:"name",l:"Služba",ph:"napr. Netflix"},{k:"cat",l:"Druh",t:"select",o:SUB_CAT},{k:"amount",l:"Suma (€) – ako odíde z účtu",t:"number"},{k:"freq",l:"Platí sa",t:"select",o:SUB_FREQ},
+    {k:"first",l:"Dátum platby (posledná alebo najbližšia)",t:"date"},{k:"payer",l:"Kto platí",t:"select",o:po},{k:"status",l:"Stav",t:"select",o:SUB_ST},{k:"pay",l:"Platba",t:"select",o:PAY},
+    {k:"since",l:"Počítať do výdavkov od",t:"date"},{k:"cancelBy",l:"Zrušiť / rozhodnúť do (nepovinné)",t:"date"},{k:"end",l:"Zrušené k (posledný deň)",t:"date"},
+    ...(jarsCfg().length?[{k:"jar",l:"Z ktorého džbánu",t:"select",o:jo}]:[]),
+    {k:"account",l:"Účet / kto používa",ph:"napr. rodinný, e-mail účtu"},{k:"match",l:"Text na výpise / v maile (ak sa líši)",ph:"napr. OpenAI, Google *YouTube"},{k:"url",l:"Stránka na správu a zrušenie",t:"url",ph:"https://",wide:true},{k:"note",l:"Poznámka",t:"textarea",wide:true}];
+  openForm({title:s?"Upraviť predplatné":"Nové predplatné",data:s?{...s,payer:subPayer(s),status:SUB_ST[s.status]?s.status:"aktivne"}:{name:pre?.[0]||"",cat:pre?.[1]||"streaming",freq:"m",payer:"osobne",status:"aktivne",pay:"karta",first:td,since:td.slice(0,7)+"-01"},fields,
+    onSave:async d=>{ const name=String(d.name||"").trim(), a=num(d.amount); if(!name){ toast("Zadaj názov služby."); return false; } if(!(a>0)){ toast("Zadaj sumu väčšiu ako 0 €."); return false; } if(!ISO_RE.test(d.first||"")){ toast("Zadaj dátum platby."); return false; }
+      const now=new Date().toISOString(), status=SUB_ST[d.status]?d.status:"aktivne";
+      const rec={name:name.slice(0,80),cat:SUB_CAT[d.cat]?d.cat:"ine",amount:r2(a),freq:SUB_FREQ[d.freq]?d.freq:"m",first:d.first,payer:d.payer==="osobne"||!unitById(d.payer)?"osobne":d.payer,status,pay:PAY[d.pay]?d.pay:"karta",
+        since:ISO_RE.test(d.since||"")?d.since:(s?subSince(s):td.slice(0,7)+"-01"),cancelBy:ISO_RE.test(d.cancelBy||"")?d.cancelBy:(status==="skusobne"?addDays(d.first,-1):""),end:ISO_RE.test(d.end||"")?d.end:(status==="zrusene"?td:""),
+        jar:jo[d.jar]&&d.jar?d.jar:"",account:String(d.account||"").slice(0,120),match:String(d.match||"").slice(0,60),url:/^https?:\/\//.test(String(d.url||"").trim())?String(d.url).trim().slice(0,300):"",note:String(d.note||"").slice(0,1000),created:s?.created||now,updated:now};
+      const ok=await put("subs",s?.id||rid(),rec); if(ok) toast(`Predplatné uložené: ${rec.name} · ${eur(rec.amount)} ${(SUB_FREQ[rec.freq]).toLowerCase()}`); return ok; },
+    onDelete:s?()=>delDoc("subs",s.id):null}); }
+function bindPredplatne(){
+  $("#subAdd")&&($("#subAdd").onclick=()=>subForm(null));
+  document.querySelectorAll("[data-subpre]").forEach(b=>b.onclick=()=>subForm(null,SUB_PRESETS[+b.dataset.subpre]));
+  document.querySelectorAll("[data-sub]").forEach(r=>r.onclick=()=>{ const s=byId("subs",r.dataset.sub); if(s) subForm(s); });
+}
+
 function bindFinancie(){
   document.querySelectorAll("[data-fintab]").forEach(b=>b.onclick=()=>{ if(b.dataset.fintab==="_add"){ unitForm(null); return; } S.fin.tab=b.dataset.fintab; S.form=null; renderView(); });
   $("#finAddInc")&&($("#finAddInc").onclick=()=>{ if(!["prehlad","prijmy"].includes(S.fin.tab)) S.fin.tab="prijmy"; incomeForm(null); });
@@ -2654,6 +2740,7 @@ function bindFinancie(){
   $("#uAddExp")&&($("#uAddExp").onclick=()=>bzExpForm(null));
   if(units().some(x=>x.id===S.fin.tab)) bindUnit();
   if(S.fin.tab==="rozpocet") bindRozpocet();
+  if(S.fin.tab==="predplatne") bindPredplatne();
   $("#finAddLoan")&&($("#finAddLoan").onclick=()=>{ S.fin.tab="uvery"; loanForm(null); });
   document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>{ const nm=shiftMonth(curMonth(),+b.dataset.mnav); if(nm<=today().slice(0,7)){ S.exp.month=nm; renderView(); } });
   document.querySelectorAll("[data-inc]").forEach(r=>r.onclick=()=>incomeForm(byId("income",r.dataset.inc)));
@@ -3117,6 +3204,7 @@ function lifeContext(){ const L=[], m0=today().slice(0,7);
   for(let k=0;k<3;k++){ const m=shiftMonth(m0,-k), inc=incMonth(m); if(inc.length) L.push(`- Príjmy ${monthName(m)}: ${eur(sumAmt(inc))} (${Object.entries(inc.reduce((o,i)=>{ const s=INC_SRC[i.src]||"Iné"; o[s]=(o[s]||0)+(+i.amount||0); return o; },{})).map(([s,v])=>s+" "+eur(v)).join(", ")})`); }
   if(jarsCfg().length){ const jb=jarBalances(); L.push("- Džbány: "+jarsCfg().map(j=>`${j.name} ${j.pct} % (zostatok ${eur((jb[j.id]?.alloc||0)-(jb[j.id]?.spent||0))})`).join("; ")); }
   for(const l of C.loans){ const c=loanCalc(l); L.push(`- Úver ${l.name}: zostatok ${eur(l.balance)}, splátka ${eur(l.payment)} (${l.payDay||"?"}. v mesiaci), cieľ: ${l.purpose||"-"}${c.n?`, zostáva cca ${c.n} splátok`:""}`); }
+  { const A=C.subs.filter(subActive); if(A.length) L.push("- Predplatné (aktívne): "+A.map(s=>`${s.name} ${eur(s.amount)} ${(SUB_FREQ[s.freq]||"mesačne").toLowerCase()}, ${subPayerName(s)}${subNext(s)?", ďalšia platba "+subNext(s):""}${s.cancelBy?", zrušiť/rozhodnúť do "+s.cancelBy:""}`).join("; ")+`; osobne spolu ${eur(subsMonthlyOsobne())} mesačne`); }
   for(const c of C.cars) L.push(`- Auto ${c.name}${c.plate?" ("+c.plate+")":""}: ${num(c.km)!=null?fmtKm(c.km):""}; `+carDeadlines(c).map(d=>`${d.l} ${d.date?fmtDate(d.date):""}${d.km!=null?" / "+fmtKm(d.km):""}`).join(", "));
   for(const t of C.trips.filter(t=>!t.end||t.end>=today())) L.push(`- Výlet ${t.name} (${t.dest||""}) ${tripDates(t)}; príprava ${tripProg(t.prep).d}/${tripProg(t.prep).n}, balenie ${tripProg(t.packing).d}/${tripProg(t.packing).n}; nevybavené: ${(t.prep||[]).filter(x=>!x.done).map(x=>x.t).slice(0,8).join("; ")}`);
   for(const g of C.goals.filter(g=>g.status!=="splneny")) L.push(`- Cieľ (${HORIZON[g.horizon]||""}): ${g.title}${g.due?" do "+g.due:""}, ${num(g.progress)||0} %`);
@@ -3649,7 +3737,7 @@ function viewRevizia(){ const t=S.rv.tab||"tyzden";
 function rvSteps(ws){ const td=today(), we=addDays(ws,6), n14=addDays(td,14);
   const late=items().filter(t=>isOpenTask(t)&&t.due&&t.due<td).length, noDue=items().filter(t=>isOpenTask(t)&&!t.due).length;
   const mail=S.mail.filter(x=>x.cat==="dolezite"&&!x.handled).length, inb=inboxNew().length;
-  const ag=agenda(addDays(we,1),addDays(we,7),{tasks:true}).length, pay=dueItems(addDays(we,1),addDays(we,7)).filter(x=>!x.car&&!x.biz&&!isDone(x.key));
+  const ag=agenda(addDays(we,1),addDays(we,7),{tasks:true}).length, pay=dueItems(addDays(we,1),addDays(we,7)).filter(x=>!x.car&&!x.biz&&!x.info&&!isDone(x.key));
   const unsorted=items().filter(i=>!(i.tags||[]).length&&i.type==="poznamka"&&String(i.created||"").slice(0,10)>=ws).length;
   const due=C.people.filter(p=>{ const c=contactDue(p); return c&&c.days<=7; }).length;
   return [
@@ -4031,6 +4119,7 @@ async function init(){
   watch("income",c=>c.orderBy("date","desc").limit(1000));
   watch("bizcf",c=>c.limit(3000));
   watch("budget",c=>c.limit(240));
+  watch("subs",c=>c.limit(300));
   watch("loans",c=>c.limit(100));
   watch("cars",c=>c.limit(20));
   watch("trips",c=>c.limit(100));
