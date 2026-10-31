@@ -2377,9 +2377,9 @@ const UNIT_KIND={firma:"Firma",pasivny:"Pasívny príjem",ine:"Iný modul"};
 const VAT_RATES={"0":"0 % / bez DPH","5":"5 %","19":"19 %","23":"23 %"};
 const AMT_MODE={s:"s DPH (hrubá suma)",b:"bez DPH (z objednávky)"};
 const INC_KIND_P={najom:"Nájom",dividendy:"Dividendy",uroky:"Úroky",licencie:"Licencie a autorské",predaj:"Predaj",ine:"Iné"};
-const SAFETY_DEF={id:"safety",name:"Safety Electric Slovakia",short:"Safety",kind:"firma",vatPayer:true,vat:23};
+const SAFETY_DEF={id:"safety",name:"Safety Electric Slovakia",short:"Safety",kind:"firma",vatPayer:false,vat:0};
 function allUnits(){ const s=setting("units"); const L=(Array.isArray(s?.units)?s.units:[]).filter(u=>u&&u.id&&u.name).map(u=>({...u}));
-  const i=L.findIndex(u=>u.id==="safety"); if(i<0) L.unshift({...SAFETY_DEF}); else L[i]={...SAFETY_DEF,...L[i],archived:false}; return L; }
+  const i=L.findIndex(u=>u.id==="safety"); if(i<0) L.unshift({...SAFETY_DEF}); else L[i]={...SAFETY_DEF,...L[i],...(L[i].vatSet?{}:{vatPayer:false,vat:0}),archived:false}; return L; }
 const units=()=>allUnits().filter(u=>!u.archived);
 const unitById=id=>allUnits().find(u=>u.id===id)||null;
 const uShort=u=>u?(u.short||u.name):"";
@@ -2393,7 +2393,7 @@ const bzOpen=(co=BZ_CO)=>bzIn(co).filter(x=>x.status!=="prijaty");
 const bzPaid=(co=BZ_CO)=>bzIn(co).filter(x=>x.status==="prijaty"&&ISO_RE.test(x.paidDate||""));
 const bzPaidAmt=x=>{ const p=num(x.paidAmount); return p!=null?p:(num(x.amount)||0); };
 const mEnd=mk=>{ const [y,m]=mk.split("-").map(Number); return isoD(new Date(y,m,0)); };
-const vatOf=(x,u)=>{ const v=num(x?.vat); if(v!=null) return v; u=u||unitById(coOf(x||{})); return u?.vatPayer?(num(u.vat)||0):0; };
+const vatOf=(x,u)=>{ u=u||unitById(coOf(x||{})); if(!u?.vatPayer) return 0; const v=num(x?.vat); return v!=null?v:(num(u.vat)||0); };
 const netOf=(a,v)=>Math.round((num(a)||0)/(1+(num(v)||0)/100)*100)/100;
 const r2=n=>Math.round(n*100)/100;
 /* Termíny pravidelnej platby v intervale <from,to> */
@@ -2492,18 +2492,18 @@ function finUnit(u){ BZ_CO=u.id; const co=u.id, vp=!!u.vatPayer, W=workOpts(u);
   </tbody></table><div class="cal-legend" style="color:var(--muted)"><span><span class="dot" style="background:var(--s3)"></span>Príjmy (prijaté + očakávané podľa splatnosti)</span><span><span class="dot" style="background:var(--s2)"></span>Výdaje (jednorazové + pravidelné)</span></div>
   <p style="margin:10px 0 0;font-size:13px;color:var(--muted);max-width:75ch">Všetky sumy sú v hrubom${vp?" (s DPH)":""}; neuhradené položky po splatnosti sú v aktuálnom mesiaci. Peniaze modulu ${esc(u.name)} sa nezapočítavajú do osobnej bilancie ani do 7 džbánov – výplatu alebo dividendu si zapíš v karte Príjmy.</p></div></section>`;
 }
-function amtFields(u,vat){ return [{k:"amtMode",l:"Zadaná suma je",t:"select",o:u?.vatPayer?AMT_MODE:{s:"konečná suma"}},{k:"vat",l:"Sadzba DPH",t:"select",o:VAT_RATES}]; }
-const grossOf=(d)=>{ const a=num(d.amount), v=num(d.vat)||0; if(!(a>0)) return null; return r2(d.amtMode==="b"?a*(1+v/100):a); };
+function amtFields(u){ return u?.vatPayer?[{k:"amtMode",l:"Zadaná suma je",t:"select",o:AMT_MODE},{k:"vat",l:"Sadzba DPH",t:"select",o:VAT_RATES}]:[]; }
+const grossOf=(d)=>{ const a=num(d.amount), v=num(d.vat)||0; if(d.amtMode!=="b") return a>0?r2(a):null; if(!(a>0)) return null; return r2(d.amtMode==="b"?a*(1+v/100):a); };
 function bzInForm(x,paid){ const td=today(), u=unitById(BZ_CO), W=workOpts(u), dv=u?.vatPayer?(num(u.vat)||0):0;
   openForm({title:x?(x.status==="prijaty"?"Upraviť prijatú platbu":"Upraviť očakávaný príjem"):(paid?`Nová prijatá platba · ${uShort(u)}`:`Nový očakávaný príjem · ${u?.name||""}`),saveLabel:x?"Uložiť":(paid?"Uložiť platbu":"Uložiť očakávaný príjem"),
     data:x?{...x,work:x.work||"ine",vat:String(vatOf(x,u)),amtMode:"s",paidAmount:x.paidAmount??""}:{title:"",work:Object.keys(W)[0],ord:"",ordDate:td,inv:"",amount:"",vat:String(dv),amtMode:u?.vatPayer?"b":"s",issued:"",due:paid?td:addDays(td,30),status:paid?"prijaty":"planovany",paidDate:paid?td:"",paidAmount:"",note:""},
     fields:[{k:"title",l:u?.kind==="firma"?"Klient / zákazka":"Zdroj / popis",ph:u?.kind==="firma"?"napr. RD Novák, Kežmarok":"napr. Prenájom bytu Poprad"},{k:"work",l:u?.kind==="firma"?"Druh práce":"Druh príjmu",t:"select",o:W},{k:"amount",l:"Suma (€)",t:"number"},...amtFields(u),{k:"due",l:paid?"Splatnosť":"Očakávaná úhrada",t:"date"},
       {k:"ord",l:"Číslo objednávky / zmluvy (nepovinné)"},{k:"ordDate",l:"Dátum objednávky",t:"date"},{k:"status",l:"Stav",t:"select",o:BZ_STATUS},{k:"inv",l:"Číslo faktúry (keď ju vystavíš)"},
-      {k:"issued",l:"Faktúra vystavená",t:"date"},{k:"paidDate",l:"Dátum úhrady",t:"date"},{k:"paidAmount",l:"Prijatá suma s DPH, ak iná (€)",t:"number"},{k:"note",l:"Poznámka",t:"textarea",wide:true,ph:"napr. projekt FVE 10 kWp, revízia bleskozvodu"}],
+      {k:"issued",l:"Faktúra vystavená",t:"date"},{k:"paidDate",l:"Dátum úhrady",t:"date"},{k:"paidAmount",l:u?.vatPayer?"Prijatá suma s DPH, ak iná (€)":"Prijatá suma, ak iná (€)",t:"number"},{k:"note",l:"Poznámka",t:"textarea",wide:true,ph:"napr. projekt FVE 10 kWp, revízia bleskozvodu"}],
     onSave:async d=>{ const a=grossOf(d); if(!String(d.title||"").trim()){ toast("Zadaj klienta alebo zdroj."); return false; } if(!(a>0)){ toast("Zadaj sumu väčšiu ako 0 €."); return false; }
       if(!ISO_RE.test(d.due||"")){ toast(paid?"Zadaj dátum splatnosti.":"Zadaj, kedy čakáš úhradu."); return false; }
       const st=BZ_STATUS[d.status]?d.status:"planovany", pa=num(d.paidAmount);
-      const rec={...(x?noId(x):{}),co:BZ_CO,dir:"in",title:String(d.title).trim().slice(0,140),work:W[d.work]?d.work:"ine",ord:String(d.ord||"").trim().slice(0,40),ordDate:ISO_RE.test(d.ordDate||"")?d.ordDate:"",inv:String(d.inv||"").trim().slice(0,40),amount:a,vat:num(d.vat)||0,issued:ISO_RE.test(d.issued||"")?d.issued:"",due:d.due,status:st,
+      const rec={...(x?noId(x):{}),co:BZ_CO,dir:"in",title:String(d.title).trim().slice(0,140),work:W[d.work]?d.work:"ine",ord:String(d.ord||"").trim().slice(0,40),ordDate:ISO_RE.test(d.ordDate||"")?d.ordDate:"",inv:String(d.inv||"").trim().slice(0,40),amount:a,vat:u?.vatPayer?(num(d.vat)||0):0,issued:ISO_RE.test(d.issued||"")?d.issued:"",due:d.due,status:st,
         paidDate:st==="prijaty"?(ISO_RE.test(d.paidDate||"")?d.paidDate:td):"",paidAmount:st==="prijaty"&&pa>0?r2(pa):null,note:String(d.note||"").slice(0,1000),created:x?.created||nowIso(),updated:nowIso()};
       const ok=await put("bizcf",x?.id||rid(),rec); if(ok) toast(st==="prijaty"?"Prijatá platba uložená: "+eur(rec.paidAmount??rec.amount):`Očakávaný príjem uložený: ${eur(rec.amount)}${u?.vatPayer?" s DPH":""} · ${fmtDate(rec.due)}`); return ok; },
     onDelete:x?()=>delDoc("bizcf",x.id):null}); }
@@ -2512,16 +2512,16 @@ function bzExpForm(x){ const td=today(), u=unitById(BZ_CO), dv=u?.vatPayer?(num(
     data:x?{...x,vat:String(vatOf(x,u)),amtMode:"s"}:{date:td,title:"",cat:"material",amount:"",amtMode:"s",vat:String(dv),inv:"",pay:"prevod",note:"",photo:""},
     fields:[{k:"title",l:"Dodávateľ / za čo",ph:"napr. Elektro Tatry – kábel CYKY, Shell – PHM"},{k:"cat",l:"Kategória",t:"select",o:BZ_OUT},{k:"amount",l:"Suma (€)",t:"number"},...amtFields(u),{k:"date",l:"Dátum úhrady",t:"date"},{k:"inv",l:"Číslo dokladu / faktúry"},{k:"pay",l:"Platba",t:"select",o:PAY},{k:"photo",l:"Doklad (fotka)",t:"image"},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
     onSave:async d=>{ const a=grossOf(d); if(!String(d.title||"").trim()){ toast("Zadaj dodávateľa alebo za čo."); return false; } if(!(a>0)){ toast("Zadaj sumu väčšiu ako 0 €."); return false; } if(!ISO_RE.test(d.date||"")){ toast("Zadaj dátum."); return false; }
-      const rec={...(x?noId(x):{}),co:BZ_CO,dir:"exp",date:d.date,title:String(d.title).trim().slice(0,140),cat:BZ_OUT[d.cat]?d.cat:"ine",amount:a,vat:num(d.vat)||0,inv:String(d.inv||"").trim().slice(0,40),pay:PAY[d.pay]!==undefined?(d.pay||""):"",photo:/^[0-9a-f]{32}$/.test(d.photo||"")?d.photo:"",note:String(d.note||"").slice(0,1000),created:x?.created||nowIso(),updated:nowIso()};
+      const rec={...(x?noId(x):{}),co:BZ_CO,dir:"exp",date:d.date,title:String(d.title).trim().slice(0,140),cat:BZ_OUT[d.cat]?d.cat:"ine",amount:a,vat:u?.vatPayer?(num(d.vat)||0):0,inv:String(d.inv||"").trim().slice(0,40),pay:PAY[d.pay]!==undefined?(d.pay||""):"",photo:/^[0-9a-f]{32}$/.test(d.photo||"")?d.photo:"",note:String(d.note||"").slice(0,1000),created:x?.created||nowIso(),updated:nowIso()};
       const ok=await put("bizcf",x?.id||rid(),rec); if(ok){ toast(`Výdaj uložený: ${eur(a)} · ${BZ_OUT[rec.cat]}`); if(S.bz.per!=="y") S.bz.pm=d.date.slice(0,7); else S.bz.py=d.date.slice(0,4); } return ok; },
     onDelete:x?()=>delDoc("bizcf",x.id):null}); }
 function bzOutForm(o){ const td=today(), u=unitById(BZ_CO), dv=u?.vatPayer?(num(u.vat)||0):0;
   openForm({title:o?`Upraviť pravidelnú platbu · ${uShort(u)}`:`Nová pravidelná platba · ${uShort(u)}`,data:o?{...o,vat:String(vatOf(o,u))}:{title:"",kind:"leasing",payee:"",amount:"",vat:String(dv),freq:"m",first:addDays(td,1),end:"",note:""},
-    fields:[{k:"title",l:"Názov",ph:"napr. Leasing dodávka, Poistka zodpovednosti"},{k:"kind",l:"Kategória",t:"select",o:BZ_OUT},{k:"payee",l:"Komu (banka, poisťovňa…)"},{k:"amount",l:"Suma jednej platby s DPH (€)",t:"number"},{k:"vat",l:"Sadzba DPH",t:"select",o:VAT_RATES},
+    fields:[{k:"title",l:"Názov",ph:"napr. Leasing dodávka, Poistka zodpovednosti"},{k:"kind",l:"Kategória",t:"select",o:BZ_OUT},{k:"payee",l:"Komu (banka, poisťovňa…)"},{k:"amount",l:u?.vatPayer?"Suma jednej platby s DPH (€)":"Suma jednej platby (€)",t:"number"},...(u?.vatPayer?[{k:"vat",l:"Sadzba DPH",t:"select",o:VAT_RATES}]:[]),
       {k:"freq",l:"Frekvencia",t:"select",o:BZ_FREQ},{k:"first",l:"Dátum prvej alebo najbližšej platby",t:"date"},{k:"end",l:"Posledná platba (nepovinné)",t:"date"},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
     onSave:async d=>{ const a=num(d.amount); if(!String(d.title||"").trim()){ toast("Zadaj názov platby."); return false; } if(!(a>0)){ toast("Zadaj sumu väčšiu ako 0 €."); return false; }
       if(!ISO_RE.test(d.first||"")){ toast("Zadaj dátum platby."); return false; }
-      const rec={...(o?noId(o):{}),co:BZ_CO,dir:"out",title:String(d.title).trim().slice(0,140),kind:BZ_OUT[d.kind]?d.kind:"ine",payee:String(d.payee||"").trim().slice(0,120),amount:r2(a),vat:num(d.vat)||0,freq:BZ_FREQ[d.freq]?d.freq:"m",first:d.first,end:ISO_RE.test(d.end||"")?d.end:"",note:String(d.note||"").slice(0,1000),created:o?.created||nowIso(),updated:nowIso()};
+      const rec={...(o?noId(o):{}),co:BZ_CO,dir:"out",title:String(d.title).trim().slice(0,140),kind:BZ_OUT[d.kind]?d.kind:"ine",payee:String(d.payee||"").trim().slice(0,120),amount:r2(a),vat:u?.vatPayer?(num(d.vat)||0):0,freq:BZ_FREQ[d.freq]?d.freq:"m",first:d.first,end:ISO_RE.test(d.end||"")?d.end:"",note:String(d.note||"").slice(0,1000),created:o?.created||nowIso(),updated:nowIso()};
       if(rec.end&&rec.end<rec.first){ toast("Posledná platba nemôže byť pred prvou."); return false; }
       const ok=await put("bizcf",o?.id||rid(),rec); if(ok) toast("Pravidelná platba uložená"); return ok; },
     onDelete:o?()=>delDoc("bizcf",o.id):null}); }
@@ -2529,13 +2529,13 @@ function bzBalForm(){ const co=BZ_CO, s=bzSet(co), u=unitById(co);
   openForm({title:`Stav účtu · ${u?.name||""}`,data:{balance:s.bal??"",date:s.date||today()},fields:[{k:"balance",l:"Zostatok na účte (€)",t:"number"},{k:"date",l:"K dátumu",t:"date"}],
     onSave:async d=>{ const b=num(d.balance); if(b==null){ toast("Zadaj zostatok."); return false; } if(!ISO_RE.test(d.date||"")){ toast("Zadaj dátum."); return false; }
       const ok=await put("settings","bizcf_"+co,{balance:r2(b),date:d.date,updated:nowIso()}); if(ok) toast("Stav účtu uložený"); return ok; }}); }
-async function saveUnits(L){ return put("settings","units",{units:L.map(u=>({id:u.id,name:u.name,short:u.short||"",kind:u.kind||"firma",vatPayer:!!u.vatPayer,vat:num(u.vat)||0,note:u.note||"",archived:!!u.archived,created:u.created||nowIso()})),updated:nowIso()}); }
+async function saveUnits(L){ return put("settings","units",{units:L.map(u=>({id:u.id,name:u.name,short:u.short||"",kind:u.kind||"firma",vatPayer:!!u.vatPayer,vat:num(u.vat)||0,note:u.note||"",archived:!!u.archived,vatSet:!!u.vatSet,created:u.created||nowIso()})),updated:nowIso()}); }
 function unitForm(u){ const isS=u?.id==="safety";
   openForm({title:u?`Nastavenie modulu · ${u.name}`:"Nový modul vo Financiách",saveLabel:u?"Uložiť":"Pridať modul",
     data:u?{...u,vatPayer:u.vatPayer?"ano":"nie",vat:String(num(u.vat)||0)}:{name:"",short:"",kind:"firma",vatPayer:"nie",vat:"23",note:""},
-    fields:[{k:"name",l:"Názov",ph:"napr. EFEKTRA, Prenájom bytu, Dividendy"},{k:"short",l:"Skratka do kalendára",ph:"napr. EFK, Byt"},{k:"kind",l:"Typ",t:"select",o:UNIT_KIND},{k:"vatPayer",l:"Platiteľ DPH",t:"select",o:ANO},{k:"vat",l:"Predvolená sadzba DPH",t:"select",o:VAT_RATES},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
+    fields:[{k:"name",l:"Názov",ph:"napr. EFEKTRA, Prenájom bytu, Dividendy"},{k:"short",l:"Skratka do kalendára",ph:"napr. EFK, Byt"},{k:"kind",l:"Typ",t:"select",o:UNIT_KIND},{k:"vatPayer",l:"Platiteľ DPH (nie = sumy bez DPH, bez rozpočítania)",t:"select",o:ANO},{k:"vat",l:"Predvolená sadzba DPH (len pre platiteľa)",t:"select",o:VAT_RATES},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
     onSave:async d=>{ const nm=String(d.name||"").trim(); if(!nm){ toast("Zadaj názov modulu."); return false; }
-      const L=allUnits(), rec={id:u?.id||("u"+rid()),name:nm.slice(0,60),short:String(d.short||"").trim().slice(0,16),kind:UNIT_KIND[d.kind]?d.kind:"ine",vatPayer:d.vatPayer==="ano",vat:num(d.vat)||0,note:String(d.note||"").slice(0,300),archived:false,created:u?.created||nowIso()};
+      const L=allUnits(), rec={id:u?.id||("u"+rid()),name:nm.slice(0,60),short:String(d.short||"").trim().slice(0,16),kind:UNIT_KIND[d.kind]?d.kind:"ine",vatPayer:d.vatPayer==="ano",vat:num(d.vat)||0,note:String(d.note||"").slice(0,300),archived:false,vatSet:true,created:u?.created||nowIso()};
       const i=L.findIndex(x=>x.id===rec.id); if(i>=0) L[i]={...L[i],...rec}; else L.push(rec);
       const ok=await saveUnits(L); if(ok){ toast(u?"Modul uložený":`Modul ${rec.name} pridaný`); S.fin.tab=rec.id; } return ok; },
     onDelete:u&&!isS?async()=>{ const L=allUnits(), has=C.bizcf.some(x=>coOf(x)===u.id); const i=L.findIndex(x=>x.id===u.id);

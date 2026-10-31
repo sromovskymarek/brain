@@ -1,5 +1,5 @@
 /* Brain – service worker: appka funguje offline a zobrazuje fotky zo súkromného úložiska. */
-const V = "brain-v20261030204220";
+const V = "brain-v20261031062055";
 const SHELL = ["./", "index.html", "shim.js", "config.js", "vendor/supabase.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/maskable-512.png"];
 
