@@ -2199,7 +2199,7 @@ const C={advice:[],subs:[],budget:[],bizcf:[],income:[],loans:[],cars:[],trips:[
 const VIEW_DEPS={kontakty:1,prehlad:1,financie:1,auta:1,vylety:1,ciele:1,dennik:1,kalendar:1,posta:1,firma:1,zdravie:1,ludia:1,revizia:1};
 let rrq=0;
 function onData(){ if(rrq) return; rrq=requestAnimationFrame(()=>{ rrq=0; if(cdHold()){ S.cdStale=true; return; } if(VIEW_DEPS[S.view]) renderView(); }); }
-function watch(name,q){ try{ q(S.db.collection(name)).onSnapshot(s=>{ C[name]=s.docs.map(d=>({...d.data(),id:d.id})); onData(); },()=>{}); }catch(e){} }
+function watch(name,q){ try{ q(S.db.collection(name)).onSnapshot(s=>{ C[name]=s.docs.map(d=>({...d.data(),id:d.id})); if(name==="assets"||name==="settings") goldApply(); onData(); },()=>{}); }catch(e){} }
 const wq2=new Map();
 function put(col,id,data,merge){
   if(!S.db){ toast("Úložisko nie je dostupné."); return Promise.resolve(false); }
@@ -2374,12 +2374,49 @@ function finPrehlad(){
   ${rows.map(([mk,a,b])=>{ const d=Math.round((a-b)*100)/100; return `<tr><td>${monthName(mk)}</td><td class="n">${eur(a)}</td><td class="n">${eur(b)}</td><td class="n ${d>=0?"pos":"neg"}">${d>=0?"+":""}${eur(d)}</td><td><div style="display:flex;flex-direction:column;gap:3px"><div class="bar" title="Príjmy ${eur(a)}"><i style="width:${(a/mx*100).toFixed(1)}%;background:var(--s3)"></i></div><div class="bar" title="Výdavky ${eur(b)}"><i style="width:${(b/mx*100).toFixed(1)}%;background:var(--s2)"></i></div></div></td></tr>`; }).join("")}
   </tbody></table><div class="cal-legend" style="color:var(--muted)"><span><span class="dot" style="background:var(--s3)"></span>Príjmy</span><span><span class="dot" style="background:var(--s2)"></span>Výdavky</span></div></div></section>`;
 }
+/* ---------- Zlato: trhová cena (settings/gold – zapisuje agent „Brain – cena zlata“; doménová appka si ju vie stiahnuť aj sama) ---------- */
+const OZ_G=31.1034768;
+function goldSet(){ const s=setting("gold")||{}; return {eurOz:num(s.eurOz),usdOz:num(s.usdOz),ecbUsd:num(s.ecbUsd),date:ISO_RE.test(s.date||"")?s.date:"",at:s.at||"",src:s.src||"",
+  hist:(Array.isArray(s.hist)?s.hist:[]).filter(h=>h&&ISO_RE.test(h.d||"")&&num(h.eur)>0).map(h=>({d:h.d,eur:num(h.eur)})).sort((a,b)=>a.d.localeCompare(b.d))}; }
+function goldPrice(){ const s=goldSet(), L=S.goldLive; if(L&&L.eurOz>0&&(!s.date||L.date>s.date)) return {...s,eurOz:L.eurOz,date:L.date,at:L.at,src:"gold-api.com XAU/EUR (stiahnuté v aplikácii)"}; return s; }
+/* Rýdze zlato v gramoch: množstvo × jednotka (g, oz, kg, ks × hmotnosť kusu) × rýdzosť (predvolene 999,9 ‰) */
+function goldGrams(a){ const q=num(a.qty); if(!(q>0)) return null; const u=String(a.unit||"g").toLowerCase().trim();
+  const g=/^(oz|unc|trojsk)/.test(u)?q*OZ_G:u==="kg"?q*1000:(u==="g"||u==="")?q:(/^ks|^kus/.test(u)&&num(a.pieceG)>0?q*num(a.pieceG):null);
+  if(g==null) return null; const f=num(a.fine); return g*((f>0&&f<=1000?f:999.9)/1000); }
+const goldAuto=a=>a.kind==="zlato"&&a.autoPrice!==false&&goldGrams(a)!=null;
+function goldApply(){ const p=goldPrice(); if(!(p.eurOz>0)) return; for(const a of C.assets) if(goldAuto(a)){ a.value=r2(goldGrams(a)*p.eurOz/OZ_G); a.valueDate=p.date; a._auto=true; } }
+const goldAt=(p,iso)=>{ const h=p.hist.filter(x=>x.d<=iso); return h.length?h[h.length-1]:null; };
+async function goldFetchLive(){ if(S.goldTried) return; S.goldTried=true; if(goldSet().date===today()) return;
+  try{ const ctl=new AbortController(), t=setTimeout(()=>ctl.abort(),6000); const r=await fetch("https://api.gold-api.com/price/XAU/EUR",{signal:ctl.signal,cache:"no-store"}); clearTimeout(t); if(!r.ok) return;
+    const j=await r.json(), p=num(j.price); if(!(p>500&&p<100000)||String(j.currency||"")!=="EUR") return;
+    const d=today(); S.goldLive={eurOz:r2(p),date:d,at:String(j.updatedAt||nowIso())}; goldApply(); onData();
+    if(S.db){ const s=goldSet(); await put("settings","gold",{eurOz:r2(p),usdOz:s.usdOz,ecbUsd:s.ecbUsd,date:d,at:S.goldLive.at,src:"gold-api.com XAU/EUR (stiahnuté v aplikácii)",hist:[...s.hist.filter(h=>h.d!==d),{d,eur:r2(p)}].slice(-400),updated:nowIso()}); } }catch(e){} }
+function goldPanel(){ const p=goldPrice(), G=C.assets.filter(a=>a.kind==="zlato"), td=today(); if(!G.length&&!(p.eurOz>0)) return "";
+  if(!(p.eurOz>0)) return `<section class="panel"><div class="panel-h"><h2>Zlato · trhová cena</h2></div><div class="panel-b" style="color:var(--muted);font-size:14px">Cena zlata sa ešte nenačítala. Agent „Brain – cena zlata“ ju zapisuje v pracovné dni o 17:41.</div></section>`;
+  const gOz=p.eurOz, gG=gOz/OZ_G, grams=G.reduce((s,a)=>s+(goldGrams(a)||0),0), GC=G.filter(a=>num(a.cost)>0&&goldAuto(a)), cost=r2(GC.reduce((s,a)=>s+num(a.cost),0)), valC=r2(GC.reduce((s,a)=>s+r2(goldGrams(a)*gG),0)), val=r2(G.filter(goldAuto).reduce((s,a)=>s+r2(goldGrams(a)*gG),0));
+  const cmp=days=>{ const o=goldAt(p,addDays(td,-days)); return o?{d:o.d,eur:o.eur,pct:(gOz/o.eur-1)*100,dv:r2(grams*(gOz-o.eur)/OZ_G)}:null; }, w=cmp(7), m=cmp(30);
+  const pc=x=>x==null?"—":`${x>=0?"+":""}${(Math.round(x*100)/100).toLocaleString("sk-SK")} %`;
+  const H=p.hist.filter(h=>h.d>=addDays(td,-90)); let spark="";
+  if(H.length>=2){ const lo=Math.min(...H.map(h=>h.eur)), hi=Math.max(...H.map(h=>h.eur)), t0=pd(H[0].d).getTime(), t1=Math.max(t0+1,pd(H[H.length-1].d).getTime());
+    const pts=H.map(h=>`${((pd(h.d).getTime()-t0)/(t1-t0)*296+2).toFixed(1)},${(hi===lo?30:56-(h.eur-lo)/(hi-lo)*52).toFixed(1)}`).join(" ");
+    spark=`<svg viewBox="0 0 300 60" style="width:100%;max-width:420px;height:60px" role="img" aria-label="Cena zlata za ${H.length} dní: od ${eur(H[0].eur)} do ${eur(H[H.length-1].eur)} za uncu"><polyline points="${pts}" fill="none" stroke="var(--wf-gold)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><div style="font-size:11px;color:var(--muted)">${fmtDate(H[0].d)} – ${fmtDate(H[H.length-1].d)} · min ${eur0(Math.min(...H.map(h=>h.eur)))} · max ${eur0(Math.max(...H.map(h=>h.eur)))} za uncu</div>`; }
+  const weeks=[]; for(let k=0;k<8;k++){ const d=addDays(td,-7*k), o=k?goldAt(p,d):{d:p.date,eur:gOz}; if(!o) break; weeks.push({d:o.d,eur:o.eur}); }
+  return `<section class="panel"><div class="panel-h"><h2>Zlato · trhová cena</h2><span class="count">k ${fmtDate(p.date)}</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:14px">
+    <div class="kpis"><div class="kpi"><span class="k">Cena za uncu (31,1 g)</span><span class="v">${eur(gOz)}</span><span class="s">${eur(r2(gG))} za gram</span></div>
+      <div class="kpi"><span class="k">Za týždeň</span><span class="v ${w?(w.pct>=0?"pos":"neg"):""}">${pc(w?.pct)}</span><span class="s">${w?`od ${fmtDate(w.d)}: ${eur(w.eur)}/oz`:"porovnanie bude po 7 dňoch údajov"}</span></div>
+      <div class="kpi"><span class="k">Za 30 dní</span><span class="v ${m?(m.pct>=0?"pos":"neg"):""}">${pc(m?.pct)}</span><span class="s">${m?`od ${fmtDate(m.d)}: ${eur(m.eur)}/oz`:"zatiaľ málo údajov"}</span></div>
+      ${G.length?`<div class="kpi"><span class="k">Tvoje zlato · ${(Math.round(grams*100)/100).toLocaleString("sk-SK")} g rýdzeho</span><span class="v">${eur(val)}</span><span class="s">${w?`za týždeň ${w.dv>=0?"+":""}${eur(w.dv)}`:""}${cost>0?`${w?" · ":""}oproti nákupu${GC.length<G.length?" ("+GC.length+" z "+G.length+")":""} ${valC-cost>=0?"+":""}${eur(r2(valC-cost))}`:""}</span></div>`:""}</div>
+    ${spark}
+    ${weeks.length>1?`<div class="tblwrap"><table class="tbl"><thead><tr><th>Týždeň</th><th class="n">€ / oz</th><th class="n">Zmena</th>${G.length?'<th class="n">Hodnota tvojho zlata</th>':""}</tr></thead><tbody>${weeks.map((x,i)=>{ const nx=weeks[i+1]; const ch=nx?(x.eur/nx.eur-1)*100:null; return `<tr><td>${fmtDate(x.d)}${i===0?" · teraz":""}</td><td class="n">${eur(x.eur)}</td><td class="n ${ch==null?"":ch>=0?"pos":"neg"}">${ch==null?"—":pc(ch)}</td>${G.length?`<td class="n">${eur(r2(grams*x.eur/OZ_G))}</td>`:""}</tr>`; }).join("")}</tbody></table></div>`:""}
+    ${G.some(a=>a.kind==="zlato"&&!goldAuto(a))?`<div style="font-size:13px;color:var(--warn)">Pri ${G.filter(a=>!goldAuto(a)).map(a=>esc(a.name)).join(", ")} chýba množstvo a jednotka (g, oz, kg alebo ks s hmotnosťou kusu) – hodnota sa nepočíta z trhovej ceny.</div>`:""}
+    <div style="font-size:11px;color:var(--faint)">Zdroj: ${esc(p.src||"gold-api.com")}${p.ecbUsd?` · kurz ECB ${String(p.ecbUsd).replace(".",",")} USD/EUR`:""}. Spotová cena rýdzeho zlata; výkupná cena u predajcu je nižšia.</div></div></section>`; }
+
 function finMajetok(){ const A=[...C.assets].sort((a,b)=>(num(b.value)||0)-(num(a.value)||0)), tot=A.reduce((s,a)=>s+(num(a.value)||0),0);
   const by={}; for(const a of A){ const k=ASSET_KIND[a.kind]?a.kind:"ine"; by[k]=(by[k]||0)+(num(a.value)||0); }
-  return `<section class="panel"><div class="panel-h"><h2>Úspory, zlato a majetok</h2><button class="btn sm primary" type="button" id="assetAdd">+ Pridať</button></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px"><span class="money" style="font-size:36px">${eur(tot)}</span>${Object.keys(by).length?hbarsHtml(Object.entries(by).sort((a,b)=>b[1]-a[1]),9,ASSET_KIND):""}</div>
-  <ul class="list">${A.map(a=>`<li class="li" data-asset="${esc(a.id)}">${dot("projekt")}<div class="li-main"><div class="li-title">${esc(a.name)}</div><div class="li-meta"><span>${esc(ASSET_KIND[a.kind]||"Iné")}</span>${num(a.qty)!=null?`<span>${a.qty} ${esc(a.unit||"")}</span>`:""}${a.valueDate?`<span>hodnota k ${fmtDate(a.valueDate)}</span>`:""}</div></div><span class="amt">${eur(a.value)}</span></li>`).join("")||'<li class="empty">Pridaj úspory, zlato (gramy alebo unce), investície. Bez čísel účtov, stačí názov a hodnota.</li>'}</ul></section>`; }
-function assetForm(a){ openForm({title:a?"Upraviť majetok":"Nový majetok",data:a?{...a}:{kind:"uspory",valueDate:today()},fields:[{k:"name",l:"Názov",ph:"napr. Sporiaci účet, Zlaté tehličky"},{k:"kind",l:"Druh",t:"select",o:ASSET_KIND},{k:"value",l:"Hodnota (€)",t:"number"},{k:"valueDate",l:"Hodnota k dátumu",t:"date"},{k:"qty",l:"Množstvo (nepovinné)",t:"number"},{k:"unit",l:"Jednotka",ph:"g, oz, ks"},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
-  onSave:async d=>{ if(!String(d.name||"").trim()){ toast("Zadaj názov."); return false; } const rec={name:String(d.name).slice(0,120),kind:ASSET_KIND[d.kind]?d.kind:"ine",value:num(d.value),valueDate:ISO_RE.test(d.valueDate||"")?d.valueDate:"",qty:num(d.qty),unit:String(d.unit||"").slice(0,20),note:String(d.note||"").slice(0,500),updated:new Date().toISOString(),created:a?.created||new Date().toISOString()};
+  return `${goldPanel()}<section class="panel"><div class="panel-h"><h2>Úspory, zlato a majetok</h2><button class="btn sm primary" type="button" id="assetAdd">+ Pridať</button></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px"><span class="money" style="font-size:36px">${eur(tot)}</span>${Object.keys(by).length?hbarsHtml(Object.entries(by).sort((a,b)=>b[1]-a[1]),9,ASSET_KIND):""}</div>
+  <ul class="list">${A.map(a=>`<li class="li" data-asset="${esc(a.id)}">${dot("projekt")}<div class="li-main"><div class="li-title">${esc(a.name)}</div><div class="li-meta"><span>${esc(ASSET_KIND[a.kind]||"Iné")}</span>${num(a.qty)!=null?`<span>${a.qty} ${esc(a.unit||"")}</span>`:""}${a.valueDate?`<span>hodnota k ${fmtDate(a.valueDate)}</span>`:""}${a._auto?"<span>trhová cena</span>":""}</div></div><span class="amt">${eur(a.value)}</span></li>`).join("")||'<li class="empty">Pridaj úspory, zlato (gramy alebo unce), investície. Bez čísel účtov, stačí názov a hodnota.</li>'}</ul></section>`; }
+function assetForm(a){ openForm({title:a?"Upraviť majetok":"Nový majetok",data:a?{...a,autoPrice:a.autoPrice===false?"0":"1"}:{kind:"uspory",valueDate:today(),autoPrice:"1",fine:"999.9"},fields:[{k:"name",l:"Názov",ph:"napr. Sporiaci účet, Zlaté tehličky"},{k:"kind",l:"Druh",t:"select",o:ASSET_KIND},{k:"value",l:"Hodnota (€)",t:"number"},{k:"valueDate",l:"Hodnota k dátumu",t:"date"},{k:"qty",l:"Množstvo (nepovinné)",t:"number"},{k:"unit",l:"Jednotka",ph:"g, oz, kg, ks"},{k:"pieceG",l:"Zlato: hmotnosť 1 kusu (g) – pri jednotke ks",t:"number"},{k:"fine",l:"Zlato: rýdzosť (‰, tehlička 999,9; šperk 585)",t:"number"},{k:"autoPrice",l:"Zlato: hodnota podľa trhovej ceny",t:"select",o:{"1":"Áno – počítať z aktuálnej ceny","0":"Nie – hodnotu zadám ručne"}},{k:"cost",l:"Nákupná cena spolu (€, nepovinné)",t:"number"},{k:"note",l:"Poznámka",t:"textarea",wide:true}],
+  onSave:async d=>{ if(!String(d.name||"").trim()){ toast("Zadaj názov."); return false; } const rec={name:String(d.name).slice(0,120),kind:ASSET_KIND[d.kind]?d.kind:"ine",value:num(d.value),valueDate:ISO_RE.test(d.valueDate||"")?d.valueDate:"",qty:num(d.qty),unit:String(d.unit||"").slice(0,20),pieceG:num(d.pieceG)>0?num(d.pieceG):null,fine:num(d.fine)>0&&num(d.fine)<=1000?num(d.fine):null,autoPrice:d.autoPrice!=="0",cost:num(d.cost)>0?r2(num(d.cost)):null,note:String(d.note||"").slice(0,500),updated:new Date().toISOString(),created:a?.created||new Date().toISOString()};
     const ok=await put("assets",a?.id||rid(),rec); if(ok) toast("Uložené"); return ok; },
   onDelete:a?()=>delDoc("assets",a.id):null}); }
 function finPrijmy(){
@@ -2888,6 +2925,7 @@ function bindFinancie(){
   if(S.fin.tab==="rozpocet") bindRozpocet();
   if(S.fin.tab==="predplatne") bindPredplatne();
   if(S.fin.tab==="poradca") bindPoradca();
+  if(S.fin.tab==="majetok"||S.fin.tab==="prehlad") goldFetchLive();
   $("#finAddLoan")&&($("#finAddLoan").onclick=()=>{ S.fin.tab="uvery"; loanForm(null); });
   document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>{ const nm=shiftMonth(curMonth(),+b.dataset.mnav); if(nm<=today().slice(0,7)){ S.exp.month=nm; renderView(); } });
   document.querySelectorAll("[data-inc]").forEach(r=>r.onclick=()=>incomeForm(byId("income",r.dataset.inc)));
