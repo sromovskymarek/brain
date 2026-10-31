@@ -769,6 +769,18 @@ input[type=tel],input[type=email]{background:var(--surface);border:1px solid var
 .dn-seg{transition:opacity .15s}.donut svg:hover .dn-seg{opacity:.55}.donut svg .dn-seg:hover{opacity:1}
 .dn-v{font-family:var(--f-display);font-weight:800;font-size:19px;fill:var(--fg);font-variant-numeric:tabular-nums}
 .dn-l{font-size:11px;fill:var(--muted)}
+.adv-hero{display:flex;gap:18px;align-items:center}
+.adv-grade{flex:none;width:86px;height:86px;border-radius:50%;border:3px solid var(--gc);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-2)}
+.adv-grade b{font-family:var(--f-display);font-stretch:115%;font-size:34px;line-height:1;color:var(--gc)}
+.adv-grade span{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.adv-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.adv-ck{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--sc);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.adv-ck .h{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.adv-ck .h em{font-style:normal;color:var(--sc)}
+.adv-ck .v{font-family:var(--f-display);font-stretch:115%;font-weight:760;font-size:22px;font-variant-numeric:tabular-nums}
+.adv-ck .m{font-size:14px}
+.adv-ck .src{font-size:11px;color:var(--faint);line-height:1.4}
+@media (max-width:640px){.adv-hero{flex-direction:column;align-items:flex-start}}
 .bud-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,110px) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:10px;align-items:center;font-size:14px;padding:4px 0;border-top:1px solid var(--line)}
 .bud-row.bud-h{font-size:12px;color:var(--muted);font-weight:600;border-top:0}
 .bud-row input{padding:6px 8px}
@@ -1047,7 +1059,7 @@ const S = {
   exp:{month:"", form:null, file:null, preview:"", busy:false},
   fin:{tab:"prehlad",sub:"osobne"}, bz:{month:"",per:"m",pm:"",py:""}, bud:{m:"",draft:null}, form:null, carId:"", tripId:"", tripTab:"prehlad", tripEdit:"", jDate:"", jd:null, jdDirty:false, jarsDraft:null, more:false, goalShowDone:false,
   chat:[], capture:{text:"",type:"auto",files:[],keepRaw:true,proposal:null,busy:false},
-  review:{text:"",busy:false}, edges:null,
+  review:{text:"",busy:false}, adv:{busy:false,text:"",q:"",sel:""}, edges:null,
   pl:{tab:"odkazy",q:""}, rv:{tab:"tyzden",ws:"",month:"",draft:null,wd:null},
   hl:{tab:"prehlad",day:"",ex:"",wk:null,food:null,quick:{text:lsGet("hq","")||"",file:null,busy:false,prop:null}}
 };
@@ -2161,7 +2173,7 @@ Odpovedz IBA JSON: {"tags":["..."],"related":[{"id":"...","why":"krátke zdôvod
 }
 
 /* ========== Spoločné: kolekcie, formuláre ========== */
-const C={subs:[],budget:[],bizcf:[],income:[],loans:[],cars:[],trips:[],goals:[],journal:[],habits:[],settings:[],verse:[],reminders:[],assets:[],measures:[],workouts:[],wplans:[],meals:[],selfcare:[],care:[],hday:[],people:[],waiting:[],inbox:[],reviews:[],wheel:[]};
+const C={advice:[],subs:[],budget:[],bizcf:[],income:[],loans:[],cars:[],trips:[],goals:[],journal:[],habits:[],settings:[],verse:[],reminders:[],assets:[],measures:[],workouts:[],wplans:[],meals:[],selfcare:[],care:[],hday:[],people:[],waiting:[],inbox:[],reviews:[],wheel:[]};
 const VIEW_DEPS={kontakty:1,prehlad:1,financie:1,auta:1,vylety:1,ciele:1,dennik:1,kalendar:1,posta:1,firma:1,zdravie:1,ludia:1,revizia:1};
 let rrq=0;
 function onData(){ if(rrq) return; rrq=requestAnimationFrame(()=>{ rrq=0; if(cdHold()){ S.cdStale=true; return; } if(VIEW_DEPS[S.view]) renderView(); }); }
@@ -2289,11 +2301,11 @@ function jarsCards(jb){ const jc=jarsCfg();
   return `<div class="jars">${jc.map(j=>{ const b=jb[j.id]||{alloc:0,spent:0}; const left=Math.round((b.alloc-b.spent)*100)/100; const pct=b.alloc>0?Math.max(0,Math.min(100,left/b.alloc*100)):0;
     return `<div class="jar" title="${esc(j.desc||"")}"><span class="nm">${esc(j.name)}</span><span class="pc">${+j.pct} % z príjmu</span><span class="bal ${left<0?"neg":""}">${eur(left)}</span><div class="fill"><i style="width:${pct.toFixed(1)}%"></i></div><span class="pc">pridelené ${eur(b.alloc)} · minuté ${eur(b.spent)}</span></div>`; }).join("")}</div>
   ${jarsOk()?"":`<div style="color:var(--warn);font-size:13px;margin-top:8px">Súčet percent je ${Math.round(jarsSum()*100)/100} %, musí byť 100 %.</div>`}`; }
-const FIN_BASE=[["prehlad","Prehľad"],["prijmy","Príjmy"],["vydavky","Výdavky"],["predplatne","Predplatné"],["rozpocet","Rozpočet"],["dzbany","7 džbánov"],["uvery","Úvery a leasingy"],["majetok","Majetok"]];
+const FIN_BASE=[["prehlad","Prehľad"],["poradca","Poradca"],["prijmy","Príjmy"],["vydavky","Výdavky"],["predplatne","Predplatné"],["rozpocet","Rozpočet"],["dzbany","7 džbánov"],["uvery","Úvery a leasingy"],["majetok","Majetok"]];
 function viewFinancie(){
   let t=S.fin.tab||"prehlad"; const u=FIN_BASE.some(x=>x[0]===t)?null:(units().find(x=>x.id===t)||null); if(!u&&!FIN_BASE.some(x=>x[0]===t)) t="prehlad";
-  const body=u?finUnit(u):t==="rozpocet"?finRozpocet():t==="prijmy"?finPrijmy():t==="dzbany"?finDzbany():t==="vydavky"?viewVydavky():t==="predplatne"?finPredplatne():t==="uvery"?finUvery():t==="majetok"?finMajetok():finPrehlad();
-  const head=u?`<div class="eyebrow">${esc(UNIT_KIND[u.kind]||"Modul")} · príjmy, výdaje, cash flow · sumy v hrubom${u.vatPayer?" s DPH":""}</div><h1>${esc(u.name)}</h1>`:`<div class="eyebrow">Bilancia · príjmy · výdavky · predplatné · rozpočet · džbány · úvery · majetok · firmy</div><h1>Financie</h1>`;
+  const body=u?finUnit(u):t==="rozpocet"?finRozpocet():t==="prijmy"?finPrijmy():t==="dzbany"?finDzbany():t==="vydavky"?viewVydavky():t==="predplatne"?finPredplatne():t==="poradca"?finPoradca():t==="uvery"?finUvery():t==="majetok"?finMajetok():finPrehlad();
+  const head=u?`<div class="eyebrow">${esc(UNIT_KIND[u.kind]||"Modul")} · príjmy, výdaje, cash flow · sumy v hrubom${u.vatPayer?" s DPH":""}</div><h1>${esc(u.name)}</h1>`:`<div class="eyebrow">Bilancia · poradca · príjmy · výdavky · predplatné · rozpočet · džbány · úvery · majetok · firmy</div><h1>Financie</h1>`;
   const acts=u?`<button class="btn primary" type="button" id="uAddIn">+ Príjem</button><button class="btn" type="button" id="uAddExp">+ Výdaj</button>`:`<button class="btn primary" type="button" id="finAddInc">+ Príjem</button><label class="btn" for="exFile">${ICONS.vydavky}Bloček</label><input type="file" id="exFile" accept="image/*,application/pdf" hidden><button class="btn" type="button" id="finAddLoan">+ Úver</button>`;
   return `<div class="view"><div class="band" style="--b1:var(${u?"--wn-1":"--wt-1"});--b2:var(${u?"--wn-2":"--wt-2"})"><div>${head}</div><div class="actions">${acts}</div></div>
     ${stateBanner()}
@@ -2325,6 +2337,7 @@ function finPrehlad(){
     <div class="fc fc-gold" style="--g1:var(--wy-1);--g2:var(--wy-2)" data-fintab="majetok" role="button" tabindex="0"><span class="k">Úspory, zlato, investície</span><span class="v">${eur(assetsT)}</span><span class="s">${C.assets.length?`${C.assets.length} ${plural(C.assets.length,"položka","položky","položiek")}`:"Doplň v karte Majetok"}</span></div>
     <div class="fc" style="--g1:var(--ws-1);--g2:var(--ws-2)" data-fintab="uvery" role="button" tabindex="0"><span class="k">Úvery a leasingy</span><span class="v">${eur(debt)}</span><span class="s">splátky ${eur(payM)} mesačne</span></div>
     ${(()=>{ const b=budSummary(m); return `<div class="fc" style="--g1:var(--wc-1);--g2:var(--wc-2)" data-fintab="rozpocet" role="button" tabindex="0"><span class="k">Rozpočet · ${esc(monthName(m))}</span><span class="v">${b.has?eur(b.actTot):"—"}</span><span class="s">${b.has?`minuté z ${eur(b.planTot)} (${b.planTot>0?Math.round(b.actTot/b.planTot*100):0} %)`:"Naplánuj si mesiac v karte Rozpočet"}</span></div>`; })()}
+    ${(()=>{ const D=advData(), top=D.K.filter(k=>k.s==="crit")[0]||D.K.filter(k=>k.s==="warn")[0]; return `<div class="fc" style="--g1:var(--wg-1);--g2:var(--wg-2)" data-fintab="poradca" role="button" tabindex="0"><span class="k">Finančný poradca</span><span class="v">${advGrade(D.score)}${D.score!=null?` · ${D.score} %`:""}</span><span class="s">${esc(top?top.l+": "+top.v:"Všetky kontroly v poriadku")}</span></div>`; })()}
     ${(()=>{ const A=C.subs.filter(s=>subActive(s)&&subPayer(s)==="osobne"), mo=subsMonthlyOsobne(), nx=A.map(s=>[subNext(s),s]).filter(x=>x[0]).sort((a,b)=>a[0].localeCompare(b[0]))[0]; return `<div class="fc" style="--g1:var(--wv-1);--g2:var(--wv-2)" data-fintab="predplatne" role="button" tabindex="0"><span class="k">Predplatné · mesačne</span><span class="v">${A.length?eur(mo):"—"}</span><span class="s">${A.length?`${A.length} ${plural(A.length,"služba","služby","služieb")} · ročne ${eur(r2(mo*12))}${nx?` · ďalšia ${esc(nx[1].name)} ${pd(nx[0]).getDate()}. ${pd(nx[0]).getMonth()+1}.`:""}`:"Netflix, Spotify, cloud… pridaj v karte Predplatné"}</span></div>`; })()}
     ${units().map(u=>{ const m0=today().slice(0,7), s=bzMonth(m0,u.id), od=bzOpen(u.id).filter(x=>x.due&&x.due<today()); return `<div class="fc" style="--g1:var(--wn-1);--g2:var(--wn-2)" data-fintab="${esc(u.id)}" role="button" tabindex="0"><span class="k">${esc(u.name)} · cash flow</span><span class="v">${s.net>=0?"+":""}${eur(s.net)}</span><span class="s">${monthName(m0)}: príjmy ${eur(r2(s.recv+s.exp))} · výdaje ${eur(s.costs)}${od.length?` · po splatnosti ${eur(sumAmt(od))}`:""}</span></div>`; }).join("")}
     <div class="fc" style="--g1:var(--wm-1);--g2:var(--wm-2)"><span class="k">Čistý majetok</span><span class="v">${eur(assetsT-debt)}</span><span class="s">majetok mínus úvery</span></div>
@@ -2711,6 +2724,139 @@ function bindPredplatne(){
   document.querySelectorAll("[data-sub]").forEach(r=>r.onclick=()=>{ const s=byId("subs",r.dataset.sub); if(s) subForm(s); });
 }
 
+/* ---------- Finančný poradca: kontrola financií, financovanie cieľov, spätná väzba od Claude (kolekcia advice, settings/advisor) ---------- */
+const ADV_LIQUID={uspory:1,hotovost:1};
+function advSet(){ const s=setting("advisor")||{}; return {reserveMonths:num(s.reserveMonths)||6,savePct:num(s.savePct)||20,lifeMin:num(s.lifeMin)}; }
+/* Finančná časť cieľa z nástenky: cieľová suma, našetrené (alebo hodnota napojeného majetku), mesačne odkladám */
+function goalFin(g){ const t=num(g.target); if(!(t>0)) return null; const td=today();
+  const a=g.assetId?byId("assets",g.assetId):null, saved=a?(num(a.value)||0):(num(g.saved)||0), left=Math.max(0,r2(t-saved));
+  const ml=ISO_RE.test(g.due||"")?Math.max(1,(pd(g.due)-pd(td))/864e5/30.4375):null;
+  const need=left<=0?0:ml?r2(left/ml):null, mon=num(g.monthly)||0, eta=left>0&&mon>0?addMonths(td,Math.ceil(left/mon)):"";
+  return {t,saved,left,ml,need,mon,eta,late:!!(g.due&&left>0&&(!mon||eta>g.due)),pct:Math.min(100,t>0?saved/t*100:0),asset:a}; }
+function advData(){ const td=today(), m0=td.slice(0,7), S0=advSet();
+  /* priemer z posledných (max 3) ukončených mesiacov, v ktorých sú údaje; inak aktuálny mesiac */
+  const cand=[]; for(let k=1;k<=6&&cand.length<3;k++){ const m=shiftMonth(m0,-k); if(incMonth(m).length||expStats(m).list.length) cand.push(m); }
+  const partial=!cand.length; const ms=partial?[m0]:cand, n=ms.length;
+  const avg=f=>r2(ms.reduce((s,m)=>s+f(m),0)/n);
+  const inc=avg(m=>sumAmt(incMonth(m))), exp=avg(m=>expStats(m).total), loan=avg(m=>loanPayMonth(m)), free=r2(inc-exp-loan);
+  const liquid=r2(C.assets.filter(a=>ADV_LIQUID[a.kind]).reduce((s,a)=>s+(num(a.value)||0),0)), invest=r2(C.assets.filter(a=>a.kind==="investicie"||a.kind==="zlato").reduce((s,a)=>s+(num(a.value)||0),0));
+  const allAssets=r2(C.assets.reduce((s,a)=>s+(num(a.value)||0),0)), debt=r2(activeLoans().reduce((s,l)=>s+(num(l.balance)||0),0));
+  const need=r2(exp+loan), resM=need>0?liquid/need:null, savePct=inc>0?free/inc*100:null;
+  const dstiBase=inc-(S0.lifeMin||0), dsti=loan>0&&dstiBase>0?loan/dstiBase*100:(loan>0?999:0);
+  const subsM=subsMonthlyOsobne(), lastM=ms[0], bud=budSummary(lastM);
+  const goals=C.goals.filter(g=>g.status!=="splneny"), fin=goals.map(g=>({g,f:goalFin(g)})).filter(x=>x.f), noFin=goals.filter(g=>!goalFin(g));
+  const goalNeed=r2(fin.reduce((s,x)=>s+(x.f.need||0),0)), goalPlan=r2(fin.reduce((s,x)=>s+(x.f.left>0?x.f.mon:0),0));
+  /* kontroly */
+  const K=[]; const st=(v,ok,warn,hi)=>v==null?"na":hi?(v>=ok?"ok":v>=warn?"warn":"crit"):(v<=ok?"ok":v<=warn?"warn":"crit");
+  K.push({k:"save",l:"Miera sporenia",v:savePct==null?"—":(Math.round(savePct*10)/10).toLocaleString("sk-SK")+" %",s:st(savePct,S0.savePct,10,true),
+    m:savePct==null?"Bez príjmov v evidencii sa nedá zmerať. Zapisuj všetky príjmy.":savePct<0?`Míňaš viac, ako zarábaš: mesačne chýba ${eur(-free)}. Toto je prvý problém na riešenie.`:savePct<10?`Odkladáš len ${eur(free)} mesačne. Najprv plať sebe – aspoň 10 % hneď po výplate.`:savePct<S0.savePct?`Odkladáš ${eur(free)} mesačne. Cieľ je ${S0.savePct} % príjmu, teda ${eur(r2(inc*S0.savePct/100))}.`:`Odkladáš ${eur(free)} mesačne. Dobré – teraz rozhoduje, kam tie peniaze idú.`,
+    src:"Pravidlo 50/30/20: 20 % príjmu na sporenie a splácanie dlhov; minimum podľa „plať najprv sebe“ 10 %."});
+  K.push({k:"res",l:"Finančná rezerva",v:resM==null?"—":(Math.floor(resM*10)/10).toLocaleString("sk-SK")+" mes.",s:resM==null?"na":resM>=S0.reserveMonths?"ok":resM>=3?"warn":"crit",
+    m:resM==null?"Doplň úspory v karte Majetok a výdavky, inak rezervu nespočítam.":resM<S0.reserveMonths?`Rezerva ${eur(liquid)} pokryje ${(Math.floor(resM*10)/10).toLocaleString("sk-SK")} mesiaca výdavkov a splátok. Chýba ${eur(r2(need*S0.reserveMonths-liquid))} do ${S0.reserveMonths} mesiacov.`:`Rezerva ${eur(liquid)} pokryje ${S0.reserveMonths}+ mesiacov. Ďalšie voľné peniaze nech už pracujú pre ciele.`,
+    src:`Rezerva = úspory + hotovosť z Majetku. Cieľ ${S0.reserveMonths} mesiacov (pri podnikaní a nepravidelnom príjme); NBS v analýze rezerv domácností porovnáva so 6 mesiacmi.`});
+  K.push({k:"dsti",l:"Zaťaženie splátkami",v:loan>0?(dsti>=999?"> 100 %":Math.round(dsti)+" %"):"0 %",s:loan<=0?"ok":dsti<=30?"ok":dsti<=60?"warn":"crit",
+    m:loan<=0?"Bez splátok úverov.":dsti>60?`Splátky ${eur(loan)} sú nad limitom NBS 60 %. Nový úver by ti banka nemala dať – najprv znižuj dlh.`:dsti>30?`Splátky ${eur(loan)} berú ${Math.round(dsti)} % príjmu${S0.lifeMin?" po odpočte životného minima":""}. Každá mimoriadna splátka uvoľní priestor.`:`Splátky ${eur(loan)} sú v bezpečnom pásme.`,
+    src:`NBS: nový úver len ak všetky splátky ≤ 60 % príjmu po odpočte životného minima (DSTI).${S0.lifeMin?"":" Životné minimum domácnosti nie je zadané – ukazovateľ je preto miernejší, doplň ho v nastavení."}`});
+  K.push({k:"goals",l:"Financovanie cieľov",v:fin.length?eur0(goalNeed)+"/mes.":"—",s:!fin.length?"na":goalNeed<=Math.max(0,free)&&goalPlan>=goalNeed*0.95?"ok":goalNeed<=Math.max(0,free)?"warn":"crit",
+    m:!fin.length?`Žiadny cieľ nemá cieľovú sumu. Bez sumy a termínu je to želanie, nie cieľ.${noFin.length?` Doplň sumy k ${noFin.length} ${plural(noFin.length,"cieľu","cieľom","cieľom")}.`:""}`:goalNeed>Math.max(0,free)?`Na ciele v termíne treba ${eur(goalNeed)} mesačne, voľných máš ${eur(Math.max(0,free))}. Uber výdavky, posuň termín alebo zoraď priority.`:goalPlan<goalNeed*0.95?`Peniaze na ciele máš (${eur(goalNeed)} z ${eur(free)}), ale odkladáš len ${eur(goalPlan)}. Nastav trvalé príkazy.`:`Ciele sú financované: ${eur(goalNeed)} mesačne z voľných ${eur(free)}.`,
+    src:"Potrebná mesačná suma = (cieľ − našetrené) / mesiace do termínu."});
+  K.push({k:"bud",l:"Rozpočet · "+monthName(lastM),v:bud.has?Math.round(bud.planTot>0?bud.actTot/bud.planTot*100:0)+" %":"—",s:!bud.has?"warn":bud.actTot>bud.planTot?"crit":"ok",
+    m:!bud.has?"Mesiac bez rozpočtu. Peniaze bez plánu sa rozkotúľajú – nastav plán v karte Rozpočet.":bud.actTot>bud.planTot?`Prekročený o ${eur(r2(bud.actTot-bud.planTot))}. Pozri kategórie v Rozpočte.`:`Dodržaný, zostalo ${eur(r2(bud.planTot-bud.actTot))}.`,src:"Minuté = výdavky + splátky úverov oproti plánu mesiaca."});
+  const subsPct=exp>0?subsM/exp*100:null;
+  K.push({k:"subs",l:"Predplatné",v:eur0(subsM)+"/mes.",s:"info",m:subsM>0?`${eur(r2(subsM*12))} ročne${subsPct!=null?`, ${Math.round(subsPct)} % výdavkov`:""}. Každý štvrťrok zruš, čo si nepoužil.`:"Žiadne evidované predplatné.",src:"Karta Predplatné."});
+  const months=ms.filter(m=>incMonth(m).length).length;
+  const gaps=[!months&&"príjmy",!C.assets.length&&"úspory a majetok",!jarsCfg().length&&"7 džbánov",!bud.has&&"rozpočet",C.goals.length&&!fin.length&&"sumy cieľov"].filter(Boolean);
+  K.push({k:"data",l:"Evidencia",v:gaps.length?gaps.length+" "+plural(gaps.length,"medzera","medzery","medzier"):"úplná",s:gaps.length>2?"crit":gaps.length?"warn":"ok",m:gaps.length?"Chýba: "+gaps.join(", ")+". Bez čísel ti poradím len všeobecne.":"Údaje sú úplné, rady sú presné.",src:partial?"Zatiaľ len aktuálny (neukončený) mesiac.":"Priemer z mesiacov: "+ms.map(monthName).join(", ")+"."});
+  const sc=K.filter(x=>["ok","warn","crit"].includes(x.s)), score=sc.length?Math.round(sc.reduce((a,x)=>a+(x.s==="ok"?2:x.s==="warn"?1:0),0)/(sc.length*2)*100):null;
+  return {td,ms,partial,inc,exp,loan,free,liquid,invest,allAssets,debt,need,resM,savePct,dsti,subsM,bud,lastM,goals,fin,noFin,goalNeed,goalPlan,K,score,S0}; }
+const advGrade=s=>s==null?"—":s>=85?"A":s>=70?"B":s>=55?"C":s>=40?"D":s>=25?"E":"F";
+function advContext(D){ const L=[];
+  L.push(`OBDOBIE: ${D.partial?"aktuálny neukončený mesiac":"priemer z mesiacov "+D.ms.map(monthName).join(", ")}; dnes ${D.td}.`);
+  L.push(`Príjmy mesačne ${eur(D.inc)}; výdavky ${eur(D.exp)}; splátky úverov ${eur(D.loan)}; voľné peniaze ${eur(D.free)} (${D.savePct==null?"—":(Math.round(D.savePct*10)/10).toLocaleString("sk-SK")+" % príjmu"}).`);
+  for(const m of D.ms){ const inc=incMonth(m); L.push(`- ${monthName(m)}: príjmy ${eur(sumAmt(inc))} (${Object.entries(inc.reduce((o,i)=>{ const s=INC_SRC[i.src]||"Iné"; o[s]=(o[s]||0)+(+i.amount||0); return o; },{})).map(([s,v])=>s+" "+eur(v)).join(", ")||"-"}), výdavky ${eur(expStats(m).total)}: ${expStats(m).catArr.map(([c,v])=>(EXPCAT[c]||c)+" "+eur(v)).join(", ")||"-"}`); }
+  L.push(`MAJETOK: spolu ${eur(D.allAssets)}; rezerva (úspory+hotovosť) ${eur(D.liquid)} = ${D.resM==null?"—":D.resM.toFixed(1)+" mesiaca výdavkov a splátok"}; investície a zlato ${eur(D.invest)}.`);
+  for(const a of C.assets) L.push(`- ${a.name} (${ASSET_KIND[a.kind]||"Iné"}): ${eur(a.value)}`);
+  L.push(`ÚVERY: dlh spolu ${eur(D.debt)}; zaťaženie splátkami ${D.loan>0?Math.round(Math.min(D.dsti,999))+" %":"0 %"}${D.S0.lifeMin?` (príjem mínus životné minimum ${eur(D.S0.lifeMin)})`:" (bez odpočtu životného minima)"}.`);
+  for(const l of activeLoans()){ const c=loanCalc(l); L.push(`- ${LOAN_KIND[l.kind]||"Úver"} ${l.name}: zostatok ${eur(l.balance)}, splátka ${eur(l.payment)}, úrok ${num(l.rate)!=null?l.rate+" % p. a.":"nezadaný"}, cieľ ${l.purpose||"-"}${c.n?`, zostáva cca ${c.n} splátok, úroky do konca cca ${c.interestLeft!=null?eur(c.interestLeft):"?"}`:""}`); }
+  { const A=C.subs.filter(subActive); L.push(`PREDPLATNÉ: osobne ${eur(D.subsM)} mesačne`+(A.length?": "+A.map(s=>`${s.name} ${eur(s.amount)} ${(SUB_FREQ[s.freq]||"mesačne").toLowerCase()} (${subPayerName(s)})`).join("; "):"")); }
+  { const p=budPlan(D.lastM); L.push(`ROZPOČET ${monthName(D.lastM)}: ${D.bud.has?`plán ${eur(D.bud.planTot)}, minuté ${eur(D.bud.actTot)}; plán po kategóriách: ${Object.entries(p.cats).filter(x=>num(x[1])>0).map(([k,v])=>(EXPCAT[k]||k)+" "+eur(v)).join(", ")}`:"nie je nastavený"}`); }
+  if(jarsCfg().length){ const jb=jarBalances(); L.push("7 DŽBÁNOV: "+jarsCfg().map(j=>`${j.name} ${j.pct} % (zostatok ${eur((jb[j.id]?.alloc||0)-(jb[j.id]?.spent||0))})`).join("; ")); } else L.push("7 DŽBÁNOV: nenastavené");
+  for(const u of units()){ const s=bzMonth(D.td.slice(0,7),u.id), od=bzOpen(u.id).filter(x=>x.due&&x.due<D.td); L.push(`FIRMA ${u.name} (mimo osobných peňazí): tento mesiac príjmy ${eur(r2(s.recv+s.exp))}, výdaje ${eur(s.costs)}, saldo ${eur(s.net)}${od.length?`, po splatnosti ${eur(sumAmt(od))}`:""}${bzSet(u.id).bal!=null?`, stav účtu ${eur(bzSet(u.id).bal)}`:""}`); }
+  L.push(`CIELE Z NÁSTENKY (${D.goals.length} aktívnych):`);
+  for(const g of D.goals){ const f=goalFin(g); L.push(`- [${HORIZON[g.horizon]||"Cieľ"}] ${g.title}${g.due?" do "+g.due:" bez termínu"}, splnené ${num(g.progress)||0} %${g.area?", oblasť "+(AREAS[g.area]||g.area):""}`+(f?`; cieľová suma ${eur(f.t)}, našetrené ${eur(f.saved)}${f.asset?" (na „"+f.asset.name+"“)":""}, chýba ${eur(f.left)}, ${f.need!=null?"treba "+eur(f.need)+" mesačne":"bez termínu"}, odkladám ${eur(f.mon)} mesačne${f.eta?", pri tomto tempe hotové "+f.eta:""}`:"; bez cieľovej sumy")+(g.why?`; prečo: ${String(g.why).slice(0,200)}`:"")); }
+  L.push(`Na ciele treba spolu ${eur(D.goalNeed)} mesačne, odkladám ${eur(D.goalPlan)}, voľné peniaze ${eur(D.free)}.`);
+  L.push("KONTROLY APLIKÁCIE: "+D.K.map(k=>`${k.l}: ${k.v} (${{ok:"v poriadku",warn:"pozor",crit:"problém",info:"info",na:"bez údajov"}[k.s]})`).join("; ")+`; skóre ${D.score??"—"} % (${advGrade(D.score)}).`);
+  const prev=C.advice.filter(a=>a.kind==="review").sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
+  if(prev) L.push(`MINULÁ SPÄTNÁ VÄZBA (${String(prev.date).slice(0,10)}, skóre ${prev.score??"—"} %):\n${String(prev.text||"").slice(0,1800)}`);
+  return L.join("\n"); }
+const ADV_PERSONA=`Si môj osobný finančný poradca a mentor finančnej gramotnosti (som Marek, podnikateľ – revízny technik a projektant, spolumajiteľ firmy EFEKTRA a majiteľ Safety Electric Slovakia, s.r.o.). Si priamy a prísny: nič neprikrášľuješ, nechváliš zbytočne, pomenuješ chyby číslami a povieš, čo presne urobiť. Máš nadhľad nad všetkými bežnými stratégiami a vyberáš tie, ktoré sedia na moje čísla: finančná rezerva, plať najprv sebe, 50/30/20, 7 džbánov, rozpočet od nuly, sinking funds (odkladanie na ročné platby: STK, poistky, ročné predplatné, dovolenky), lavína vs. snehová guľa pri dlhoch, mimoriadne splátky a refinancovanie, poistenie rizík (príjem, invalidita, zodpovednosť), oddelenie firemných a osobných peňazí (mzda vs. dividenda), dlhodobé pravidelné investovanie do širokých indexov (DCA), dôchodkové piliere, horizont a riziko (do 2 rokov / 2–5 rokov / nad 5 rokov), FIRE a pravidlo 4 %, celkový čistý majetok.
+Pravidlá: vychádzaj VÝHRADNE z údajov nižšie, nič nevymýšľaj; ak údaj chýba, povedz presne, čo mám doplniť. Pri kľúčových číslach ukáž výpočet. Nie si licencovaný investičný ani daňový poradca: neodporúčaj konkrétne cenné papiere, fondy ani produkty podľa názvu; pri daňových úľavách, štátnych príspevkoch, poplatkoch za mimoriadne splátky a podmienkach úverov napíš, že si mám overiť aktuálne podmienky v zmluve alebo u inštitúcie. Píš po slovensky, Markdown (nadpisy ##, odrážky), žiadne tabuľky.`;
+function advPrompt(D,q){ return q?`${ADV_PERSONA}
+
+MOJE FINANCIE:
+${advContext(D)}
+
+OTÁZKA: ${q}
+Odpovedz priamo na otázku, opri sa o moje čísla a o vhodnú stratégiu, max 250 slov.`:`${ADV_PERSONA}
+
+MOJE FINANCIE:
+${advContext(D)}
+
+Daj mi spätnú väzbu na moje financie a hospodárenie. Štruktúra:
+## Verdikt – známka A až F a 1–2 vety, prečo.
+## Čo robím zle – max 3 body, každý s číslom.
+## Čo urobiť tento mesiac – 3 až 5 konkrétnych krokov so sumou a termínom.
+## Ciele a stratégia – pre každý cieľ z nástenky: stratégia, mesačná suma, kam odkladať podľa horizontu, realistický termín; ak sa všetky nedajú financovať naraz, poradie priorít a prečo. Cieľ bez sumy: navrhni, akú sumu a termín doplniť.
+## Dlhy a rezerva – čo s úvermi (poradie, mimoriadne splátky alebo nie) a koľko do rezervy.
+## Lekcia finančnej gramotnosti – jeden pojem alebo stratégia vysvetlená na mojich číslach + jedna otázka na zamyslenie.
+${C.advice.some(a=>a.kind==="review")?"Na začiatku Verdiktu jednou vetou zhodnoť, či som splnil minulé odporúčania (podľa čísel).":""}
+Max 480 slov.`; }
+let advCtl=null;
+async function runAdvice(q){ if(!S.sample||S.adv.busy) return; const D=advData(); q=String(q||"").trim();
+  S.adv.busy=true; S.adv.text=""; S.adv.q=q; S.adv.sel=""; renderView();
+  advCtl=new AbortController(); const out=()=>$("#advOut");
+  try{ const r=await S.sample(advPrompt(D,q).slice(0,180000),{cache:false,signal:advCtl.signal,onText:({text})=>{ S.adv.text=text; const o=out(); if(o) o.innerHTML=md(text); }});
+    S.adv.text=r.text; const id=rid(); S.adv.sel=id;
+    await put("advice",id,{date:nowIso(),kind:q?"q":"review",q:q.slice(0,500),text:String(r.text||"").slice(0,20000),score:D.score}); if(q) S.adv.ask="";
+  }catch(e){ S.adv.text=(e?.text||"")+(e?.code==="cancelled"?"\n\n_(Zastavené.)_":"\n\n**"+sErr(e)+"**"); if(aiOff.includes(e?.code)) S.sample=null; }
+  advCtl=null; S.adv.busy=false; if(S.view==="financie") renderView(); }
+function advSetForm(){ const s=setting("advisor")||{}; openForm({title:"Nastavenie poradcu",data:{reserveMonths:s.reserveMonths??6,savePct:s.savePct??20,lifeMin:s.lifeMin??""},fields:[
+  {k:"reserveMonths",l:"Cieľ rezervy (mesiace výdavkov)",t:"number"},{k:"savePct",l:"Cieľová miera sporenia (% príjmu)",t:"number"},{k:"lifeMin",l:"Životné minimum domácnosti (€ mesačne, na výpočet DSTI)",t:"number",wide:true}],
+  onSave:async d=>{ const rm=num(d.reserveMonths), sp=num(d.savePct), lm=num(d.lifeMin); if(!(rm>0&&rm<=36)){ toast("Rezerva: zadaj 1 až 36 mesiacov."); return false; } if(!(sp>0&&sp<=90)){ toast("Miera sporenia: zadaj 1 až 90 %."); return false; }
+    const ok=await put("settings","advisor",{reserveMonths:rm,savePct:sp,lifeMin:lm!=null&&lm>=0?lm:null,updated:nowIso()}); if(ok) toast("Nastavenie poradcu uložené"); return ok; }}); }
+function finPoradca(){ const D=advData(), td=D.td, col={ok:"var(--ok)",warn:"var(--warn)",crit:"var(--crit)",info:"var(--accent)",na:"var(--faint)"}, word={ok:"v poriadku",warn:"pozor",crit:"problém",info:"info",na:"bez údajov"};
+  const hist=[...C.advice].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const shown=S.adv.busy||S.adv.text?null:(hist.find(a=>a.id===S.adv.sel)||hist.find(a=>a.kind==="review")||hist[0]||null);
+  const txt=S.adv.busy||S.adv.text?S.adv.text:(shown?.text||"");
+  const top=D.K.filter(k=>k.s==="crit")[0]||D.K.filter(k=>k.s==="warn")[0];
+  const goalRows=D.goals.map(g=>({g,f:goalFin(g)})).sort((a,b)=>(b.f?1:0)-(a.f?1:0)||(a.g.due||"9").localeCompare(b.g.due||"9"));
+  return `<div class="actions"><button class="btn primary" type="button" id="advRun" ${S.sample&&!S.adv.busy?"":"disabled"}>${S.adv.busy&&!S.adv.q?'<span class="spin"></span> Poradca píše…':"Spätná väzba od poradcu"}</button><button class="btn" type="button" id="advGoal">+ Finančný cieľ</button><button class="btn ghost" type="button" id="advSet">Nastavenie</button></div>
+  <section class="panel"><div class="panel-b adv-hero"><div class="adv-grade" style="--gc:${D.score==null?"var(--faint)":D.score>=70?"var(--ok)":D.score>=40?"var(--warn)":"var(--crit)"}"><b>${advGrade(D.score)}</b><span>${D.score==null?"bez údajov":D.score+" %"}</span></div>
+    <div style="min-width:0"><div class="eyebrow">Finančné zdravie · ${D.partial?"aktuálny mesiac":"priemer "+D.ms.length+" "+plural(D.ms.length,"mesiaca","mesiacov","mesiacov")}</div><div style="font-size:17px;font-weight:600;margin:4px 0 6px">${esc(top?top.m:"Všetky kontroly sú v poriadku. Drž kurz a zvyšuj investície na dlhodobé ciele.")}</div>
+    <div class="summary"><span>príjmy <b>${eur(D.inc)}</b></span><span>výdavky <b>${eur(D.exp)}</b></span><span>splátky <b>${eur(D.loan)}</b></span><span>voľné <b class="${D.free<0?"neg":""}">${eur(D.free)}</b></span><span>čistý majetok <b>${eur(r2(D.allAssets-D.debt))}</b></span></div></div></div></section>
+  <div class="adv-checks">${D.K.map(k=>`<div class="adv-ck" style="--sc:${col[k.s]}"><div class="h"><span>${esc(k.l)}</span><em>${word[k.s]}</em></div><div class="v">${esc(k.v)}</div><div class="m">${esc(k.m)}</div><div class="src">${esc(k.src)}</div></div>`).join("")}</div>
+  <section class="panel"><div class="panel-h"><h2>Ciele a peniaze</h2><span class="count">treba ${eur(D.goalNeed)}/mes. · odkladáš ${eur(D.goalPlan)} · voľné ${eur(D.free)}</span></div>
+    ${goalRows.length?`<div class="tblwrap"><table class="tbl"><thead><tr><th>Cieľ z nástenky</th><th class="n">Cieľ</th><th class="n">Našetrené</th><th class="n">Treba / mes.</th><th class="n">Odkladám</th><th>Stav</th></tr></thead><tbody>${goalRows.map(({g,f})=>`<tr data-advgoal="${esc(g.id)}" style="cursor:pointer"><td style="min-width:150px"><b style="font-weight:600">${esc(g.title)}</b><div style="font-size:12px;color:var(--muted)">${esc(HORIZON[g.horizon]||"")}${g.due?" · do "+fmtDate(g.due):" · bez termínu"}</div>${f?`<div class="bar" style="margin-top:5px"><i style="width:${f.pct.toFixed(1)}%;background:var(--ok)"></i></div>`:""}</td>
+      ${f?`<td class="n">${eur0(f.t)}</td><td class="n">${eur0(f.saved)}${f.asset?`<div style="font-size:11px;color:var(--muted)">${esc(f.asset.name)}</div>`:""}</td><td class="n">${f.need==null?"—":eur(f.need)}</td><td class="n">${eur(f.mon)}</td><td style="font-size:13px">${f.left<=0?'<span style="color:var(--ok)">našetrené</span>':f.late?`<span style="color:var(--crit)">${f.mon?"nestihneš – "+fmtDate(f.eta):"neodkladáš"}</span>`:f.eta?`<span style="color:var(--ok)">hotové ${fmtDate(f.eta)}</span>`:"doplň termín"}</td>`:`<td colspan="5" style="font-size:13px;color:var(--warn)">Doplň cieľovú sumu, našetrené a koľko mesačne odkladáš →</td>`}</tr>`).join("")}</tbody></table></div>`:`<div class="empty">Na nástenke Ciele a sny zatiaľ nie sú ciele. Pridaj finančný cieľ (rezerva, auto, dovolenka, splatenie úveru…) so sumou a termínom.</div>`}</section>
+  <section class="panel"><div class="panel-h"><h2>${S.adv.busy||S.adv.text?(S.adv.q?"Odpoveď poradcu":"Spätná väzba"):shown?(shown.kind==="q"?"Odpoveď poradcu":"Posledná spätná väzba"):"Spätná väzba od poradcu"}</h2><span class="count">${S.adv.busy?'<span class="spin"></span>':shown&&!S.adv.text?fmtDate(String(shown.date).slice(0,10))+(shown.score!=null?" · skóre "+shown.score+" %":""):""}</span></div>
+    <div class="panel-b" style="display:flex;flex-direction:column;gap:12px">${(S.adv.q||shown?.q)?`<div style="font-size:13px;color:var(--muted)">Otázka: ${esc(S.adv.q||shown.q)}</div>`:""}
+    <div class="md" id="advOut">${txt?md(txt):`<span style="color:var(--muted)">${S.sample?"Ťukni na „Spätná väzba od poradcu“. Poradca prejde príjmy, výdavky, rozpočet, úvery, rezervu, predplatné aj ciele z nástenky a povie ti priamo, čo robíš zle a čo urobiť tento mesiac.":"Spätná väzba od poradcu (Claude) funguje po otvorení Brain v Claude. Kontroly a výpočty vyššie fungujú všade."}</span>`}</div>
+    ${S.adv.busy?`<div class="actions"><button class="btn sm ghost" type="button" id="advStop">Zastaviť</button></div>`:""}
+    <div class="askbar"><textarea id="advQ" rows="1" data-keep placeholder="Opýtaj sa poradcu… napr. Mám najprv splácať úver alebo sporiť na auto?" ${S.sample&&!S.adv.busy?"":"disabled"}></textarea><button class="btn primary" id="advAsk" type="button" ${S.sample&&!S.adv.busy?"":"disabled"}>Opýtať</button></div></div></section>
+  ${hist.length?`<section class="panel"><div class="panel-h"><h2>História rád</h2><span class="count">${hist.length}</span></div><ul class="list">${hist.slice(0,12).map(a=>`<li class="li" data-advh="${esc(a.id)}">${dot(a.kind==="q"?"poznamka":"znalost")}<div class="li-main"><div class="li-title">${a.kind==="q"?esc(String(a.q||"Otázka").slice(0,90)):"Spätná väzba"+(a.score!=null?" · skóre "+a.score+" %":"")}</div><div class="li-meta"><span>${fmtDate(String(a.date).slice(0,10))}</span></div></div>${shown?.id===a.id&&!S.adv.text?'<span class="chip">zobrazené</span>':""}</li>`).join("")}</ul></section>`:""}
+  <p style="margin:0;font-size:12px;color:var(--muted);max-width:80ch">Poradca je Claude nad tvojimi údajmi v Brain, nie licencovaný investičný ani daňový poradca. Konkrétne produkty, daňové úľavy a podmienky úverov si over v zmluve alebo u inštitúcie.</p>`; }
+function bindPoradca(){
+  $("#advRun")&&($("#advRun").onclick=()=>runAdvice(""));
+  $("#advSet")&&($("#advSet").onclick=advSetForm);
+  $("#advGoal")&&($("#advGoal").onclick=()=>goalForm(null,{area:"financie",horizon:"rok"}));
+  $("#advStop")&&($("#advStop").onclick=()=>advCtl?.abort());
+  const q=$("#advQ"), ask=()=>{ const v=q.value.trim(); if(v){ q.value=""; runAdvice(v); } };
+  $("#advAsk")&&($("#advAsk").onclick=ask);
+  q&&q.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); ask(); } });
+  document.querySelectorAll("[data-advgoal]").forEach(r=>r.onclick=()=>goalForm(byId("goals",r.dataset.advgoal)));
+  document.querySelectorAll("[data-advh]").forEach(r=>r.onclick=()=>{ S.adv.sel=r.dataset.advh; S.adv.text=""; S.adv.q=""; renderView(); $("#advOut")?.scrollIntoView({behavior:"smooth",block:"center"}); });
+}
+
 function bindFinancie(){
   document.querySelectorAll("[data-fintab]").forEach(b=>b.onclick=()=>{ if(b.dataset.fintab==="_add"){ unitForm(null); return; } S.fin.tab=b.dataset.fintab; S.form=null; renderView(); });
   $("#finAddInc")&&($("#finAddInc").onclick=()=>{ if(!["prehlad","prijmy"].includes(S.fin.tab)) S.fin.tab="prijmy"; incomeForm(null); });
@@ -2719,6 +2865,7 @@ function bindFinancie(){
   if(units().some(x=>x.id===S.fin.tab)) bindUnit();
   if(S.fin.tab==="rozpocet") bindRozpocet();
   if(S.fin.tab==="predplatne") bindPredplatne();
+  if(S.fin.tab==="poradca") bindPoradca();
   $("#finAddLoan")&&($("#finAddLoan").onclick=()=>{ S.fin.tab="uvery"; loanForm(null); });
   document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>{ const nm=shiftMonth(curMonth(),+b.dataset.mnav); if(nm<=today().slice(0,7)){ S.exp.month=nm; renderView(); } });
   document.querySelectorAll("[data-inc]").forEach(r=>r.onclick=()=>incomeForm(byId("income",r.dataset.inc)));
@@ -3007,15 +3154,16 @@ function viewCiele(){
   const active=C.goals.filter(g=>g.status!=="splneny"), done=C.goals.filter(g=>g.status==="splneny");
   const vis=active.filter(g=>g.image||g.horizon==="sen").sort((a,b)=>(a.horizon==="sen"?0:1)-(b.horizon==="sen"?0:1));
   return `<div class="view"><div class="band" style="--b1:var(--wm-1);--b2:var(--wm-2)"><div><div class="eyebrow">Nástenka cieľov</div><h1>Ciele a sny</h1></div><div class="actions"><button class="btn primary" type="button" id="goalAdd">+ Sen alebo cieľ</button></div></div>${stateBanner()}${formPanel()}
+  ${(()=>{ const F=C.goals.filter(g=>g.status!=="splneny"&&goalFin(g)); if(!C.goals.some(g=>g.status!=="splneny")) return ""; const need=r2(F.reduce((s,g)=>s+(goalFin(g).need||0),0)); return `<section class="panel"><div class="panel-b" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="min-width:0"><b>Financovanie cieľov</b><div style="font-size:13px;color:var(--muted)">${F.length?`${F.length} ${plural(F.length,"cieľ","ciele","cieľov")} so sumou · treba ${eur(need)} mesačne`:"Doplň k cieľom cieľovú sumu – poradca k nim pripojí stratégiu."}</div></div><button class="btn sm" type="button" data-go="financie/poradca">Finančný poradca →</button></div></section>`; })()}
   <section><div class="vision">${vis.map(g=>`<div class="vtile ${g.image?"":"noimg"}" data-goal="${esc(g.id)}" role="button" tabindex="0">${g.image?`<img src="/_blob/${esc(g.image)}" alt="${esc(g.title)}" loading="lazy">`:""}<div class="cap">${esc(g.title)}<span>${esc(HORIZON[g.horizon]||"")}${g.due?" · do "+fmtDate(g.due):""}</span></div></div>`).join("")
     ||`<div class="vtile noimg" id="goalAdd2" role="button" tabindex="0"><div class="cap">+ Pridaj prvý sen s fotkou<span>Dom, cesta, rodina, auto… čokoľvek, čo chceš vidieť každý deň.</span></div></div>`}</div></section>
   ${Object.entries(HORIZON).map(([h,l])=>{ const L=active.filter(g=>(g.horizon||"rok")===h); return `<section class="panel"><div class="panel-h"><h2>${l}</h2><span class="count">${L.length}</span></div><div>${L.map(goalRow).join("")||`<div class="empty">${h==="mesiac"?"Mesačné targety, ktoré ťa posunú k ročným cieľom.":h==="rok"?"Čo chceš dosiahnuť tento rok.":"Veľké sny bez termínu."}</div>`}</div></section>`; }).join("")}
   ${done.length?`<section class="panel"><div class="panel-h"><h2>Splnené</h2><button class="btn sm ghost" type="button" id="goalDoneT">${S.goalShowDone?"Skryť":"Zobraziť"} (${done.length})</button></div>${S.goalShowDone?`<div>${done.map(goalRow).join("")}</div>`:""}</section>`:""}</div>`; }
 function goalRow(g){ const p=Math.max(0,Math.min(100,num(g.progress)||0));
-  return `<div class="goalrow" data-goal="${esc(g.id)}" role="button" tabindex="0"><div class="th">${g.image?`<img src="/_blob/${esc(g.image)}" alt="" loading="lazy">`:""}</div><div style="min-width:0"><div style="font-weight:600">${esc(g.title)}</div><div style="font-size:12px;color:var(--muted)">${[AREAS[g.area],g.due?"do "+fmtDate(g.due):""].filter(Boolean).join(" · ")}</div></div><div><div class="bar"><i style="width:${p}%;background:var(--ok)"></i></div><div class="pc">${p} %</div></div></div>`; }
-function goalForm(g){ openForm({title:g?"Upraviť":"Nový sen alebo cieľ",data:g?{...g}:{horizon:"rok",progress:"0"},fields:[{k:"title",l:"Názov",ph:"napr. Rodinná dovolenka v Nórsku",wide:true},{k:"horizon",l:"Typ",t:"select",o:HORIZON},{k:"area",l:"Oblasť",t:"select",o:{"":"—",...AREAS}},{k:"due",l:"Termín",t:"date"},{k:"progress",l:"Splnené (%)",t:"number"},{k:"image",l:"Fotka na nástenku",t:"image"},{k:"why",l:"Prečo to chcem",t:"textarea",wide:true},{k:"steps",l:"Kroky a míľniky",t:"textarea",wide:true,ph:"každý krok na nový riadok"}],
+  return `<div class="goalrow" data-goal="${esc(g.id)}" role="button" tabindex="0"><div class="th">${g.image?`<img src="/_blob/${esc(g.image)}" alt="" loading="lazy">`:""}</div><div style="min-width:0"><div style="font-weight:600">${esc(g.title)}</div><div style="font-size:12px;color:var(--muted)">${[AREAS[g.area],g.due?"do "+fmtDate(g.due):"",(f=>f?`${eur0(f.saved)} z ${eur0(f.t)}${f.left>0&&f.need!=null?" · treba "+eur0(f.need)+"/mes.":""}`:"")(goalFin(g))].filter(Boolean).join(" · ")}</div></div><div><div class="bar"><i style="width:${p}%;background:var(--ok)"></i></div><div class="pc">${p} %</div></div></div>`; }
+function goalForm(g,def){ const ao={"":"—"}; for(const a of C.assets) ao[a.id]=`${a.name} (${eur0(a.value)})`; openForm({title:g?"Upraviť":"Nový sen alebo cieľ",data:g?{...g}:{horizon:"rok",progress:"0",...(def||{})},fields:[{k:"title",l:"Názov",ph:"napr. Rodinná dovolenka v Nórsku",wide:true},{k:"horizon",l:"Typ",t:"select",o:HORIZON},{k:"area",l:"Oblasť",t:"select",o:{"":"—",...AREAS}},{k:"due",l:"Termín",t:"date"},{k:"progress",l:"Splnené (%)",t:"number"},{k:"target",l:"Cieľová suma (€) – ak cieľ stojí peniaze",t:"number"},{k:"saved",l:"Už našetrené (€)",t:"number"},{k:"monthly",l:"Mesačne odkladám (€)",t:"number"},...(C.assets.length?[{k:"assetId",l:"Šetrím na (Majetok – našetrené sa vezme odtiaľ)",t:"select",o:ao}]:[]),{k:"image",l:"Fotka na nástenku",t:"image"},{k:"why",l:"Prečo to chcem",t:"textarea",wide:true},{k:"steps",l:"Kroky a míľniky",t:"textarea",wide:true,ph:"každý krok na nový riadok"}],
   onSave:async d=>{ if(!String(d.title||"").trim()){ toast("Zadaj názov."); return false; } const p=Math.max(0,Math.min(100,num(d.progress)||0));
-    const rec={title:String(d.title).slice(0,160),horizon:HORIZON[d.horizon]?d.horizon:"rok",area:AREAS[d.area]?d.area:"",due:ISO_RE.test(d.due||"")?d.due:"",progress:p,image:/^[0-9a-f]{32}$/.test(d.image||"")?d.image:"",why:String(d.why||"").slice(0,3000),steps:String(d.steps||"").slice(0,3000),status:p>=100?"splneny":"aktivny",updated:new Date().toISOString(),created:g?.created||new Date().toISOString()};
+    const rec={title:String(d.title).slice(0,160),horizon:HORIZON[d.horizon]?d.horizon:"rok",area:AREAS[d.area]?d.area:"",due:ISO_RE.test(d.due||"")?d.due:"",progress:p,image:/^[0-9a-f]{32}$/.test(d.image||"")?d.image:"",why:String(d.why||"").slice(0,3000),steps:String(d.steps||"").slice(0,3000),target:num(d.target)>0?r2(num(d.target)):null,saved:num(d.saved)>=0?r2(num(d.saved)):null,monthly:num(d.monthly)>=0?r2(num(d.monthly)):null,assetId:ao[d.assetId]&&d.assetId?d.assetId:"",status:p>=100?"splneny":"aktivny",updated:new Date().toISOString(),created:g?.created||new Date().toISOString()};
     const ok=await put("goals",g?.id||rid(),rec); if(ok) toast(p>=100?"Splnené. Gratulujem!":"Uložené"); return ok; },
   onDelete:g?()=>delDoc("goals",g.id):null}); }
 function bindCiele(){
@@ -4098,6 +4246,7 @@ async function init(){
   watch("bizcf",c=>c.limit(3000));
   watch("budget",c=>c.limit(240));
   watch("subs",c=>c.limit(300));
+  watch("advice",c=>c.orderBy("date","desc").limit(40));
   watch("loans",c=>c.limit(100));
   watch("cars",c=>c.limit(20));
   watch("trips",c=>c.limit(100));
