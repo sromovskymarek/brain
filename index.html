@@ -2392,7 +2392,7 @@ async function goldFetchLive(){ if(S.goldTried) return; S.goldTried=true; if(gol
     const d=today(); S.goldLive={eurOz:r2(p),date:d,at:String(j.updatedAt||nowIso())}; goldApply(); onData();
     if(S.db){ const s=goldSet(); await put("settings","gold",{eurOz:r2(p),usdOz:s.usdOz,ecbUsd:s.ecbUsd,date:d,at:S.goldLive.at,src:"gold-api.com XAU/EUR (stiahnuté v aplikácii)",hist:[...s.hist.filter(h=>h.d!==d),{d,eur:r2(p)}].slice(-400),updated:nowIso()}); } }catch(e){} }
 function goldPanel(){ const p=goldPrice(), G=C.assets.filter(a=>a.kind==="zlato"), td=today(); if(!G.length&&!(p.eurOz>0)) return "";
-  if(!(p.eurOz>0)) return `<section class="panel"><div class="panel-h"><h2>Zlato · trhová cena</h2></div><div class="panel-b" style="color:var(--muted);font-size:14px">Cena zlata sa ešte nenačítala. Agent „Brain – cena zlata“ ju zapisuje v pracovné dni o 17:41.</div></section>`;
+  if(!(p.eurOz>0)) return `<section class="panel"><div class="panel-h"><h2>Zlato · trhová cena</h2></div><div class="panel-b" style="color:var(--muted);font-size:14px">Cena zlata sa ešte nenačítala. Agent „Brain – cena zlata“ ju zapisuje každý piatok o 17:41.</div></section>`;
   const gOz=p.eurOz, gG=gOz/OZ_G, grams=G.reduce((s,a)=>s+(goldGrams(a)||0),0), GC=G.filter(a=>num(a.cost)>0&&goldAuto(a)), cost=r2(GC.reduce((s,a)=>s+num(a.cost),0)), valC=r2(GC.reduce((s,a)=>s+r2(goldGrams(a)*gG),0)), val=r2(G.filter(goldAuto).reduce((s,a)=>s+r2(goldGrams(a)*gG),0));
   const cmp=days=>{ const o=goldAt(p,addDays(td,-days)); return o?{d:o.d,eur:o.eur,pct:(gOz/o.eur-1)*100,dv:r2(grams*(gOz-o.eur)/OZ_G)}:null; }, w=cmp(7), m=cmp(30);
   const pc=x=>x==null?"—":`${x>=0?"+":""}${(Math.round(x*100)/100).toLocaleString("sk-SK")} %`;
