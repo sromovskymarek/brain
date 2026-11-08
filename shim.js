@@ -225,6 +225,41 @@ const assetsApi = {
   }
 };
 
+/* Záloha bez service workera: ak sa fotka _blob/<id> nenačíta (service worker nebeží alebo nemá
+   prihlásenie – napr. iPad/Safari), stiahne sa priamo zo Supabase s prihlásením appky. */
+const blobObj = new Map(); // id -> Promise<objectURL|null>
+const blobId = s => { const m = String(s || "").match(/(?:^|\/)_blob\/([0-9a-f]{32})(?:[?#].*)?$/); return m ? m[1] : ""; };
+function blobFetch(id) {
+  if (blobObj.has(id)) return blobObj.get(id);
+  const p = (async () => {
+    try { const c = await caches.open("brain-blobs"); const hit = await c.match(blobUrl(id)); if (hit) return URL.createObjectURL(await hit.blob()); } catch (e) {}
+    if (!(await ensure()) || !sb || !uid) return null;
+    const { data, error } = await sb.storage.from("assets").download(uid + "/" + id);
+    if (error || !data) { console.warn("Brain: fotku " + id + " sa nepodarilo stiahnuť", error && error.message); return null; }
+    try { const c = await caches.open("brain-blobs"); await c.put(blobUrl(id), new Response(data, { headers: { "Content-Type": data.type || "application/octet-stream" } })); } catch (e) {}
+    return URL.createObjectURL(data);
+  })().catch(e => { console.warn("Brain: fotka " + id, e); return null; });
+  blobObj.set(id, p);
+  p.then(u => { if (!u) blobObj.delete(id); });
+  return p;
+}
+document.addEventListener("error", async e => {
+  const el = e.target;
+  if (!el || el.tagName !== "IMG" || el.dataset.bzBlob) return;
+  const id = blobId(el.getAttribute("src")); if (!id) return;
+  el.dataset.bzBlob = "1";
+  const u = await blobFetch(id);
+  if (u) el.src = u;
+}, true);
+document.addEventListener("click", e => {
+  const a = e.target && e.target.closest && e.target.closest("a[href]");
+  const id = a && blobId(a.getAttribute("href")); if (!id) return;
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) return; // service worker ho obslúži sám
+  e.preventDefault();
+  const w = window.open("", "_blank");
+  blobFetch(id).then(u => { if (!u) { if (w) w.close(); return; } if (w) w.location.href = u; else location.href = u; });
+}, true);
+
 /* ---------- Sťahovanie súborov ---------- */
 const MIME = { json: "application/json", csv: "text/csv", txt: "text/plain", md: "text/markdown", html: "text/html", pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", svg: "image/svg+xml" };
 const dlApi = {
