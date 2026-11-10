@@ -493,6 +493,21 @@ label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu
 .shopstores{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
 .cat-h{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px;display:flex;justify-content:space-between}
 .tripcard{cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.tdbusy{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface-2);font-size:14px}
+.tdlist{list-style:none;margin:0;padding:0}
+.tdi{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.tdi:first-child{border-top:0}
+.tdi a{color:var(--fg);text-decoration:none}
+.tdi a:hover{color:var(--accent);text-decoration:underline}
+.tdic{flex:none;width:38px;height:44px;border-radius:6px;border:1px solid var(--line-2);background:var(--surface-2);display:grid;place-items:center;font:600 10px var(--f-mono);color:var(--accent);letter-spacing:.04em}
+.tdact{display:flex;gap:4px;flex:none;align-items:center}
+.tdprop{border:1px solid var(--accent);border-radius:var(--r);padding:12px 14px;background:linear-gradient(180deg,var(--accent-soft),var(--surface) 70%)}
+.tdp{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-top:1px solid var(--line);cursor:pointer;font-size:14px;min-width:0}
+.tdp span{min-width:0;overflow-wrap:anywhere}
+.tdp .chk{margin-top:2px}
+.tdsub{display:block;font-size:12px;color:var(--muted);margin-top:1px}
+.tdwarn{margin:8px 0;padding:8px 10px;border-radius:6px;background:rgba(232,168,62,.12);color:var(--warn);font-size:13px}
 .tripcard:hover{border-color:var(--line-2)}
 .big-cd{font-family:var(--f-display);font-stretch:125%;font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
 .vision{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
@@ -3394,17 +3409,17 @@ function checkList(list,path,opt={}){
 function viewVylety(){
   const t0=S.tripId&&byId("trips",S.tripId); if(t0) return viewTrip(t0);
   const td=today(), up=C.trips.filter(t=>!t.end||t.end>=td).sort(tripSort), past=C.trips.filter(t=>t.end&&t.end<td).sort((a,b)=>tripSort(b,a));
-  return `<div class="view"><div class="band" style="--b1:var(--wsk-1);--b2:var(--wsk-2)"><div><div class="eyebrow">Plánovanie, itinerár, balenie</div><h1>Výlety a dovolenky</h1></div><div class="actions"><button class="btn primary" type="button" id="tripAdd">+ Výlet</button></div></div>${stateBanner()}${formPanel()}
-  ${up.length?`<div class="cards">${up.map(tripCard).join("")}</div>`:`<section class="panel panel-b" style="color:var(--muted)">Žiadny naplánovaný výlet. Pridaj ho tlačidlom + Výlet alebo mi napíš, kam a kedy ideš.</section>`}
+  return `<div class="view"><div class="band" style="--b1:var(--wsk-1);--b2:var(--wsk-2)"><div><div class="eyebrow">Plánovanie, itinerár, balenie</div><h1>Výlety a dovolenky</h1></div><div class="actions">${S.assets?`<label class="btn" for="tripDocNew">📄 Z dokumentu</label><input type="file" id="tripDocNew" multiple accept="application/pdf,.pdf,image/jpeg,image/png,image/webp,image/gif,image/heic,text/plain,.txt" hidden>`:""}<button class="btn primary" type="button" id="tripAdd">+ Výlet</button></div></div>${stateBanner()}${formPanel()}
+  ${up.length?`<div class="cards">${up.map(tripCard).join("")}</div>`:`<section class="panel panel-b" style="color:var(--muted)">Žiadny naplánovaný výlet. Pridaj ho tlačidlom + Výlet, nahraj letenku či podklady od cestovky tlačidlom Z dokumentu, alebo mi napíš, kam a kedy ideš.</section>`}
   ${past.length?`<section class="panel"><div class="panel-h"><h2>Minulé výlety</h2><span class="count">${past.length}</span></div><ul class="list">${past.map(t=>`<li class="li" data-trip="${esc(t.id)}">${dot("udalost")}<div class="li-main"><div class="li-title">${esc(t.name)}</div><div class="li-meta"><span>${tripDates(t)}</span></div></div></li>`).join("")}</ul></section>`:""}</div>`; }
-function tripCard(t){ const n=t.start?dayDiff(t.start):null, pk=tripProg(t.packing), pr=tripProg(t.prep), nn=tripNights(t);
+function tripCard(t){ const n=t.start?dayDiff(t.start):null, pk=tripProg(t.packing), pr=tripProg(t.prep), sh=tripProg(t.shopping), nn=tripNights(t);
   return `<div class="card tripcard" data-trip="${esc(t.id)}" role="button" tabindex="0"><div style="display:flex;justify-content:space-between;gap:10px"><div style="min-width:0"><h3>${esc(t.name)}</h3><div class="sub">${esc(t.dest||"")}${t.dest?" · ":""}${tripDates(t)}${nn!=null?` · ${nn} ${plural(nn,"noc","noci","nocí")}`:""}</div></div><span class="chip">${esc(TRIP_KIND[t.kind]||"Výlet")}</span></div>
   ${n!=null?`<div><span class="big-cd">${n>0?n:n===0?"Dnes":"Prebieha"}</span>${n>0?` <span class="sub">${plural(n,"deň","dni","dní")} do odchodu</span>`:""}</div>`:""}
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><div class="sub">Príprava ${pr.d}/${pr.n}</div><div class="bar"><i style="width:${pr.p}%"></i></div></div><div><div class="sub">Balenie ${pk.d}/${pk.n}</div><div class="bar"><i style="width:${pk.p}%"></i></div></div></div></div>`; }
+  <div style="display:grid;grid-template-columns:repeat(${sh.n?3:2},minmax(0,1fr));gap:10px"><div><div class="sub">Príprava ${pr.d}/${pr.n}</div><div class="bar"><i style="width:${pr.p}%"></i></div></div>${sh.n?`<div><div class="sub">Nákupy ${sh.d}/${sh.n}</div><div class="bar"><i style="width:${sh.p}%"></i></div></div>`:""}<div><div class="sub">Balenie ${pk.d}/${pk.n}</div><div class="bar"><i style="width:${pk.p}%"></i></div></div></div>${(t.docs||[]).length?`<div class="sub">📄 ${t.docs.length} ${plural(t.docs.length,"dokument","dokumenty","dokumentov")}</div>`:""}</div>`; }
 const TRIP_TXT=[["weather","Počasie a podmienky"],["tips","Dôležité informácie a tipy"],["accom","Ubytovanie – moje kritériá"],["notes","Poznámky"]];
 function viewTrip(t){
   const tab=S.tripTab, n=t.start?dayDiff(t.start):null, pk=tripProg(t.packing), pr=tripProg(t.prep), it=tripProg((t.itinerary||[]).flatMap(d=>d.items||[])), nn=tripNights(t);
-  const body=tab==="itinerar"?tripItin(t):tab==="balenie"?tripPacking(t):tab==="priprava"?tripPrep(t):tab==="program"?tripProgram(t):tripOverview(t);
+  const body=tab==="itinerar"?tripItin(t):tab==="balenie"?tripPacking(t):tab==="priprava"?tripPrep(t):tab==="program"?tripProgram(t):tab==="dokumenty"?tripDocs(t):tab==="nakupy"?tripShop(t):tripOverview(t), sh=tripProg(t.shopping), nd=(t.docs||[]).length;
   return `<div class="view"><div><button class="btn sm ghost" type="button" id="tripBack">‹ Všetky výlety</button></div>
   <div class="band" style="--b1:var(--wsk-1);--b2:var(--wsk-2)"><div><div class="eyebrow">${esc(TRIP_KIND[t.kind]||"Výlet")} · ${tripDates(t)}</div><h1>${esc(t.name)}</h1>${t.dest||t.people?`<p class="lead">${esc([t.dest,t.people].filter(Boolean).join(" · "))}</p>`:""}</div><div class="actions"><button class="btn sm" type="button" id="tripEditBtn">Upraviť</button></div></div>
   ${formPanel()}
@@ -3412,7 +3427,7 @@ function viewTrip(t){
     <div class="kpi"><span class="k">Dĺžka</span><span class="v">${nn!=null?`${nn} ${plural(nn,"noc","noci","nocí")}`:"—"}</span><span class="s">${t.end?"návrat "+fmtDate(t.end):"návrat nezadaný"}</span></div>
     <div class="kpi"><span class="k">Príprava</span><span class="v">${pr.d}/${pr.n}</span><span class="s">${pr.p} % hotovo</span></div>
     <div class="kpi"><span class="k">Zbalené</span><span class="v">${pk.d}/${pk.n}</span><span class="s">${pk.p} % hotovo</span></div></div>
-  ${tabsHtml(tab,[["prehlad","Prehľad"],["itinerar","Itinerár"+(it.n?` ${it.d}/${it.n}`:"")],["balenie","Balenie"],["priprava","Príprava"],["program","Program a rezervácie"]],"data-triptab")}
+  ${tabsHtml(tab,[["prehlad","Prehľad"],["dokumenty","Dokumenty"+(nd?` ${nd}`:"")+(S.tdoc?.trip===t.id&&(S.tdoc.busy||S.tdoc.proposal)?" •":"")],["itinerar","Itinerár"+(it.n?` ${it.d}/${it.n}`:"")],["program","Program a rezervácie"],["priprava","Príprava"],["balenie","Balenie"],["nakupy","Nákupy"+(sh.n?` ${sh.d}/${sh.n}`:"")]],"data-triptab")}
   ${body}</div>`; }
 function tripOverview(t){ return TRIP_TXT.map(([k,l])=>`<section class="panel"><div class="panel-h"><h2>${l}</h2>${S.tripEdit===k?"":`<button class="btn sm ghost" type="button" data-tedit="${k}">Upraviť</button>`}</div><div class="panel-b">${S.tripEdit===k
   ?`<textarea id="tt_${k}" data-keep rows="12" style="min-height:220px">${esc(t[k]||"")}</textarea><div class="actions" style="margin-top:8px"><button class="btn primary sm" type="button" data-tsave="${k}">Uložiť</button><button class="btn ghost sm" type="button" data-tcancel="1">Zrušiť</button></div>`
@@ -3428,22 +3443,268 @@ function tripPrep(t){ const L=(t.prep||[]).slice().sort((a,b)=>(a.done-b.done)||
   return `<section class="panel"><div class="panel-h"><h2>Čo vybaviť pred odchodom</h2><span class="count">${tripProg(L).d}/${L.length}</span></div><div class="panel-b">${checkList(L,"prep",{meta:x=>x.due?`<span class="m ${!x.done&&dayDiff(x.due)<0?"neg":""}">${fmtDate(x.due)}</span>`:""})}
   <div class="addrow"><input type="text" id="prepAdd" data-keep data-ckadd="prep" placeholder="Pridať úlohu, Enter…" aria-label="Nová úloha pred odchodom"><input type="date" id="prepDue" data-keep style="flex:0 0 160px" aria-label="Termín"></div></div></section>`; }
 function tripProgram(t){ const L=(t.bookings||[]).slice().sort((a,b)=>((a.date||"9")+(a.time||"")).localeCompare((b.date||"9")+(b.time||"")));
-  return `<section class="panel"><div class="panel-h"><h2>Program, vstupenky a rezervácie</h2><button class="btn sm primary" type="button" id="bookAdd">+ Pridať</button></div><div class="panel-b">${L.length?`<ul class="ck">${L.map(b=>`<li class="${b.done?"done":""}"><input type="checkbox" class="chk" data-ck="bookings" data-cid="${esc(b.id)}" ${b.done?"checked":""} aria-label="Rezervované"><span class="t"><b style="font-weight:600">${esc(b.title)}</b><span style="display:block;font-size:12px;color:var(--muted)">${esc(BOOK_KIND[b.kind]||"")}${b.date?" · "+fmtDate(b.date):""}${b.time?" "+esc(b.time):""}${b.place?" · "+esc(b.place):""}${b.note?" · "+esc(b.note):""}</span></span><button type="button" class="x" data-ckdel="bookings" data-cid="${esc(b.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>`:'<span style="color:var(--muted)">Pridaj lety, ubytovanie, vstupenky, divadlo, kino alebo iný program. Odškrtni, keď je rezervované.</span>'}</div></section>`; }
-function bookingForm(t){ openForm({title:"Nový bod programu alebo rezervácia",data:{kind:"vstupenka",date:t.start||""},fields:[{k:"kind",l:"Typ",t:"select",o:BOOK_KIND},{k:"title",l:"Názov",ph:"napr. Machu Picchu – okruh 2"},{k:"date",l:"Dátum",t:"date"},{k:"time",l:"Čas",t:"time"},{k:"place",l:"Miesto"},{k:"note",l:"Poznámka",ph:"napr. číslo rezervácie, čo so sebou",wide:true}],
-  onSave:async d=>{ if(!String(d.title||"").trim()){ toast("Zadaj názov."); return false; } const b={id:rid(),kind:BOOK_KIND[d.kind]?d.kind:"ine",title:String(d.title).slice(0,160),date:ISO_RE.test(d.date||"")?d.date:"",time:/^\d{2}:\d{2}$/.test(d.time||"")?d.time:"",place:String(d.place||"").slice(0,160),note:String(d.note||"").slice(0,300),done:false};
+  return `<section class="panel"><div class="panel-h"><h2>Program, vstupenky a rezervácie</h2><button class="btn sm primary" type="button" id="bookAdd">+ Pridať</button></div><div class="panel-b">${L.length?`<ul class="ck">${L.map(b=>`<li class="${b.done?"done":""}"><input type="checkbox" class="chk" data-ck="bookings" data-cid="${esc(b.id)}" ${b.done?"checked":""} aria-label="Rezervované"><span class="t"><b style="font-weight:600">${esc(b.title)}</b><span style="display:block;font-size:12px;color:var(--muted)">${esc(BOOK_KIND[b.kind]||"")}${b.date?" · "+fmtDate(b.date):""}${b.time?" "+esc(b.time):""}${b.endDate||b.endTime?" – "+(b.endDate&&b.endDate!==b.date?fmtDate(b.endDate)+" ":"")+esc(b.endTime||""):""}${b.place?" · "+esc(b.place):""}${b.ref?" · rez. "+esc(b.ref):""}${b.note?" · "+esc(b.note):""}</span></span><button type="button" class="x" data-ckdel="bookings" data-cid="${esc(b.id)}" aria-label="Odstrániť">×</button></li>`).join("")}</ul>`:'<span style="color:var(--muted)">Pridaj lety, ubytovanie, vstupenky, divadlo, kino alebo iný program. Odškrtni, keď je rezervované.</span>'}</div></section>`; }
+function bookingForm(t){ openForm({title:"Nový bod programu alebo rezervácia",data:{kind:"vstupenka",date:t.start||""},fields:[{k:"kind",l:"Typ",t:"select",o:BOOK_KIND},{k:"title",l:"Názov",ph:"napr. Machu Picchu – okruh 2"},{k:"date",l:"Dátum",t:"date"},{k:"time",l:"Čas",t:"time"},{k:"place",l:"Miesto"},{k:"ref",l:"Číslo rezervácie"},{k:"note",l:"Poznámka",ph:"napr. čo so sebou, storno do",wide:true}],
+  onSave:async d=>{ if(!String(d.title||"").trim()){ toast("Zadaj názov."); return false; } const b={id:rid(),kind:BOOK_KIND[d.kind]?d.kind:"ine",title:String(d.title).slice(0,160),date:ISO_RE.test(d.date||"")?d.date:"",time:/^\d{2}:\d{2}$/.test(d.time||"")?d.time:"",place:String(d.place||"").slice(0,160),ref:String(d.ref||"").slice(0,60),note:String(d.note||"").slice(0,300),done:false};
     return put("trips",t.id,{bookings:[...(t.bookings||[]),b],updated:new Date().toISOString()},true); }}); }
 function tripForm(t){ openForm({title:t?"Upraviť výlet":"Nový výlet",data:t?{...t}:{kind:"rodinny"},fields:[{k:"name",l:"Názov",ph:"napr. Budapešť – veľtrh"},{k:"dest",l:"Cieľ / trasa"},{k:"start",l:"Odchod",t:"date"},{k:"end",l:"Návrat",t:"date"},{k:"kind",l:"Typ",t:"select",o:TRIP_KIND},{k:"people",l:"Kto ide"}],
   onSave:async d=>{ if(!String(d.name||"").trim()){ toast("Zadaj názov výletu."); return false; }
     const base={name:String(d.name).slice(0,120),dest:String(d.dest||"").slice(0,200),start:ISO_RE.test(d.start||"")?d.start:"",end:ISO_RE.test(d.end||"")?d.end:"",kind:TRIP_KIND[d.kind]?d.kind:"rodinny",people:String(d.people||"").slice(0,200),updated:new Date().toISOString()};
     if(t) return put("trips",t.id,base,true);
-    const id=rid(); const ok=await put("trips",id,{...base,created:base.updated,weather:"",tips:"",accom:"",notes:"",itinerary:[],packing:[],prep:[],bookings:[]}); if(ok){ S.tripId=id; S.tripTab="prehlad"; } return ok; },
+    const id=rid(); const ok=await put("trips",id,{...base,created:base.updated,weather:"",tips:"",accom:"",notes:"",itinerary:[],packing:[],prep:[],bookings:[],docs:[],shopping:[]}); if(ok){ S.tripId=id; S.tripTab="prehlad"; } return ok; },
   onDelete:t?async()=>{ await delDoc("trips",t.id); S.tripId=""; }:null}); }
 function tripArr(t,path){ if(path.startsWith("it:")){ const d=(t.itinerary||[]).find(x=>x.id===path.slice(3)); return d?(d.items||[]):[]; } return t[path]||[]; }
 function tripSetArr(t,path,arr){ const now=new Date().toISOString();
   if(path.startsWith("it:")){ const id=path.slice(3); return put("trips",t.id,{itinerary:(t.itinerary||[]).map(d=>d.id===id?{...d,items:arr}:d),updated:now},true); }
   return put("trips",t.id,{[path]:arr,updated:now},true); }
+/* ---- Výlety: dokumenty (letenky, cestovka, itinerár) + nákupný zoznam na výlet ---- */
+const TRIP_SHOP_CATS=["Zdravie a lekárnička","Vybavenie","Elektronika","Oblečenie a obuv","Hygiena a kozmetika","Doklady a poistenie","Jedlo a pitie na cestu","Deti","Ostatné"];
+const PACK_FROM_SHOP={"Zdravie a lekárnička":"Zdravie","Elektronika":"Elektronika","Oblečenie a obuv":"Oblečenie","Doklady a poistenie":"Doklady"};
+const TRIP_DOC_KIND={letenka:"Letenka",ubytovanie:"Ubytovanie",cestovka:"Cestovná kancelária",itinerar:"Itinerár / program",doprava:"Doprava",vstupenka:"Vstupenka",poistenie:"Poistenie",ine:"Iné"};
+const PDFJS_BASE="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+let tdCtl=null, pdfLibP=null;
+const catSlug=c=>norm(c).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"x";
+function tripShopCats(L){ const extra=[...new Set((L||[]).map(x=>x.cat||"Ostatné"))].filter(c=>!TRIP_SHOP_CATS.includes(c)); return [...TRIP_SHOP_CATS.slice(0,-1),...extra,"Ostatné"]; }
+function tripShop(t){ const L=t.shopping||[], p=tripProg(L), cats=tripShopCats(L), used=cats.filter(c=>L.some(x=>(x.cat||"Ostatné")===c));
+  const meta=x=>x.q?`<span class="m">${esc(x.q)}</span>`:"";
+  return `<section class="panel"><div class="panel-h"><h2>Čo kúpiť na výlet</h2><span class="count">${p.d}/${p.n} kúpené</span></div><div class="panel-b">
+  ${used.map(c=>{ const it=L.filter(x=>(x.cat||"Ostatné")===c).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0)), q=tripProg(it);
+    return `<div class="cat-h"><span>${esc(c)}</span><span>${q.d}/${q.n}</span></div>${checkList(it,"shopping",{meta})}<div class="addrow"><input type="text" id="tsq_${catSlug(c)}" data-keep data-tsadd="${esc(c)}" placeholder="Pridať do sekcie, Enter…" aria-label="Pridať do sekcie ${esc(c)}"></div>`; }).join("")
+   ||'<p style="color:var(--muted);margin:0 0 6px">Zoznam je prázdny. Vyber sekciu a dopíš, čo treba kúpiť – viac vecí naraz oddeľ čiarkou. Návrhy z nahraných dokumentov sa sem pridajú samy po potvrdení.</p>'}
+  <div class="cat-h"><span>Pridať</span><span></span></div>
+  <div class="addrow" style="flex-wrap:wrap"><select id="tsCat" data-keep aria-label="Sekcia" style="flex:1 1 180px;width:auto">${cats.map(c=>`<option>${esc(c)}</option>`).join("")}<option value="__new">+ Nová sekcia…</option></select>
+    <input type="text" id="tsNewCat" data-keep placeholder="Názov novej sekcie" aria-label="Názov novej sekcie" style="flex:1 1 160px" ${S.tsNew?"":"hidden"}>
+    <input type="text" id="tsText" data-keep placeholder="napr. adaptér do zásuvky, repelent" aria-label="Čo kúpiť" style="flex:3 1 220px">
+    <input type="text" id="tsQty" data-keep placeholder="Množstvo" aria-label="Množstvo" style="flex:0 1 110px">
+    <button class="btn primary" type="button" id="tsAdd">Pridať</button></div>
+  ${L.length?`<div class="actions" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm" type="button" id="tsToPack" ${p.d?"":"disabled"}>Kúpené pridať do Balenia</button><button class="btn sm ghost" type="button" id="tsClear" ${p.d?"":"disabled"}>Vymazať kúpené</button></div>`:""}
+  </div></section>`; }
+function tripShopAdd(tid,cat,text,qty){ const t=byId("trips",tid); if(!t) return; cat=String(cat||"Ostatné").trim().slice(0,60)||"Ostatné";
+  const parts=String(text||"").split(/[,;\n]/).map(s=>s.trim()).filter(Boolean); if(!parts.length){ toast("Napíš, čo treba kúpiť."); return; }
+  let L=[...(t.shopping||[])], n=0;
+  for(const p of parts){ const k=norm(p), ex=L.find(x=>norm(x.t)===k&&(x.cat||"Ostatné")===cat);
+    if(ex){ if(ex.done){ L=L.map(x=>x===ex?{...x,done:false}:x); n++; } continue; }
+    L.push({id:rid(),t:p.slice(0,200),q:parts.length===1?String(qty||"").trim().slice(0,40):"",cat,done:false}); n++; }
+  if(!n){ toast("Už je v zozname."); return; }
+  return tripSetArr(t,"shopping",L); }
+function tripShopToPack(tid){ const t=byId("trips",tid); if(!t) return; const pk=t.packing||[], have=new Set(pk.map(x=>norm(x.t)));
+  const add=(t.shopping||[]).filter(x=>x.done&&!have.has(norm(x.t))).map(x=>({id:rid(),t:x.t,cat:PACK_FROM_SHOP[x.cat]||x.cat||"Ostatné",done:false}));
+  if(!add.length){ toast("Kúpené veci už sú v Balení."); return; }
+  put("trips",t.id,{packing:[...pk,...add],updated:new Date().toISOString()},true).then(ok=>{ if(ok) toast(`Do Balenia pridané: ${add.length}`); }); }
+
+/* dokumenty */
+function tripDocs(t){ const D=(t.docs||[]).slice().sort((a,b)=>(b.added||"").localeCompare(a.added||"")), st=S.tdoc&&S.tdoc.trip===t.id?S.tdoc:null;
+  return `<section class="panel"><div class="panel-h"><h2>Dokumenty k výletu</h2><span class="count">${D.length}</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+  <div class="drop" id="tdDrop"><span style="flex:1 1 240px">Letenky, potvrdenia ubytovania, podklady od cestovky, itinerár, poistenie – PDF alebo fotka. ${S.sample?"Claude z nich vyčíta termíny, lety, ubytovanie, program a čo treba vybaviť, zbaliť alebo kúpiť; pred uložením všetko skontroluješ.":"Vyčítanie údajov funguje po otvorení Brain v Claude; dokumenty sa uložia aj tak."}</span>
+  ${S.assets?`<label class="btn primary" for="tdFile" ${st?.busy?'aria-disabled="true" style="pointer-events:none;opacity:.5"':""}>📄 Nahrať dokument</label><input type="file" id="tdFile" multiple accept="application/pdf,.pdf,image/jpeg,image/png,image/webp,image/gif,image/heic,text/plain,.txt" hidden>`:`<span>Nahrávanie súborov funguje v Claude verzii Brain.</span>`}</div>
+  <details id="tdTextBox" ${S.tdOpen?"open":""}><summary style="cursor:pointer;color:var(--muted);font-size:14px">Vložiť text (napr. potvrdenie rezervácie z e-mailu)</summary>
+    <textarea id="tdText" data-keep rows="6" style="margin-top:8px" placeholder="Sem vlož text potvrdenia, letenky alebo programu…"></textarea>
+    <div class="actions" style="margin-top:8px"><button class="btn sm" type="button" id="tdTextGo" ${st?.busy?"disabled":""}>Uložiť a vyčítať text</button></div></details>
+  ${st?.busy?`<div class="tdbusy"><span class="spin"></span><span id="tdMsg">${esc(st.msg||"Čítam dokumenty…")}</span><span style="flex:1"></span><button class="btn sm ghost" type="button" id="tdStop">Zastaviť</button></div>`:""}
+  ${st?.proposal?tripDocProposal(t,st.proposal):""}
+  ${D.length?`<ul class="tdlist">${D.map(d=>`<li class="tdi"><span class="tdic">${/pdf/.test(d.type||"")?"PDF":/^image\//.test(d.type||"")?"IMG":"TXT"}</span><div class="li-main"><div class="li-title"><a href="_blob/${esc(d.asset)}" target="_blank" rel="noopener">${esc(d.title||d.name)}</a></div>
+      <div class="li-meta">${d.kind?`<span class="chip">${esc(TRIP_DOC_KIND[d.kind]||d.kind)}</span>`:""}${d.title&&d.title!==d.name?`<span>${esc(d.name)}</span>`:""}<span>${fmtDate((d.added||"").slice(0,10))}</span>${d.readAt?"<span>vyčítané ✓</span>":""}</div>${d.summary?`<div style="font-size:13px;color:var(--muted);margin-top:3px">${esc(d.summary)}</div>`:""}</div>
+      <div class="tdact">${S.sample?`<button class="btn sm" type="button" data-tdread="${esc(d.id)}" ${st?.busy?"disabled":""}>Vyčítať</button>`:""}<button class="btn sm ghost danger" type="button" data-tddel="${esc(d.id)}" aria-label="Odstrániť dokument">×</button></div></li>`).join("")}</ul>
+    ${S.sample&&D.length>1?`<div class="actions"><button class="btn sm ghost" type="button" id="tdReadAll" ${st?.busy?"disabled":""}>Vyčítať všetky dokumenty spolu</button></div>`:""}`
+   :'<span style="color:var(--muted);font-size:14px">Zatiaľ žiadne dokumenty.</span>'}
+  </div></section>`; }
+function tripDocProposal(t,P){ const sel=k=>P.sel[k]!==false;
+  const row=(k,html)=>`<label class="tdp"><input type="checkbox" class="chk" data-tdp="${esc(k)}" ${sel(k)?"checked":""}><span>${html}</span></label>`;
+  const sub=s=>s?`<span class="tdsub">${s}</span>`:"";
+  const grp=(title,arr)=>arr.length?`<div class="cat-h"><span>${title}</span><span>${arr.length}</span></div>${arr.join("")}`:"";
+  const n=P.fields.length+P.bookings.length+P.itinerary.length+P.prep.length+P.packing.length+P.shopping.length+(P.tips?1:0);
+  return `<div class="tdprop"><div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap"><h3 style="font-size:16px">Návrh z dokumentov</h3><span class="count">${n} ${plural(n,"položka","položky","položiek")}</span></div>
+  ${P.warn?`<div class="tdwarn">⚠ ${esc(P.warn)}</div>`:""}
+  ${n?"":'<p style="color:var(--muted);margin:6px 0">V dokumentoch som nenašiel nič nové, čo by sa dalo k výletu zapísať.</p>'}
+  ${grp("Údaje výletu",P.fields.map((f,i)=>row("f:"+i,`<b>${esc(f.l)}:</b> ${esc(f.show||f.v)}${f.old?sub("teraz: "+esc(f.oldShow||f.old)):""}`)))}
+  ${grp("Lety, ubytovanie a rezervácie",P.bookings.map((b,i)=>row("b:"+i,`<b>${esc(BOOK_KIND[b.kind]||"Iné")}:</b> ${esc(b.title)}${sub([b.date?fmtDate(b.date)+(b.time?" "+b.time:""):"",b.endDate||b.endTime?"do "+(b.endDate?fmtDate(b.endDate):"")+(b.endTime?" "+b.endTime:""):"",b.place,b.ref?"rez. "+b.ref:"",b.note,b.done?"potvrdené":"len ponuka"].filter(Boolean).map(esc).join(" · "))}`)))}
+  ${grp("Itinerár",P.itinerary.map((d,i)=>row("i:"+i,`<b>${d.date?esc(DAYS[pd(d.date).getDay()]+" "+fmtDate(d.date)):"Deň"}${d.title?" · "+esc(d.title):""}</b>${sub(d.items.map(esc).join(" · "))}`)))}
+  ${grp("Vybaviť pred odchodom",P.prep.map((x,i)=>row("p:"+i,`${esc(x.t)}${x.due?sub("do "+fmtDate(x.due)):""}`)))}
+  ${grp("Zbaliť",P.packing.map((x,i)=>row("k:"+i,`${esc(x.t)}${sub(esc(x.cat))}`)))}
+  ${grp("Kúpiť",P.shopping.map((x,i)=>row("s:"+i,`${esc(x.t)}${x.q?" ("+esc(x.q)+")":""}${sub(esc(x.cat))}`)))}
+  ${P.tips?grp("Dôležité informácie",[row("t:0",`<span class="md" style="display:block">${md(P.tips)}</span>`)]):""}
+  <div class="actions" style="margin-top:12px;flex-wrap:wrap">${n?`<button class="btn primary" type="button" id="tdApply">Potvrdiť a uložiť</button>`:""}<button class="btn ghost" type="button" id="tdDiscard">${n?"Zahodiť návrh":"Zavrieť"}</button></div></div>`; }
+function loadScriptOnce(src){ return new Promise((res,rej)=>{ if(document.querySelector(`script[data-src="${src}"]`)) return res(); const s=document.createElement("script"); s.src=src; s.dataset.src=src; s.onload=()=>res(); s.onerror=()=>{ s.remove(); rej(new Error("load")); }; document.head.appendChild(s); }); }
+function pdfjs(){ if(!pdfLibP) pdfLibP=(async()=>{ await loadScriptOnce(PDFJS_BASE+"pdf.min.js"); await loadScriptOnce(PDFJS_BASE+"pdf.worker.min.js"); const L=window.pdfjsLib; if(!L) throw new Error("pdfjs"); L.GlobalWorkerOptions.workerSrc=PDFJS_BASE+"pdf.worker.min.js"; return L; })().catch(e=>{ pdfLibP=null; throw e; }); return pdfLibP; }
+function canvasBlob(cv,q){ return new Promise(r=>cv.toBlob(b=>r(b),"image/jpeg",q)); }
+async function pdfRead(blob,imgBudget,imgMax){ const L=await pdfjs();
+  const doc=await L.getDocument({data:new Uint8Array(await blob.arrayBuffer()),isEvalSupported:false}).promise;
+  const n=doc.numPages, lim=Math.min(n,40), pages=[];
+  for(let i=1;i<=lim;i++){ const p=await doc.getPage(i); const tc=await p.getTextContent(); let s=""; for(const it of tc.items){ if(typeof it.str!=="string") continue; s+=it.str+(it.hasEOL?"\n":" "); } pages.push(s.replace(/[ \t ]+/g," ").replace(/ *\n */g,"\n").replace(/\n{3,}/g,"\n\n").trim()); }
+  const chars=pages.join("").length, imgs=[];
+  if(chars<80*lim&&imgBudget>0){ for(let i=1;i<=Math.min(lim,imgBudget);i++){ const p=await doc.getPage(i), v0=p.getViewport({scale:1}), sc=Math.min(2.5,1600/Math.max(v0.width,v0.height)), vp=p.getViewport({scale:sc});
+      const cv=document.createElement("canvas"); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height); const ctx=cv.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,cv.width,cv.height);
+      await p.render({canvasContext:ctx,viewport:vp}).promise; let b=await canvasBlob(cv,.82); if(b&&imgMax&&b.size>imgMax) b=await canvasBlob(cv,.6); if(b&&(!imgMax||b.size<=imgMax)) imgs.push({blob:b,page:i}); } }
+  try{ doc.destroy(); }catch(e){}
+  return {text:chars>=20?pages.map((s,i)=>`[strana ${i+1}]\n${s}`).join("\n\n"):"",pages:n,imgs}; }
+async function imgFit(blob,il){ const okType=(il.mediaTypes||[]).includes(blob.type);
+  if(okType&&blob.size<=il.maxInputBytes&&blob.size<=4.5*1024*1024) return blob;
+  try{ const bm=await createImageBitmap(blob); const sc=Math.min(1,2000/Math.max(bm.width,bm.height)); const cv=document.createElement("canvas"); cv.width=Math.round(bm.width*sc); cv.height=Math.round(bm.height*sc); cv.getContext("2d").drawImage(bm,0,0,cv.width,cv.height); try{ bm.close(); }catch(e){}
+    const b=await canvasBlob(cv,.85); return b&&b.size<=il.maxInputBytes?b:null; }catch(e){ return okType&&blob.size<=il.maxInputBytes?blob:null; } }
+function tdSetMsg(m){ if(S.tdoc) S.tdoc.msg=m; const el=$("#tdMsg"); if(el) el.textContent=m; }
+async function tripDocUpload(tid,files){ const t=byId("trips",tid); if(!t||!files.length) return;
+  if(!S.assets){ toast("Nahrávanie súborov funguje v Claude verzii Brain."); return; }
+  S.tdoc={trip:tid,busy:true,msg:`Nahrávam ${files.length===1?files[0].name:files.length+" súbory"}…`}; renderView();
+  const ups=await uploadFiles(files);
+  if(!ups.length){ S.tdoc=null; renderView(); return; }
+  const now=new Date().toISOString(), used=new Set();
+  const list=ups.map(u=>{ const f=files.find(x=>x.name===u.name&&!used.has(x)); if(f) used.add(f); return {doc:{id:rid(),asset:u.id,name:String(u.name||"dokument").slice(0,160),type:u.type||f?.type||"",size:u.size||0,kind:"",title:"",summary:"",added:now},blob:f}; });
+  const cur=byId("trips",tid)||t;
+  const ok=await put("trips",tid,{docs:[...(cur.docs||[]),...list.map(x=>x.doc)],updated:now},true);
+  if(!ok){ S.tdoc=null; renderView(); return; }
+  if(!S.sample){ S.tdoc=null; toast("Dokumenty uložené. Vyčítanie údajov funguje po otvorení Brain v Claude."); renderView(); return; }
+  await tripDocRead(tid,list); }
+async function tripDocReadStored(tid,ids){ const t=byId("trips",tid); if(!t) return; const docs=(t.docs||[]).filter(d=>ids.includes(d.id)); if(!docs.length) return;
+  S.tdoc={trip:tid,busy:true,msg:"Načítavam dokumenty…"}; renderView();
+  const list=[]; for(const d of docs){ try{ const r=await fetch("_blob/"+d.asset); if(!r.ok) throw 0; list.push({doc:d,blob:await r.blob()}); }catch(e){ toast(`${d.name}: dokument sa nepodarilo načítať.`); } }
+  if(!list.length){ S.tdoc=null; renderView(); return; }
+  await tripDocRead(tid,list); }
+function tripDocCtx(t){ const L=(a,f)=>(a||[]).map(f).filter(Boolean).slice(0,60).join("; ")||"(nič)";
+  return `Názov: ${t.name||"-"} | Cieľ: ${t.dest||"-"} | Odchod: ${t.start||"-"} | Návrat: ${t.end||"-"} | Kto ide: ${t.people||"-"} | Typ: ${TRIP_KIND[t.kind]||"-"}
+Rezervácie: ${L(t.bookings,b=>`${b.title}${b.date?" ("+b.date+(b.time?" "+b.time:"")+")":""}`)}
+Dni itinerára: ${L(t.itinerary,d=>`${d.date||"bez dátumu"}${d.title?" "+d.title:""} [${(d.items||[]).map(x=>x.t).join(" | ")}]`)}
+Príprava: ${L(t.prep,x=>x.t)}
+Balenie: ${L(t.packing,x=>x.t)}
+Nákupy: ${L(t.shopping,x=>x.t)}`; }
+async function tripDocRead(tid,list){ const t=byId("trips",tid); if(!t) return;
+  if(!S.sample){ S.tdoc=null; toast("Vyčítanie údajov funguje po otvorení Brain v Claude."); renderView(); return; }
+  S.tdoc={trip:tid,busy:true,msg:"Pripravujem dokumenty…"}; if(S.view==="vylety") renderView();
+  tdCtl=new AbortController(); const ctl=tdCtl;
+  try{
+    const lim=await S.sample.limits().catch(()=>null), il=lim?.images; let budget=il?Math.min(il.maxCount,8):0;
+    const parts=[], images=[], inames=[];
+    for(const [i,x] of list.entries()){ if(ctl.signal.aborted) throw {code:"cancelled"}; const d=x.doc, b=x.blob, type=b?.type||d.type||"";
+      tdSetMsg(`Čítam ${d.name} (${i+1}/${list.length})…`);
+      if(!b){ parts.push(`=== DOKUMENT ${i} · ${d.name} === (súbor nie je k dispozícii)`); continue; }
+      if(/pdf/.test(type)||/\.pdf$/i.test(d.name)){
+        try{ const r=await pdfRead(b,budget,il?.maxInputBytes);
+          if(r.text) parts.push(`=== DOKUMENT ${i} · ${d.name} · PDF, ${r.pages} ${plural(r.pages,"strana","strany","strán")} ===\n${r.text}`);
+          for(const im of r.imgs){ images.push(im.blob); inames.push(`obrázok ${images.length} = dokument ${i} (${d.name}), strana ${im.page} – naskenovaný dokument`); } budget-=r.imgs.length;
+          if(!r.text&&!r.imgs.length) parts.push(`=== DOKUMENT ${i} · ${d.name} === (PDF neobsahuje čitateľný text)`);
+        }catch(e){ parts.push(`=== DOKUMENT ${i} · ${d.name} === (PDF sa nepodarilo otvoriť)`); }
+      } else if(/^image\//.test(type)){
+        const im=il&&budget>0?await imgFit(b,il):null;
+        if(im){ images.push(im); inames.push(`obrázok ${images.length} = dokument ${i} (${d.name}) – fotka`); budget--; } else parts.push(`=== DOKUMENT ${i} · ${d.name} === (fotku sa nepodarilo poslať)`);
+      } else { let s=""; try{ s=await b.text(); }catch(e){} parts.push(`=== DOKUMENT ${i} · ${d.name} · text ===\n${s.slice(0,60000)}`); }
+    }
+    const docList=list.map((x,i)=>`${i}: ${x.doc.name}`).join("\n");
+    const head=`Čítaš cestovné dokumenty k výletu v osobnej aplikácii Brain (Marek Šromovský, Slovensko). Dnes je ${today()}.
+
+VÝLET TERAZ:
+${tripDocCtx(t)}
+
+DOKUMENTY (index: názov):
+${docList}
+${inames.length?"OBRÁZKY:\n"+inames.join("\n")+"\n":""}
+PRAVIDLÁ:
+- Píš po slovensky. Zapíš len to, čo je v dokumentoch. Nič nevymýšľaj ani neodhaduj. Dátumy, časy, čísla letov, kódy rezervácií, adresy, telefóny a mená prepíš presne.
+- Dátumy YYYY-MM-DD, časy HH:MM v miestnom čase, ako ich uvádza dokument. Ak dátum nemá rok, použi rok termínu výletu, inak najbližší budúci.
+- Neopakuj nič, čo je už zapísané vo VÝLET TERAZ (rovnaký let, rovnaký bod programu, rovnaká vec).
+- trip: vyplň len hodnoty, ktoré jasne vyplývajú z dokumentov, inak null. start = deň prvého odchodu/odletu z domova, end = deň návratu domov. dest = cieľ alebo trasa (napr. "Lima – Cusco – Machu Picchu"). people = mená cestujúcich. kind len ak je zrejmý: ${Object.keys(TRIP_KIND).join(", ")}.
+- bookings: každý let (segment) zvlášť: kind "let", title napr. "Let KSC → IST · TK 1048", date a time = odlet, endDate a endTime = prílet, place = letisko odletu (terminál), ref = kód rezervácie (PNR), note = batožina, sedadlá, cestujúci, online check-in. Ubytovanie: kind "ubytovanie", title = názov ubytovania, date = check-in, time = check-in od, endDate = check-out, endTime = check-out do, place = adresa, ref = číslo rezervácie, note = izba, strava, storno do, cena. Transfer, vlak, autobus, požičovňa auta = "doprava". Prehliadky, výlety, vstupenky = "vstupenka"; divadlo, koncert, kino = "kultura"; ostatné = "ine". booked = true, ak dokument potvrdzuje rezerváciu alebo zaplatenie; false, ak je to len ponuka alebo návrh.
+- itinerary: program po dňoch (najmä z itinerára cestovky): [{"date","title","items":["09:00 …", …]}], najviac 12 stručných bodov na deň. Lety a ubytovanie sem nedávaj, tie patria do bookings.
+- prep: čo treba vybaviť pred odchodom podľa dokumentov (online check-in, doplatok, víza, očkovanie, cestovné poistenie, platnosť pasu, formuláre, vstupné povolenia), due = termín, ak je uvedený alebo sa dá presne vypočítať (napr. online check-in otvára 24 h pred odletom = deň pred odletom), inak null.
+- packing: veci, ktoré dokumenty výslovne odporúčajú alebo vyžadujú zobrať; cat jedna z: Doklady, Oblečenie, Zdravie, Elektronika, Ostatné.
+- shopping: čo bude treba pred cestou kúpiť, len ak to vyplýva z dokumentov (napr. adaptér do zásuvky typu …, repelent, lieky); cat jedna z: ${TRIP_SHOP_CATS.join(", ")}; q = množstvo alebo "".
+- tips: Markdown, max 15 riadkov – dôležité informácie, ktoré sa nehodia inam: kontakt na cestovku / delegáta, núdzové čísla, miesto a čas stretnutia, čo je a nie je v cene, pravidlá batožiny, storno podmienky. "" ak nič.
+- docs: pre každý dokument {"i": index, "kind": jedno z ${Object.keys(TRIP_DOC_KIND).join(", ")}, "title": krátky názov (napr. "Letenka Turkish Airlines KSC – LIM"), "summary": 1 veta}.
+- Nikdy neuvádzaj čísla platobných kariet, čísla pasov a občianskych preukazov, rodné čísla ani heslá.
+- warning: "" alebo krátka veta, ak sa dokument netýka tohto výletu alebo termíny nesedia s termínom výletu.
+
+Odpovedz IBA JSON objektom:
+{"trip":{"name":null,"dest":null,"start":null,"end":null,"people":null,"kind":null},"bookings":[{"kind":"let","title":"","date":"","time":"","endDate":"","endTime":"","place":"","ref":"","note":"","booked":true}],"itinerary":[{"date":"","title":"","items":[""]}],"prep":[{"t":"","due":null}],"packing":[{"t":"","cat":"Doklady"}],"shopping":[{"t":"","cat":"Elektronika","q":""}],"tips":"","docs":[{"i":0,"kind":"letenka","title":"","summary":""}],"warning":""}
+
+OBSAH DOKUMENTOV:
+`;
+    const enc=new TextEncoder(), maxB=(lim?.maxPromptBytes||262144)-8000; let body=parts.join("\n\n");
+    if(enc.encode(head+body).length>maxB){ let lo=0, hi=body.length; while(lo<hi){ const mid=(lo+hi+1)>>1; if(enc.encode(head+body.slice(0,mid)).length<=maxB) lo=mid; else hi=mid-1; } body=body.slice(0,lo)+"\n…(zvyšok dokumentov skrátený)"; }
+    if(!body.trim()&&!images.length) throw {code:"empty_docs"};
+    tdSetMsg(`Claude vyčítava údaje${images.length?` (${images.length} ${plural(images.length,"strana","strany","strán")} ako obrázok)`:""}…`);
+    const r=await S.sample.json(head+(body||"(len obrázky)"),{images:images.length?images:undefined,cache:false,signal:ctl.signal});
+    const t2=byId("trips",tid)||t;
+    S.tdoc={trip:tid,busy:false,proposal:tripDocNorm(t2,r,list)};
+    if(S.view!=="vylety"||S.tripId!==tid||S.tripTab!=="dokumenty") toast(`Návrh z dokumentov k výletu „${t2.name||"výlet"}“ je pripravený – Výlety → Dokumenty.`);
+  }catch(e){
+    S.tdoc=null;
+    if(e?.code==="empty_docs") toast("Z dokumentov sa nepodarilo prečítať žiadny text. Skús fotku alebo vlož text.");
+    else if(e?.code!=="cancelled"){ toast(sErr(e)); if(aiOff.includes(e?.code)) S.sample=null; }
+  }
+  if(tdCtl===ctl) tdCtl=null;
+  if(S.view==="vylety") renderView(); }
+function tripDocNorm(t,r,list){ const s=(v,n)=>v==null?"":String(v).replace(/\s+/g," ").trim().slice(0,n), iso=v=>{ const x=String(v||""); if(!ISO_RE.test(x)) return ""; const d=pd(x); return d.getFullYear()===+x.slice(0,4)&&d.getMonth()+1===+x.slice(5,7)&&d.getDate()===+x.slice(8,10)?x:""; }, tm=v=>{ const m=String(v||"").match(/^(\d{1,2}):(\d{2})/); return m&&+m[1]<24&&+m[2]<60?m[1].padStart(2,"0")+":"+m[2]:""; };
+  const A=v=>Array.isArray(v)?v:[], R=r?.trip||{};
+  const fields=[];
+  for(const [k,l,n] of [["name","Názov",120],["dest","Cieľ / trasa",200],["start","Odchod",0],["end","Návrat",0],["people","Kto ide",200],["kind","Typ",-1]]){
+    let v=n>0?s(R[k],n):n===0?iso(R[k]):(TRIP_KIND[R[k]]?String(R[k]):""); if(!v||v===(t[k]||"")) continue;
+    const old=t[k]||"", empty=!old||(k==="name"&&old==="Nový výlet");
+    fields.push({k,l,v,old:empty?"":old,show:n===0?fmtDate(v):n<0?TRIP_KIND[v]:v,oldShow:n===0&&old?fmtDate(old):n<0?TRIP_KIND[old]||old:old,on:empty&&k!=="kind"}); }
+  const seenB=new Set((t.bookings||[]).map(b=>norm(b.title)+"|"+(b.date||"")));
+  const bookings=[]; for(const b of A(r?.bookings).slice(0,40)){ const x={kind:BOOK_KIND[b?.kind]?b.kind:"ine",title:s(b?.title,160),date:iso(b?.date),time:tm(b?.time),endDate:iso(b?.endDate),endTime:tm(b?.endTime),place:s(b?.place,160),ref:s(b?.ref,60),note:s(b?.note,300),done:b?.booked!==false};
+    const k=norm(x.title)+"|"+x.date; if(!x.title||seenB.has(k)) continue; seenB.add(k); bookings.push(x); }
+  const dayItems=new Map((t.itinerary||[]).map(d=>[(d.date||"")+"|"+(d.date?"":norm(d.title)),new Set((d.items||[]).map(i=>norm(i.t)))]));
+  const itinerary=[]; for(const d of A(r?.itinerary).slice(0,60)){ const date=iso(d?.date), title=s(d?.title,120), key=date+"|"+(date?"":norm(title)), have=dayItems.get(key)||new Set();
+    const items=[...new Set(A(d?.items).map(x=>s(x,200)).filter(Boolean))].filter(x=>!have.has(norm(x))).slice(0,30);
+    if(!date&&!title) continue; if(!items.length&&(dayItems.has(key)||!title)) continue; itinerary.push({date,title,items}); }
+  const uniq=(arr,have,f)=>{ const seen=new Set([...have].map(norm)), out=[]; for(const x of arr){ const k=norm(x.t); if(!x.t||seen.has(k)) continue; seen.add(k); out.push(f(x)); } return out; };
+  const prep=uniq(A(r?.prep).slice(0,40).map(x=>({t:s(x?.t,200),due:iso(x?.due)})),(t.prep||[]).map(x=>x.t),x=>x);
+  const PCATS=["Doklady","Oblečenie","Zdravie","Elektronika","Ostatné"];
+  const packing=uniq(A(r?.packing).slice(0,60).map(x=>({t:s(x?.t,200),cat:PCATS.includes(x?.cat)?x.cat:"Ostatné"})),(t.packing||[]).map(x=>x.t),x=>x);
+  const shopping=uniq(A(r?.shopping).slice(0,60).map(x=>({t:s(x?.t,200),cat:TRIP_SHOP_CATS.includes(x?.cat)?x.cat:"Ostatné",q:s(x?.q,40)})),(t.shopping||[]).map(x=>x.t),x=>x);
+  const docs={}; for(const d of A(r?.docs)){ const i=Number.isInteger(+d?.i)?+d.i:-1; if(!list[i]) continue; docs[list[i].doc.id]={kind:TRIP_DOC_KIND[d?.kind]?d.kind:"ine",title:s(d?.title,120),summary:s(d?.summary,300)}; }
+  for(const x of list) if(!docs[x.doc.id]) docs[x.doc.id]={};
+  const sel={}; fields.forEach((f,i)=>sel["f:"+i]=f.on);
+  return {fields,bookings,itinerary,prep,packing,shopping,tips:r?.tips?String(r.tips).trim().slice(0,6000):"",docs,warn:s(r?.warning,300),sel}; }
+async function tripDocApply(tid){ const t=byId("trips",tid), P=S.tdoc?.proposal; if(!t||!P) return; const on=k=>P.sel[k]!==false, now=new Date().toISOString(), up={updated:now}, cnt=[];
+  P.fields.forEach((f,i)=>{ if(on("f:"+i)) up[f.k]=f.v; });
+  const nb=P.bookings.filter((b,i)=>on("b:"+i)).map(b=>({id:rid(),...b})); if(nb.length){ up.bookings=[...(t.bookings||[]),...nb]; cnt.push(`${nb.length} ${plural(nb.length,"rezervácia","rezervácie","rezervácií")}`); }
+  const ni=P.itinerary.filter((d,i)=>on("i:"+i)); if(ni.length){ let it=[...(t.itinerary||[])], pts=0;
+    for(const d of ni){ const items=d.items.map(x=>({id:rid(),t:x,done:false})); pts+=items.length; const ix=it.findIndex(e=>d.date?e.date===d.date:(!e.date&&norm(e.title)===norm(d.title)));
+      if(ix>=0) it[ix]={...it[ix],title:it[ix].title||d.title,items:[...(it[ix].items||[]),...items]}; else it.push({id:rid(),date:d.date,title:d.title,items}); }
+    up.itinerary=it; cnt.push(`${ni.length} ${plural(ni.length,"deň","dni","dní")} itinerára`); }
+  const np=P.prep.filter((x,i)=>on("p:"+i)).map(x=>({id:rid(),t:x.t,...(x.due?{due:x.due}:{}),done:false})); if(np.length){ up.prep=[...(t.prep||[]),...np]; cnt.push(`${np.length} na vybavenie`); }
+  const nk=P.packing.filter((x,i)=>on("k:"+i)).map(x=>({id:rid(),t:x.t,cat:x.cat,done:false})); if(nk.length){ up.packing=[...(t.packing||[]),...nk]; cnt.push(`${nk.length} na zbalenie`); }
+  const ns=P.shopping.filter((x,i)=>on("s:"+i)).map(x=>({id:rid(),t:x.t,q:x.q,cat:x.cat,done:false})); if(ns.length){ up.shopping=[...(t.shopping||[]),...ns]; cnt.push(`${ns.length} na kúpenie`); }
+  if(P.tips&&on("t:0")){ up.tips=((t.tips||"").trim()?(t.tips||"").trim()+"\n\n":"")+`### Z dokumentov (${fmtDate(today())})\n`+P.tips; up.tips=up.tips.slice(0,20000); cnt.push("dôležité informácie"); }
+  up.docs=(t.docs||[]).map(d=>P.docs[d.id]?{...d,...Object.fromEntries(Object.entries(P.docs[d.id]).filter(([,v])=>v)),readAt:now}:d);
+  const ok=await put("trips",tid,up,true);
+  if(ok){ S.tdoc=null; toast(cnt.length?"Uložené: "+cnt.join(", ")+".":"Dokumenty označené ako vyčítané."); renderView(); } }
+function bindTripDocs(t){
+  const fi=$("#tdFile"); if(fi) fi.onchange=e=>{ const fs=[...(e.target.files||[])].filter(f=>{ if(f.size>20*1024*1024){ toast(`${f.name}: súbor je väčší ako 20 MB.`); return false; } return true; }); e.target.value=""; if(fs.length) tripDocUpload(t.id,fs); };
+  const dz=$("#tdDrop"); if(dz&&S.assets){ dz.ondragover=e=>{ e.preventDefault(); dz.classList.add("over"); }; dz.ondragleave=()=>dz.classList.remove("over"); dz.ondrop=e=>{ e.preventDefault(); dz.classList.remove("over"); if(S.tdoc?.busy) return; const fs=[...(e.dataTransfer?.files||[])].filter(f=>f.size<=20*1024*1024); if(fs.length) tripDocUpload(t.id,fs); }; }
+  const tb=$("#tdTextBox"); if(tb) tb.ontoggle=()=>{ S.tdOpen=tb.open; };
+  $("#tdTextGo")&&($("#tdTextGo").onclick=()=>{ const v=($("#tdText")?.value||"").trim(); if(v.length<20){ toast("Vlož text dokumentu."); return; } $("#tdText").value=""; S.tdOpen=false;
+    const f=new File([v],`text-${today()}-${Date.now().toString(36).slice(-4)}.txt`,{type:"text/plain"}); tripDocUpload(t.id,[f]); });
+  $("#tdStop")&&($("#tdStop").onclick=()=>{ tdCtl?.abort(); });
+  document.querySelectorAll("[data-tdread]").forEach(b=>b.onclick=()=>tripDocReadStored(t.id,[b.dataset.tdread]));
+  $("#tdReadAll")&&($("#tdReadAll").onclick=()=>tripDocReadStored(t.id,(t.docs||[]).map(d=>d.id)));
+  document.querySelectorAll("[data-tddel]").forEach(b=>b.onclick=async()=>{ if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Zmazať?"; return; } const cur=byId("trips",t.id); if(!cur) return; const d=(cur.docs||[]).find(x=>x.id===b.dataset.tddel); if(!d) return;
+    const ok=await put("trips",cur.id,{docs:(cur.docs||[]).filter(x=>x.id!==d.id),updated:new Date().toISOString()},true);
+    if(ok&&S.assets&&d.asset&&!C.trips.some(x=>x.id!==cur.id&&(x.docs||[]).some(y=>y.asset===d.asset))){ try{ await S.assets.delete(d.asset); }catch(e){} } });
+  document.querySelectorAll("[data-tdp]").forEach(cb=>cb.onchange=()=>{ if(S.tdoc?.proposal) S.tdoc.proposal.sel[cb.dataset.tdp]=cb.checked; });
+  $("#tdApply")&&($("#tdApply").onclick=()=>tripDocApply(t.id));
+  $("#tdDiscard")&&($("#tdDiscard").onclick=()=>{ S.tdoc=null; renderView(); });
+}
+function bindTripShop(t){
+  const cat=()=>{ const v=$("#tsCat")?.value||"Ostatné"; return v==="__new"?($("#tsNewCat")?.value||"").trim():v; };
+  const sc=$("#tsCat"); if(sc){ if(S.tsNew) sc.value="__new"; sc.onchange=()=>{ S.tsNew=sc.value==="__new"; const n=$("#tsNewCat"); if(n){ n.hidden=!S.tsNew; if(S.tsNew) n.focus(); } }; }
+  const add=()=>{ const c=cat(); if(!c){ toast("Zadaj názov novej sekcie."); $("#tsNewCat")?.focus(); return; } const tx=$("#tsText"); if(!tx.value.trim()){ toast("Napíš, čo treba kúpiť."); tx.focus(); return; }
+    const p=tripShopAdd(t.id,c,tx.value,$("#tsQty")?.value); if(p){ tx.value=""; if($("#tsQty")) $("#tsQty").value=""; if(S.tsNew){ S.tsNew=false; if($("#tsNewCat")) $("#tsNewCat").value=""; p.then(()=>{ const s2=$("#tsCat"); if(s2) s2.value=c; }); } tx.focus(); } };
+  $("#tsAdd")&&($("#tsAdd").onclick=add);
+  $("#tsText")&&($("#tsText").onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
+  document.querySelectorAll("[data-tsadd]").forEach(inp=>inp.onkeydown=e=>{ if(e.key!=="Enter"||!inp.value.trim()) return; e.preventDefault(); const v=inp.value; inp.value=""; tripShopAdd(t.id,inp.dataset.tsadd,v,""); });
+  $("#tsToPack")&&($("#tsToPack").onclick=()=>tripShopToPack(t.id));
+  $("#tsClear")&&($("#tsClear").onclick=e=>{ const b=e.currentTarget; if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Naozaj vymazať kúpené?"; return; } const cur=byId("trips",t.id); if(cur) tripSetArr(cur,"shopping",(cur.shopping||[]).filter(x=>!x.done)); });
+}
+async function tripFromDoc(files){ if(!S.assets){ toast("Nahrávanie súborov funguje v Claude verzii Brain."); return; } const now=new Date().toISOString(), id=rid();
+  const base={name:"Nový výlet",dest:"",start:"",end:"",kind:"rodinny",people:"",updated:now,created:now,weather:"",tips:"",accom:"",notes:"",itinerary:[],packing:[],prep:[],bookings:[],docs:[],shopping:[]};
+  if(!await put("trips",id,base)) return;
+  if(!byId("trips",id)) C.trips=[...C.trips,{...base,id}];
+  S.tripId=id; S.tripTab="dokumenty"; S.tripEdit=""; S.form=null; renderView(); $("#main").scrollTop=0;
+  await tripDocUpload(id,files); }
+
 function bindVylety(){
   $("#tripAdd")&&($("#tripAdd").onclick=()=>tripForm(null));
+  const tdn=$("#tripDocNew"); if(tdn) tdn.onchange=e=>{ const fs=[...(e.target.files||[])].filter(f=>f.size<=20*1024*1024); e.target.value=""; if(fs.length) tripFromDoc(fs); };
   document.querySelectorAll("[data-trip]").forEach(el=>{ el.onclick=()=>{ S.tripId=el.dataset.trip; S.tripTab="prehlad"; S.tripEdit=""; S.form=null; renderView(); $("#main").scrollTop=0; }; el.onkeydown=e=>{ if(e.key==="Enter") el.onclick(); }; });
   const t=S.tripId&&byId("trips",S.tripId); if(!t) return;
   $("#tripBack").onclick=()=>{ S.tripId=""; S.form=null; renderView(); };
@@ -3460,6 +3721,8 @@ function bindVylety(){
     put("trips",t.id,{itinerary:[...(t.itinerary||[]),{id:rid(),date:ISO_RE.test(d)?d:"",title:ti.slice(0,120),items:[]}],updated:new Date().toISOString()},true); });
   document.querySelectorAll("[data-daydel]").forEach(b=>b.onclick=()=>{ if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Naozaj odstrániť?"; return; } put("trips",t.id,{itinerary:(t.itinerary||[]).filter(d=>d.id!==b.dataset.daydel)},true); });
   $("#bookAdd")&&($("#bookAdd").onclick=()=>bookingForm(t));
+  if(S.tripTab==="dokumenty") bindTripDocs(t);
+  if(S.tripTab==="nakupy") bindTripShop(t);
 }
 
 /* ========== NÁKUPNÉ ZOZNAMY + akcie z letákov (dopĺňa agent „Brain – akcie k nákupnému zoznamu“ do settings/shopdeals) ========== */
