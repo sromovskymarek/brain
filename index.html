@@ -1421,6 +1421,108 @@ a.btn{text-decoration:none;color:inherit}
 .pm-cand{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
 .pm-empty{margin:0;font-size:13px;color:var(--muted)}
 .ds-legacy{background:#ffc24a;color:#2a1a00;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600}.ds-legacy a{color:#2a1a00;text-decoration:underline}
+
+.ds-goal-svg{position:absolute;inset:0}.ds-goal-svg svg{width:100%;height:100%;display:block}
+.ds-mis{font-size:13px;color:var(--cc-mut);margin:0 0 10px}.ds-mis b{color:var(--cc-ink)}
+
+/* ===== Nástenka cieľov (vision board) ===== */
+.vb-view{max-width:1240px;gap:16px;container-type:inline-size;container-name:vb}
+.vb-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.vb-head h1{margin:2px 0 0;font-family:var(--f-display);font-size:30px;letter-spacing:-.01em}
+.vb-actions{display:flex;gap:8px;flex-wrap:wrap}
+.vb-mission{position:relative;border-radius:14px;padding:18px 54px 18px 22px;background:linear-gradient(120deg,#0f3d8f,#1f6fe0 55%,#2aa1d8);color:#fff;box-shadow:0 10px 30px rgba(10,40,120,.35);overflow:hidden}
+.vb-mission::after{content:"";position:absolute;right:-30px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
+.vb-mis-l{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;font-weight:700}
+.vb-mission p{margin:4px 0 0;font-family:var(--f-display);font-size:clamp(20px,3.2cqi,30px);font-weight:700;line-height:1.15}
+.vb-mission p::before{content:"🛡️ "}
+.vb-mis-e{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:16px;cursor:pointer;z-index:1}
+.vb-mis-ed textarea{width:100%;margin-top:6px;border-radius:10px;border:0;padding:10px;font:600 18px/1.3 var(--f-body);background:rgba(255,255,255,.95);color:#0b1d3f;resize:vertical}
+.vb-mis-b{display:flex;gap:8px;margin-top:8px}
+.vb-bar1{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.vb-chips{display:flex;gap:6px;flex-wrap:wrap}
+.vb-chip,.vb-tag{border:1px solid var(--line-2);background:var(--surface);color:var(--fg);border-radius:999px;padding:7px 13px;font:600 13px var(--f-body);cursor:pointer;white-space:nowrap}
+.vb-chip i,.vb-tag i{font-style:normal;opacity:.6;margin-left:3px}
+.vb-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.vb-tag{--tc:var(--accent);padding:6px 11px;font-size:12.5px}
+.vb-tag.on{background:color-mix(in srgb,var(--tc) 28%,var(--surface));border-color:var(--tc);color:#fff}
+.vb-tag.sm{padding:5px 9px;font-size:12px}
+.vb-tools{display:flex;gap:8px;align-items:center}
+.vb-tools .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;overflow:hidden}
+.vb-tools .seg button{border:0;background:var(--surface);color:var(--muted);padding:7px 13px;font:600 13px var(--f-body);cursor:pointer}
+.vb-tools .seg button.on{background:var(--surface-2);color:var(--fg)}
+/* korková tabuľa */
+.vb-board{column-count:5;column-gap:22px;padding:30px 26px 34px;border-radius:16px;
+  background-color:#b98c5e;
+  background-image:radial-gradient(rgba(90,55,25,.35) 1px,transparent 1.6px),radial-gradient(rgba(255,230,190,.25) 1px,transparent 1.8px),radial-gradient(rgba(70,40,15,.22) 1.4px,transparent 2px),linear-gradient(135deg,#c79a69,#a87a4c);
+  background-size:9px 9px,13px 13px,17px 17px,100% 100%;background-position:0 0,4px 7px,9px 3px,0 0;
+  box-shadow:inset 0 0 0 10px #6e4a2a,inset 0 0 0 12px #8a6038,inset 0 0 40px rgba(60,30,10,.45),0 14px 40px rgba(0,0,0,.45)}
+.vb-card,.vb-note{break-inside:avoid;display:inline-block;vertical-align:top;box-sizing:border-box;position:relative;margin:var(--dy,0px) 0 26px;transform:rotate(var(--rot,0deg));transition:transform .2s ease,box-shadow .2s ease;width:100%}
+.vb-card{background:#fdfcf7;padding:9px 9px 10px;border-radius:2px;box-shadow:0 2px 3px rgba(0,0,0,.25),0 10px 22px rgba(40,20,5,.35);cursor:pointer;color:#1d2433;text-align:left;border:0;font:inherit}
+.vb-card:hover,.vb-card:focus-visible{transform:rotate(0) scale(1.04);z-index:3;box-shadow:0 4px 6px rgba(0,0,0,.25),0 22px 40px rgba(40,20,5,.45);outline:none}
+.vb-ph{position:relative;overflow:hidden;background:#dfe6f0;border-radius:1px}
+.vb-ph img,.vb-ph svg{display:block;width:100%;height:100%;object-fit:cover}
+.vb-cap{display:flex;flex-direction:column;gap:5px;padding:9px 3px 1px}
+.vb-cap b{font-family:"Bradley Hand","Segoe Print","Marker Felt","Comic Sans MS",cursive;font-size:17px;line-height:1.15;font-weight:700;color:#1b2232}
+.vb-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
+.vb-hz{font:700 10.5px var(--f-body);letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:#e8eefc;color:#2a4fb0}
+.vb-hz-dalsi{background:#e4f6ee;color:#1d7a52}.vb-hz-5r{background:#fdf0dc;color:#a0620a}.vb-hz-zivot{background:#f1e8fd;color:#6a3fb5}
+.vb-bar{height:4px;border-radius:4px;background:#e4e7ee;overflow:hidden}.vb-bar i{display:block;height:100%;background:#2fa86a}
+.vb-done{position:absolute;left:8px;top:8px;background:#2fa86a;color:#fff;font:700 12px var(--f-body);padding:4px 9px;border-radius:999px}
+.vb-card.done .vb-ph{filter:saturate(.75)}
+.vb-pin{position:absolute;left:50%;top:-8px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,transparent 40%),var(--pc,#e63946);box-shadow:0 3px 4px rgba(0,0,0,.4);z-index:2}
+.vb-tape{position:absolute;left:50%;top:-11px;width:84px;height:22px;margin-left:-42px;transform:rotate(var(--tr,0deg));background:rgba(255,250,225,.62);box-shadow:0 1px 2px rgba(0,0,0,.15);z-index:2;backdrop-filter:blur(1px)}
+.vb-note{--nc:#fff3a8;background:var(--nc);color:#3a2f12;padding:22px 18px 16px;box-shadow:0 3px 5px rgba(0,0,0,.2),0 12px 20px rgba(40,20,5,.3);border-radius:2px 2px 14px 2px}
+.vb-note q{display:block;font-family:"Bradley Hand","Segoe Print","Marker Felt","Comic Sans MS",cursive;font-size:19px;line-height:1.25;font-weight:700;quotes:"„" "“"}
+.vb-note cite{display:block;margin-top:8px;font:italic 600 12.5px var(--f-body);opacity:.75}
+.vb-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:170px;background:rgba(253,252,247,.55);border:2px dashed rgba(70,40,15,.45);box-shadow:none;color:#3a2a18;text-align:center}
+.vb-add span{font-size:34px;line-height:1}.vb-add b{font-size:15px}.vb-add small{font-size:12px;opacity:.75;max-width:180px}
+.vb-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.vb-foot span{flex:1;min-width:200px}
+.vb-lsec .panel-h small{font-weight:500;color:var(--muted);font-size:12px;margin-left:6px}
+.vb-lsec .th svg{width:100%;height:100%;display:block}
+@container vb (max-width:1100px){.vb-board{column-count:4}}
+@container vb (max-width:880px){.vb-board{column-count:3;column-gap:18px;padding:26px 18px 28px}}
+@container vb (max-width:600px){.vb-board{column-count:2;column-gap:14px;padding:22px 12px 22px;box-shadow:inset 0 0 0 6px #6e4a2a,inset 0 0 30px rgba(60,30,10,.45),0 10px 26px rgba(0,0,0,.4)}.vb-cap b{font-size:14.5px}.vb-note q{font-size:15.5px}.vb-note{padding:18px 12px 12px}.vb-card{padding:6px 6px 8px}.vb-meta{font-size:12px}.vb-tags,.vb-bar1>.vb-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;max-width:100%}.vb-bar1{flex-direction:column;align-items:stretch}.vb-tools{justify-content:space-between}.vb-head h1{font-size:24px}.vb-mission{padding:14px 48px 14px 16px}}
+@container vb (max-width:300px){.vb-board{column-count:1}}
+/* modálne okná */
+html.vb-lock,html.vb-lock body{overflow:hidden}
+.vb-ov{position:fixed;inset:0;z-index:200;background:rgba(2,6,14,.72);display:flex;align-items:flex-start;justify-content:center;padding:4vh 14px;overflow:auto;backdrop-filter:blur(3px)}
+.vb-modal{width:min(860px,100%);background:var(--surface);border:1px solid var(--line-2);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;max-height:none}
+.vb-modal.wide{width:min(1100px,100%)}
+.vb-mh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.vb-mh b{display:block;font-size:17px}.vb-mh span{font-size:12.5px;color:var(--muted)}
+.vb-x{border:0;background:var(--surface-2);color:var(--fg);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;flex:none}
+.vb-mf{display:flex;align-items:center;gap:8px;padding:14px 18px;border-top:1px solid var(--line);flex-wrap:wrap;position:sticky;bottom:0;background:var(--surface);border-radius:0 0 16px 16px}
+.vb-mf>span:first-child,.vb-mf>.vb-delb{margin-right:auto}
+.vb-mf>span{font-size:13px;color:var(--muted)}
+.vb-del{color:var(--crit)!important;font-weight:600}
+.vb-ed{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:18px;padding:18px}
+.vb-ed-img .vb-ph{aspect-ratio:4/3;border-radius:10px;border:6px solid #fdfcf7;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.vb-ed-ib{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.vb-ed-ib small{font-size:12px;color:var(--muted)}
+.vb-ed-f{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start}
+.vb-ed-f .wide{grid-column:1/-1}
+.vb-ed-f input[type=text],.vb-ed-f input[type=date],.vb-ed-f input[type=number],.vb-ed-f textarea,.vb-ed-f select,.vb-ii input,.vb-ii select{width:100%;box-sizing:border-box;border:1px solid var(--line-2);background:var(--surface-2);color:var(--fg);border-radius:9px;padding:9px 11px;font:500 14px var(--f-body)}
+.vb-ed-f input[type=range]{width:100%;accent-color:var(--ok)}
+.vb-tchips{display:flex;gap:5px;flex-wrap:wrap}
+.vb-fin summary{cursor:pointer;font-size:13px;color:var(--fg);padding:4px 0}
+.vb-fin-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.vb-split{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:12px 18px 0;font-size:13px;color:var(--muted)}
+.vb-note2{margin:10px 18px 0;padding:9px 12px;border-radius:9px;background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--fg);font-size:13px}
+.vb-imp{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:16px 18px}
+.vb-ii{display:flex;flex-direction:column;gap:7px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px}
+.vb-ii.off{opacity:.38}
+.vb-ii-img{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#000}
+.vb-ii-img img{width:100%;height:100%;object-fit:contain;display:block}
+.vb-ii-rm{position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;font-size:14px}
+.vb-ii .vb-tag span{display:none}
+@media (max-width:700px){.vb-ed{grid-template-columns:1fr}.vb-ed-img .vb-ph{aspect-ratio:16/9}.vb-ed-f{grid-template-columns:1fr}.vb-fin-g{grid-template-columns:1fr 1fr}.vb-ov{padding:0}.vb-modal{border-radius:0;min-height:100%}.vb-mf{border-radius:0;padding-bottom:max(14px,env(safe-area-inset-bottom))}.vb-imp{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.vb-ii .vb-tag{padding:4px 7px}}
+@media (max-width:420px){.vb-imp{grid-template-columns:1fr}}
+/* nástenka na dashboarde */
+.ds-mis{font-size:13px;color:var(--cc-mut,var(--muted));margin:-4px 0 10px}.ds-mis b{color:var(--cc-ink,var(--fg))}
+.ds-pol{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:6px 4px 4px}
+.ds-pol .vb-card{margin:0}
+.ds-pol .vb-cap b{font-size:15px}
+@container dash (max-width:760px){.ds-pol{grid-template-columns:repeat(2,1fr);gap:12px}}
 </style>
 
 <div class="app">
@@ -1475,7 +1577,7 @@ const BZ_WORK = {projekcia:"Projekčné práce",revizia:"Revízne práce",blesko
 const LOG_KIND = {olej:"Výmena oleja",servis:"Servis",pneu:"Pneumatiky",stk:"STK",ek:"Emisná kontrola",pzp:"PZP poistka",hav:"Havarijná poistka",vignette:"Diaľničná známka",brzdy:"Brzdová kvapalina",filter:"Kabínový filter",rotacia:"Rotácia pneumatík",strmene:"Čistenie a mazanie strmeňov",oprava:"Oprava",ine:"Iné"};
 const TRIP_KIND = {dobrodruzny:"Dobrodružný",rodinny:"Rodinný",dovolenka:"Dovolenka",pracovny:"Pracovný",vikend:"Víkend"};
 const BOOK_KIND = {let:"Let",ubytovanie:"Ubytovanie",doprava:"Doprava",vstupenka:"Vstupenka",kultura:"Kultúra a program",ine:"Iné"};
-const HORIZON = {sen:"Sny",rok:"Ročné ciele",mesiac:"Mesačné targety"};
+const HORIZON = {rok:"Do konca roka",dalsi:"Do konca budúceho roka","5r":"Do 5 rokov",zivot:"Životné sny"};
 const HAB_WHEN = {rano:"Ráno",den:"Cez deň",vecer:"Večer"};
 const TIRE = {"":"—",letne:"Letné",zimne:"Zimné",celorocne:"Celoročné"};
 const ANO = {nie:"Nie",ano:"Áno"};
@@ -2085,7 +2187,7 @@ function ccView(cfg){
   /* Cieľ */
   const gs=C.goals.filter(g=>g.status!=="splneny");
   const goal=gs.filter(g=>g.image).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"))[0]||gs.sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"))[0];
-  const goalHtml=goal?(()=>{ const p=Math.max(0,Math.min(100,num(goal.progress)||0)), f=goalFin(goal); return `<div class="cc-goal ${goal.image?"":"noimg"}">${goal.image?`<img src="_blob/${esc(goal.image)}" alt="" loading="lazy">`:""}<div class="cc-goal-cap"><b>${esc(goal.title)}</b><span>${goal.due?"do "+fmtDate(goal.due):esc(HORIZON[goal.horizon]||"")}${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span><div class="bar"><i style="width:${p}%"></i></div><small>${p} % splnené · ${gs.length} ${plural(gs.length,"cieľ","ciele","cieľov")} spolu</small></div></div>`; })()
+  const goalHtml=goal?(()=>{ const p=Math.max(0,Math.min(100,num(goal.progress)||0)), f=goalFin(goal); return `<div class="cc-goal ${goal.image?"":"noimg"}">${goal.image?`<img src="_blob/${esc(goal.image)}" alt="" loading="lazy">`:""}<div class="cc-goal-cap"><b>${esc(goal.title)}</b><span>${goal.due?"do "+fmtDate(goal.due):esc(HORIZON[hz(goal)]||"")}${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span><div class="bar"><i style="width:${p}%"></i></div><small>${p} % splnené · ${gs.length} ${plural(gs.length,"cieľ","ciele","cieľov")} spolu</small></div></div>`; })()
     :`<div class="cc-empty">Pridaj si sen alebo cieľ s fotkou.</div>`;
   /* Týždeň */
   const sc=D.sc, part=(l,v)=>`<div class="cc-part"><span>${l}</span><div class="bar"><i style="width:${v==null?0:Math.round(Math.min(100,v))}%"></i></div><b>${pctR(v)}</b></div>`;
@@ -2266,8 +2368,8 @@ function dsView(){
   const P=ccPriorities();
   /* 5 · Ciele a sny */
   const gs=C.goals.filter(g=>g.status!=="splneny").sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"));
-  const goalsB=gs.length?`<div class="ds-goals">${gs.slice(0,4).map(g=>{ const p=Math.max(0,Math.min(100,num(g.progress)||0)), f=goalFin(g); return `<button type="button" class="ds-goal" data-go="ciele">${g.image?`<img src="_blob/${esc(g.image)}" alt="" loading="lazy">`:`<span class="ds-goal-ph">${ICONS.ciele}</span>`}<span class="cap"><span class="h">${esc(HORIZON[g.horizon]||"Cieľ")}${g.due?" · do "+fmtDate(g.due):""}</span><b>${esc(g.title)}</b><span class="bar"><i style="width:${p}%"></i></span><span class="s">${p} %${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span></span></button>`; }).join("")}</div>`
-    :`<div class="ds-empty">Pridaj si sen alebo cieľ s fotkou. <button type="button" class="ds-link" data-go="ciele">Ciele a sny →</button></div>`;
+  const goalsB=`<div class="ds-mis">🛡️ Moje poslanie: <b>${esc(vbMission())}</b></div>`+(gs.length?`<div class="ds-goals">${gs.slice(0,4).map(g=>{ const p=Math.max(0,Math.min(100,num(g.progress)||0)), f=goalFin(g); return `<button type="button" class="ds-goal" data-go="ciele">${vbImg(g)?`<img src="${esc(vbImg(g))}" alt="" loading="lazy">`:`<span class="ds-goal-svg">${vbScene(g)}</span>`}<span class="cap"><span class="h">${esc(HORIZON[hz(g)]||"Cieľ")}${g.due?" · do "+fmtDate(g.due):""}</span><b>${esc(g.title)}</b><span class="bar"><i style="width:${p}%"></i></span><span class="s">${p} %${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span></span></button>`; }).join("")}</div>`
+    :`<div class="ds-empty">Pridaj si sen alebo cieľ s fotkou. <button type="button" class="ds-link" data-go="ciele">Ciele a sny →</button></div>`);
   /* 6 · Výlety */
   const trips=C.trips.filter(t=>t.start&&(t.end||t.start)>=td).sort(tripSort);
   const tripsB=trips.length?`<div class="ds-trips">${trips.slice(0,4).map((t,i)=>{ const n=dayDiff(t.start), pr=tripProg(t.prep), pk=tripProg(t.packing), open=(t.prep||[]).filter(x=>!x.done).slice(0,3);
@@ -2329,6 +2431,312 @@ function viewPosta(){
   <div class="ds-mails pm-list">${list.slice(0,80).map(mailLine).join("")||`<div class="panel panel-b" style="color:var(--muted)">${tab==="dolezite"?"Žiadne dôležité maily na vybavenie.":tab==="vedomie"?"Nič na vedomie.":tab==="vybavene"?"Zatiaľ nič vybavené.":"Nič označené ako nepodstatné."}</div>`}</div></div>`;
 }
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-mper]"); if(b){ S.mailPer=+b.dataset.mper; renderView(); } });
+
+/* ========== NÁSTENKA CIEĽOV (vision board): polaroidy, citáty, poslanie, horizonty, tagy, import fotiek a skenu diára ========== */
+const VB_TAGS = {
+  biznis:{l:"Biznis",e:"💼",c:"#3b6fd8"}, peniaze:{l:"Peniaze",e:"💰",c:"#1f9d6b"}, rodina:{l:"Rodina",e:"👨‍👩‍👧",c:"#e0784a"},
+  viera:{l:"Viera",e:"✝️",c:"#8a5cd1"}, zdravie:{l:"Šport a zdravie",e:"🏃",c:"#20a3b5"}, vztahy:{l:"Vzťahy",e:"❤️",c:"#d9466b"},
+  cestovanie:{l:"Cestovanie",e:"✈️",c:"#e2a21b"}, svet:{l:"Zmeniť svet k lepšiemu",e:"🌍",c:"#2c8f4e"}
+};
+const VB_HZ_HINT = {rok:"do 31. 12. tohto roka", dalsi:"do 31. 12. budúceho roka", "5r":"do 5 rokov", zivot:"čo chcem v živote zažiť"};
+const VB_AREA2TAG = {biznis:"biznis",financie:"peniaze",rodina:"rodina",sukromie:"zdravie",ludia:"vztahy"};
+const VB_TAG2AREA = {biznis:"biznis",peniaze:"financie",rodina:"rodina",zdravie:"sukromie",vztahy:"ludia"};
+const VB_MISSION_DEF = "Zmeniť svet na bezpečnejšie miesto.";
+const VB_QUOTES = [
+  ["Žiadny vietor nie je priaznivý pre toho, kto nevie, do ktorého prístavu pláva.","Seneca"],
+  ["Cesta dlhá tisíc míľ začína prvým krokom.","Lao-c'"],
+  ["Všetko môžem v tom, ktorý ma posilňuje.","Flp 4,13"],
+  ["Viera je istota toho, v čo dúfame.","Hebr 11,1"],
+  ["Zver Pánovi svoje diela a podaria sa tvoje zámery.","Prís 16,3"],
+  ["Blahoslavení tí, čo šíria pokoj.","Mt 5,9"],
+  ["Kto má prečo žiť, znesie takmer každé ako.","F. Nietzsche"],
+  ["Náhoda praje pripraveným.","L. Pasteur"],
+  ["Či si myslíš, že to dokážeš, alebo nie – máš pravdu.","H. Ford"],
+  ["Buď zmenou, ktorú chceš vidieť vo svete.","M. Gándhí (pripisované)"],
+  ["Bezpečnosť nie je náhoda. Je to rozhodnutie.",""],
+  ["Bez práce nie sú koláče.","slovenské príslovie"],
+  ["Kto chce, hľadá spôsob. Kto nechce, hľadá dôvod.",""],
+  ["Sen s termínom sa stáva cieľom.",""],
+  ["Neodkladaj na zajtra, čo môžeš urobiť dnes.","slovenské príslovie"],
+  ["Malé kroky každý deň porazia veľké plány raz za rok.",""],
+  ["Odvaha nie je absencia strachu, ale rozhodnutie ísť ďalej.",""],
+  ["Najlepší čas zasadiť strom bol pred 20 rokmi. Druhý najlepší je dnes.","čínske príslovie"],
+  ["Ak chceš ísť rýchlo, choď sám. Ak chceš ísť ďaleko, choďte spolu.","africké príslovie"],
+  ["Rodina nie je dôležitá vec. Je to všetko.",""],
+  ["Disciplína je most medzi cieľmi a výsledkami.",""],
+  ["Vďačnosť mení to, čo máme, na dosť.",""],
+  ["Robíme si život tým, čo dávame.",""]
+];
+function hz(g){ const h=g&&g.horizon; return h==="sen"?"zivot":h==="mesiac"?"rok":HORIZON[h]?h:"rok"; }
+function gTags(g){ const t=Array.isArray(g.tags)?g.tags.filter(x=>VB_TAGS[x]):[]; if(t.length) return t; const a=VB_AREA2TAG[g.area]; return a?[a]:[]; }
+function vbHash(s){ let h=2166136261; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function vbRnd(seed){ let a=seed>>>0||1; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function vbDueDef(h){ const y=new Date().getFullYear(); return h==="rok"?`${y}-12-31`:h==="dalsi"?`${y+1}-12-31`:h==="5r"?`${y+5}-12-31`:""; }
+function vbMission(){ const s=setting("vision"); return s&&typeof s.mission==="string"&&s.mission.trim()?s.mission.trim():VB_MISSION_DEF; }
+function vbImg(g){ return /^[0-9a-f]{32}$/.test(g.image||"")?"_blob/"+g.image:(/^data:image\/(jpeg|png|webp);base64,/.test(g.img||"")?g.img:""); }
+const vbNorm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+/* ---------- Ilustrované scény (keď cieľ nemá fotku) ---------- */
+const VB_SCN_KEYS = [
+  ["house",/(^|\W)(dom|domu|domcek|byt|chat|vila|zahrad|pozem|rekonstr)/],
+  ["car",/(auto|tesla|porsche|mercedes|bmw|audi|motork|karavan|obytn)/],
+  ["beach",/(more|mora|plaz|ostrov|karib|maldiv|dovolenk|chorvat|grec|tropic)/],
+  ["mount",/(hory|hor |tatr|alp|lyz|turist|vrchol|everest|kilimand|horolez)/],
+  ["family",/(rodin|deti|dieta|syn|dcer|manzel|svadb|vnuk|otec|mama)/],
+  ["biz",/(firm|biznis|podnik|zakazk|obrat|spolocnost|efektra|safety|zamestnan|klient|tim |znack|export)/],
+  ["money",/(peniaz|milion|financ|invest|uspor|sporen|eur|dlh|hypotek|dochod|pasiv|zlato|akci)/],
+  ["faith",/(boh|boz|viera|viery|kostol|modlit|put|biblia|duchov|cirkev|sluzb)/],
+  ["health",/(zdrav|sport|beh|marat|kondic|vah|fit|bicyk|plav|triatlon|posil|kil|strav)/],
+  ["heart",/(vztah|lask|priatel|manzelk|partner|rande)/],
+  ["world",/(bezpec|zmen|svet|charit|pomoc|nadac|komunit|skol|ochran|prevenc|zachran)/],
+  ["travel",/(cest|let |lietad|japon|amerik|usa|nor|island|vylet|new york|austral|afrik|azi|paris|rim|safari)/]
+];
+const VB_TAG_SCN = {biznis:"biz",peniaze:"money",rodina:"family",viera:"faith",zdravie:"health",vztahy:"heart",cestovanie:"travel",svet:"world"};
+function vbScene(g){ const t=vbNorm(g.title)+" "; let k=""; for(const [n,re] of VB_SCN_KEYS){ if(re.test(t)){ k=n; break; } } if(!k){ const tg=gTags(g)[0]; k=VB_TAG_SCN[tg]||"star"; } return vbSvg(k, vbHash(g.id||g.title)); }
+function vbSvg(k,seed){
+  const u="s"+(seed%1e6), P={house:["#ffd9a8","#ff9f6b"],car:["#9fd3ff","#5b8def"],beach:["#8fe3ff","#ffd59a"],mount:["#a8c8ff","#e8f1ff"],family:["#ffe0b3","#ffb38a"],money:["#c9f2d9","#7fd6a8"],biz:["#cfdcff","#8aa6ff"],faith:["#ffe9b8","#ffc46b"],health:["#b8f0e8","#62c9c0"],heart:["#ffd1dc","#ff8fab"],world:["#bde6ff","#5aa9e6"],travel:["#a9d8ff","#ffe1f0"],star:["#2a2f6b","#6a5acd"]}[k]||["#cfe0ff","#9db8ff"];
+  const sky=`<defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P[0]}"/><stop offset="1" stop-color="${P[1]}"/></linearGradient></defs><rect width="300" height="220" fill="url(#${u})"/>`;
+  const sun=`<circle cx="236" cy="52" r="24" fill="#fff6c9" opacity=".9"/>`;
+  const B={
+    house:`${sun}<path d="M0 170 Q80 150 160 165 T300 160 V220 H0Z" fill="#7cc576"/><path d="M0 190 Q120 175 300 188 V220 H0Z" fill="#5aa857"/><rect x="92" y="104" width="116" height="74" fill="#fff4e6"/><path d="M80 108 L150 58 L220 108Z" fill="#c8553d"/><rect x="138" y="138" width="24" height="40" fill="#8b5a3c"/><rect x="104" y="120" width="24" height="20" fill="#9fd3ff"/><rect x="172" y="120" width="24" height="20" fill="#9fd3ff"/><rect x="186" y="66" width="12" height="26" fill="#a0442f"/><circle cx="48" cy="150" r="20" fill="#4f9d4a"/><rect x="45" y="160" width="6" height="22" fill="#7a5233"/>`,
+    car:`${sun}<rect y="168" width="300" height="52" fill="#555b66"/><rect y="190" width="300" height="5" fill="#f2f2f2" opacity=".6"/><path d="M56 160 L82 126 Q90 116 104 116 H186 Q200 116 210 126 L238 156 Q256 158 258 170 V178 H44 V170 Q44 162 56 160Z" fill="#e63946"/><path d="M92 128 H144 V152 H76Z M152 128 H196 L218 152 H152Z" fill="#cdeaff"/><circle cx="90" cy="180" r="17" fill="#222"/><circle cx="90" cy="180" r="7" fill="#bbb"/><circle cx="212" cy="180" r="17" fill="#222"/><circle cx="212" cy="180" r="7" fill="#bbb"/>`,
+    beach:`${sun}<rect y="120" width="300" height="50" fill="#1fa2c9"/><path d="M0 132 Q30 126 60 132 T120 132 T180 132 T240 132 T300 132" stroke="#fff" stroke-width="2" fill="none" opacity=".6"/><path d="M0 160 Q150 140 300 165 V220 H0Z" fill="#f5d69a"/><path d="M220 168 Q214 110 236 80" stroke="#7a5233" stroke-width="7" fill="none"/><path d="M236 80 q-30 -6 -44 12 M236 80 q-10 -26 -36 -26 M236 80 q22 -22 44 -10 M236 80 q30 4 36 26" stroke="#2f9e44" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M70 176 L110 150 L150 176Z" fill="#ff6b6b"/><rect x="108" y="150" width="3" height="40" fill="#555"/>`,
+    mount:`${sun}<path d="M-10 190 L80 70 L130 130 L180 60 L310 190Z" fill="#5c6f91"/><path d="M80 70 L98 94 L88 92 L80 102 L70 92 L62 96Z M180 60 L202 90 L190 86 L180 98 L170 88 L160 90Z" fill="#fff"/><path d="M0 190 Q150 160 300 186 V220 H0Z" fill="#4c8c4a"/><path d="M40 196 l10 -26 l10 26Z M60 200 l9 -22 l9 22Z M236 196 l10 -26 l10 26Z" fill="#2f6b34"/>`,
+    family:`${sun}<path d="M0 176 Q150 160 300 178 V220 H0Z" fill="#7cc576"/><g fill="#5a3e36"><circle cx="100" cy="98" r="14"/><circle cx="160" cy="94" r="15"/><circle cx="214" cy="124" r="10"/><circle cx="128" cy="130" r="10"/></g><path d="M84 176 V122 Q100 110 116 122 V176Z" fill="#3b6fd8"/><path d="M142 176 V120 Q160 106 178 120 V176Z" fill="#e0784a"/><path d="M118 176 V146 Q128 138 138 146 V176Z" fill="#f2c94c"/><path d="M204 176 V140 Q214 132 224 140 V176Z" fill="#20a3b5"/><path d="M150 60 c-6 -10 -20 -4 -14 6 l14 12 l14 -12 c6 -10 -8 -16 -14 -6Z" fill="#ff5c7a"/>`,
+    money:`<circle cx="70" cy="60" r="18" fill="#fff" opacity=".4"/><rect x="40" y="150" width="220" height="40" rx="6" fill="#2f9e64"/><g fill="#f2c94c" stroke="#c9a227" stroke-width="2"><ellipse cx="90" cy="146" rx="26" ry="8"/><ellipse cx="90" cy="136" rx="26" ry="8"/><ellipse cx="90" cy="126" rx="26" ry="8"/><ellipse cx="150" cy="146" rx="26" ry="8"/><ellipse cx="150" cy="136" rx="26" ry="8"/><ellipse cx="150" cy="126" rx="26" ry="8"/><ellipse cx="150" cy="116" rx="26" ry="8"/><ellipse cx="150" cy="106" rx="26" ry="8"/><ellipse cx="210" cy="146" rx="26" ry="8"/><ellipse cx="210" cy="136" rx="26" ry="8"/><ellipse cx="210" cy="126" rx="26" ry="8"/><ellipse cx="210" cy="116" rx="26" ry="8"/><ellipse cx="210" cy="106" rx="26" ry="8"/><ellipse cx="210" cy="96" rx="26" ry="8"/><ellipse cx="210" cy="86" rx="26" ry="8"/></g><text x="150" y="60" font-size="40" text-anchor="middle" fill="#1d6b45" font-weight="700">€</text>`,
+    biz:`<g opacity=".9"><rect x="30" y="80" width="40" height="110" fill="#4a5fb5"/><rect x="80" y="50" width="54" height="140" fill="#3b4f9e"/><rect x="144" y="96" width="40" height="94" fill="#5b72c9"/><rect x="194" y="30" width="60" height="160" fill="#2f3f86"/></g><g fill="#ffe08a" opacity=".85">${[0,1,2,3,4,5].map(r=>[0,1,2].map(c=>`<rect x="${202+c*17}" y="${42+r*22}" width="9" height="12"/>`).join("")).join("")}${[0,1,2,3,4].map(r=>`<rect x="90" y="${62+r*24}" width="10" height="12"/><rect x="112" y="${62+r*24}" width="10" height="12"/>`).join("")}</g><rect y="190" width="300" height="30" fill="#2b2f45"/><path d="M20 170 L90 140 L140 150 L270 70" stroke="#2ee59d" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M270 70 l-16 2 l10 12Z" fill="#2ee59d"/>`,
+    faith:`<circle cx="150" cy="200" r="120" fill="#fff3c4" opacity=".6"/><g stroke="#fff6d6" stroke-width="4" opacity=".7">${[...Array(10)].map((_,i)=>{ const a=Math.PI*(1.05+i*0.09); return `<line x1="150" y1="150" x2="${150+190*Math.cos(a)}" y2="${150+190*Math.sin(a)}"/>`; }).join("")}</g><path d="M0 186 Q150 166 300 186 V220 H0Z" fill="#9c8a5a"/><rect x="142" y="70" width="16" height="110" fill="#6b4f2a"/><rect x="112" y="98" width="76" height="14" fill="#6b4f2a"/>`,
+    health:`${sun}<path d="M0 180 Q150 166 300 182 V220 H0Z" fill="#6fcf97"/><path d="M0 196 H300" stroke="#f2f2f2" stroke-width="3" stroke-dasharray="14 10"/><g stroke="#1f3b5c" stroke-width="9" stroke-linecap="round" fill="none"><path d="M150 96 L140 138 L162 162 L156 184"/><path d="M140 138 L116 160 L100 158"/><path d="M146 108 L170 124 L188 112"/><path d="M146 108 L124 118 L114 104"/></g><circle cx="156" cy="80" r="13" fill="#1f3b5c"/>`,
+    heart:`<g fill="#fff" opacity=".5"><circle cx="50" cy="40" r="3"/><circle cx="250" cy="30" r="2"/><circle cx="270" cy="90" r="3"/></g><path d="M150 186 C40 120 70 40 128 62 Q144 68 150 84 Q156 68 172 62 C230 40 260 120 150 186Z" fill="#ff4d6d"/><path d="M118 80 q-18 6 -20 28" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity=".6"/>`,
+    world:`<circle cx="150" cy="112" r="72" fill="#2b8fd6"/><path d="M104 70 q18 -10 30 4 q-4 16 10 22 q10 14 -6 22 q-20 2 -26 -12 q-14 -8 -8 -36Z M168 60 q22 4 32 22 q-12 4 -16 18 q-14 -6 -22 -4 q-6 -16 6 -36Z M160 132 q18 -4 26 10 q-4 22 -22 32 q-10 -16 -4 -42Z" fill="#5cc66b"/><path d="M150 26 L214 48 V104 Q214 164 150 196 Q86 164 86 104 V48Z" fill="none" stroke="#ffffff" stroke-width="7" opacity=".95"/><path d="M124 112 l18 18 l34 -38" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+    travel:`${sun}<g fill="#fff" opacity=".85"><ellipse cx="70" cy="60" rx="30" ry="12"/><ellipse cx="92" cy="54" rx="20" ry="12"/><ellipse cx="200" cy="120" rx="34" ry="12"/></g><path d="M40 170 Q140 120 250 70" stroke="#fff" stroke-width="3" stroke-dasharray="8 8" fill="none"/><g transform="translate(232 76) rotate(-24)"><path d="M-40 0 Q-40 -8 -30 -8 H30 Q44 -8 48 0 Q44 8 30 8 H-30 Q-40 8 -40 0Z" fill="#fff"/><path d="M-6 -6 L-26 -36 H-14 L16 -6Z M-6 6 L-26 36 H-14 L16 6Z M-36 -4 L-46 -20 H-38 L-26 -4Z" fill="#e63946"/></g><path d="M0 196 Q150 180 300 198 V220 H0Z" fill="#7cc576"/>`,
+    star:`<g fill="#fff">${[...Array(26)].map((_,i)=>{ const r=vbRnd(seed+i); return `<circle cx="${(r()*300).toFixed(0)}" cy="${(r()*220).toFixed(0)}" r="${(r()*1.8+.4).toFixed(1)}" opacity="${(r()*.6+.3).toFixed(2)}"/>`; }).join("")}</g><path d="M150 52 l17 36 l40 5 l-29 27 l8 39 l-36 -20 l-36 20 l8 -39 l-29 -27 l40 -5Z" fill="#ffd166"/>`
+  };
+  return `<svg viewBox="0 0 300 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${sky}${B[k]||B.star}</svg>`;
+}
+
+/* ---------- Nástenka ---------- */
+function vbFiltered(){ const all=C.goals.filter(g=>S.goalShowDone?true:g.status!=="splneny"); return all.filter(g=>(!S.vbHz||hz(g)===S.vbHz)&&(!S.vbTag||gTags(g).includes(S.vbTag))); }
+function vbCard(g,r){
+  const rot=((r()*2-1)*4.2).toFixed(1), ar=["4/5","1/1","4/3","3/4","5/4"][Math.floor(r()*5)], pin=r()<.5, dy=Math.round(r()*14);
+  const src=vbImg(g), p=Math.max(0,Math.min(100,num(g.progress)||0)), tg=gTags(g), done=g.status==="splneny";
+  return `<div class="vb-card${done?" done":""}" style="--rot:${rot}deg;--dy:${dy}px" data-vbgoal="${esc(g.id)}" role="button" tabindex="0">
+    ${pin?`<i class="vb-pin" style="--pc:${["#e63946","#3b6fd8","#f2c94c","#2c8f4e"][Math.floor(r()*4)]}"></i>`:`<i class="vb-tape" style="--tr:${((r()*2-1)*8).toFixed(0)}deg"></i>`}
+    <div class="vb-ph" style="aspect-ratio:${ar}">${src?`<img src="${esc(src)}" alt="${esc(g.title)}" loading="lazy">`:vbScene(g)}${done?`<span class="vb-done">✓ Splnené</span>`:""}</div>
+    <div class="vb-cap"><b>${esc(g.title)}</b><span class="vb-meta"><span class="vb-hz vb-hz-${hz(g)}">${esc(HORIZON[hz(g)])}</span>${tg.map(t=>`<span title="${esc(VB_TAGS[t].l)}">${VB_TAGS[t].e}</span>`).join("")}</span>${p>0&&!done?`<span class="vb-bar"><i style="width:${p}%"></i></span>`:""}</div></div>`;
+}
+function vbQuote(q,r){ const col=["#fff3a8","#ffd6e0","#d4f1ff","#d9f7c8","#ffe4c2"][Math.floor(r()*5)];
+  return `<div class="vb-note" style="--rot:${((r()*2-1)*5).toFixed(1)}deg;--nc:${col}"><i class="vb-tape" style="--tr:${((r()*2-1)*10).toFixed(0)}deg"></i><q>${esc(q[0])}</q>${q[1]?`<cite>— ${esc(q[1])}</cite>`:""}</div>`; }
+function vbBoard(L){
+  const seed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5)), r=vbRnd(seed*7919+13);
+  const order=L.map(g=>({g,k:vbRnd(vbHash(g.id)^seed)()})).sort((a,b)=>a.k-b.k).map(x=>x.g);
+  const qs=[...VB_QUOTES].map(q=>({q,k:r()})).sort((a,b)=>a.k-b.k).map(x=>x.q);
+  const out=[]; let qi=0; const every=4+Math.floor(r()*2);
+  order.forEach((g,i)=>{ if(i===1||(i>1&&(i-1)%every===0)) out.push(vbQuote(qs[qi++%qs.length],r)); out.push(vbCard(g,vbRnd(vbHash(g.id)+seed))); });
+  if(order.length<2) out.push(vbQuote(qs[qi++%qs.length],r));
+  out.push(`<button type="button" class="vb-card vb-add" style="--rot:${((r()*2-1)*3).toFixed(1)}deg;--dy:0px" data-vbnew="1"><span>＋</span><b>Pridať sen</b><small>alebo nahraj fotku či sken diára</small></button>`);
+  return `<div class="vb-board">${out.join("")}</div>`;
+}
+function viewCiele(){
+  const active=C.goals.filter(g=>g.status!=="splneny"), done=C.goals.filter(g=>g.status==="splneny"), L=vbFiltered();
+  const cnt=h=>active.filter(g=>hz(g)===h).length, tcnt=t=>active.filter(g=>gTags(g).includes(t)).length;
+  const F=active.filter(g=>goalFin(g)), need=r2(F.reduce((s,g)=>s+(goalFin(g).need||0),0));
+  const list=S.vbMode==="list";
+  return `<div class="view vb-view">
+  <div class="vb-head"><div><div class="eyebrow">Nástenka cieľov</div><h1>Ciele a sny</h1></div>
+    <div class="vb-actions"><button class="btn primary" type="button" data-vbnew="1">＋ Sen alebo cieľ</button><label class="btn" for="vbPhotos">📷 Fotky</label><input type="file" id="vbPhotos" accept="image/*" multiple hidden><label class="btn" for="vbScan">📒 Sken diára</label><input type="file" id="vbScan" accept="image/*" hidden></div></div>
+  ${stateBanner()}
+  <div class="vb-mission" id="vbMission">${S.vbMisEdit?`<div class="vb-mis-ed"><span class="vb-mis-l">Moje poslanie</span><textarea id="vbMisTa" rows="2" maxlength="300">${esc(vbMission())}</textarea><div class="vb-mis-b"><button class="btn sm primary" type="button" id="vbMisSave">Uložiť</button><button class="btn sm ghost" type="button" id="vbMisX">Zrušiť</button></div></div>`
+    :`<span class="vb-mis-l">Moje poslanie</span><p>${esc(vbMission())}</p><button class="vb-mis-e" type="button" id="vbMisEdit" aria-label="Upraviť poslanie">✎</button>`}</div>
+  <div class="vb-bar1">
+    <div class="vb-chips" role="tablist"><button type="button" class="vb-chip${!S.vbHz?" on":""}" data-vbhz="">Všetko <i>${active.length}</i></button>${Object.entries(HORIZON).map(([h,l])=>`<button type="button" class="vb-chip${S.vbHz===h?" on":""}" data-vbhz="${h}" title="${esc(VB_HZ_HINT[h])}">${esc(l)} <i>${cnt(h)}</i></button>`).join("")}</div>
+    <div class="vb-tools"><div class="seg"><button type="button" class="${list?"":"on"}" data-vbmode="board">Nástenka</button><button type="button" class="${list?"on":""}" data-vbmode="list">Zoznam</button></div>${list?"":`<button class="btn sm" type="button" id="vbShuffle" title="Nové rozloženie a citáty">🔀 Zamiešať</button>`}</div>
+  </div>
+  <div class="vb-chips vb-tags"><button type="button" class="vb-tag${!S.vbTag?" on":""}" data-vbtag="">Všetky oblasti</button>${Object.entries(VB_TAGS).map(([k,t])=>`<button type="button" class="vb-tag${S.vbTag===k?" on":""}" data-vbtag="${k}" style="--tc:${t.c}">${t.e} ${esc(t.l)}${tcnt(k)?` <i>${tcnt(k)}</i>`:""}</button>`).join("")}</div>
+  ${list?vbList(L):vbBoard(L)}
+  <div class="vb-foot">${F.length?`<span>💶 ${F.length} ${plural(F.length,"cieľ","ciele","cieľov")} so sumou · treba ${eur(need)} mesačne</span><button class="btn sm" type="button" data-go="financie/poradca">Finančný poradca →</button>`:`<span>Doplň k cieľom cieľovú sumu – poradca k nim pripojí stratégiu.</span>`}${done.length?`<button class="btn sm ghost" type="button" id="goalDoneT">${S.goalShowDone?"Skryť":"Zobraziť"} splnené (${done.length})</button>`:""}</div>
+  </div>`;
+}
+function vbList(L){
+  return Object.entries(HORIZON).map(([h,l])=>{ const G=L.filter(g=>hz(g)===h).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9")); if(S.vbHz&&S.vbHz!==h) return "";
+    return `<section class="panel vb-lsec"><div class="panel-h"><h2>${esc(l)} <small>${esc(VB_HZ_HINT[h])}</small></h2><span class="count">${G.length}</span></div><div>${G.map(g=>{ const p=Math.max(0,Math.min(100,num(g.progress)||0)), src=vbImg(g), f=goalFin(g);
+      return `<div class="goalrow" data-vbgoal="${esc(g.id)}" role="button" tabindex="0"><div class="th">${src?`<img src="${esc(src)}" alt="" loading="lazy">`:vbScene(g)}</div><div style="min-width:0"><div style="font-weight:600">${esc(g.title)}</div><div style="font-size:12px;color:var(--muted)">${[gTags(g).map(t=>VB_TAGS[t].e+" "+VB_TAGS[t].l).join(", "),g.due?"do "+fmtDate(g.due):"",f?`${eur0(f.saved)} z ${eur0(f.t)}`:""].filter(Boolean).join(" · ")}</div></div><div><div class="bar"><i style="width:${p}%;background:var(--ok)"></i></div><div class="pc">${p} %</div></div></div>`; }).join("")||`<div class="empty">${h==="zivot"?"Čo chceš v živote zažiť?":"Zatiaľ nič."}</div>`}</div></section>`; }).join("");
+}
+function bindCiele(){
+  const m=$("#main");
+  m.querySelectorAll("[data-vbgoal]").forEach(el=>{ el.onclick=()=>goalForm(byId("goals",el.dataset.vbgoal)); el.onkeydown=e=>{ if(e.key==="Enter") el.onclick(); }; });
+  m.querySelectorAll("[data-vbnew]").forEach(b=>b.onclick=()=>goalForm(null,S.vbHz?{horizon:S.vbHz}:S.vbTag?{tags:[S.vbTag]}:null));
+  m.querySelectorAll("[data-vbhz]").forEach(b=>b.onclick=()=>{ S.vbHz=b.dataset.vbhz; renderView(); });
+  m.querySelectorAll("[data-vbtag]").forEach(b=>b.onclick=()=>{ S.vbTag=b.dataset.vbtag; renderView(); });
+  m.querySelectorAll("[data-vbmode]").forEach(b=>b.onclick=()=>{ S.vbMode=b.dataset.vbmode; renderView(); });
+  $("#vbShuffle")&&($("#vbShuffle").onclick=()=>{ S.vbSeed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5))+1+Math.floor(Math.random()*997); renderView(); });
+  $("#goalDoneT")&&($("#goalDoneT").onclick=()=>{ S.goalShowDone=!S.goalShowDone; renderView(); });
+  $("#vbMisEdit")&&($("#vbMisEdit").onclick=()=>{ S.vbMisEdit=true; renderView(); setTimeout(()=>$("#vbMisTa")?.focus(),30); });
+  $("#vbMisX")&&($("#vbMisX").onclick=()=>{ S.vbMisEdit=false; renderView(); });
+  $("#vbMisSave")&&($("#vbMisSave").onclick=async()=>{ const v=String($("#vbMisTa").value||"").trim().slice(0,300)||VB_MISSION_DEF; S.vbMisEdit=false; const {id:_i,...prev}=setting("vision")||{}; const ok=await put("settings","vision",{...prev,mission:v,updated:new Date().toISOString()}); if(ok) toast("Poslanie uložené"); renderView(); });
+  const ph=$("#vbPhotos"); if(ph) ph.onchange=e=>{ const fs=[...e.target.files].filter(f=>/^image\//.test(f.type)); e.target.value=""; if(fs.length) vbImportPhotos(fs); };
+  const sc=$("#vbScan"); if(sc) sc.onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(f) vbImportScan(f); };
+}
+
+/* ---------- Obrázky: načítanie, zmenšenie, nahratie ---------- */
+async function vbLoad(file){ const url=URL.createObjectURL(file); const img=new Image(); img.decoding="async"; img.src=url; try{ await img.decode(); }catch(e){ await new Promise((ok,ko)=>{ img.onload=ok; img.onerror=ko; }); } return img; }
+function vbCrop(img,b,max,q){ const sw=b?b.w:img.naturalWidth, sh=b?b.h:img.naturalHeight, sc=Math.min(1,max/Math.max(sw,sh)); const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(sw*sc)); c.height=Math.max(1,Math.round(sh*sc)); const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,b?b.x:0,b?b.y:0,sw,sh,0,0,c.width,c.height); return c; }
+const vbBlob=(c,q)=>new Promise(ok=>c.toBlob(b=>ok(b),"image/jpeg",q||.84));
+async function vbStore(canvas){ /* vráti {image} (príloha) alebo {img} (vložený obrázok) */
+  if(S.assets){ const b=await vbBlob(canvas,.84); if(b){ const up=await uploadFiles([new File([b],"ciel-"+Date.now()+".jpg",{type:"image/jpeg"})]); if(up[0]) return {image:up[0].id,img:""}; } return null; }
+  const c2=canvas.width>640||canvas.height>640?(()=>{ const s=640/Math.max(canvas.width,canvas.height), d=document.createElement("canvas"); d.width=Math.round(canvas.width*s); d.height=Math.round(canvas.height*s); d.getContext("2d").drawImage(canvas,0,0,d.width,d.height); return d; })():canvas;
+  return {image:"",img:c2.toDataURL("image/jpeg",.72)};
+}
+
+/* ---------- Rozdelenie skenu diára na jednotlivé fotky (bez AI, priamo v zariadení) ---------- */
+function vbDetect(img){
+  const W0=img.naturalWidth, H0=img.naturalHeight, sc=Math.min(1,640/Math.max(W0,H0)), w=Math.max(8,Math.round(W0*sc)), h=Math.max(8,Math.round(H0*sc));
+  const cv=document.createElement("canvas"); cv.width=w; cv.height=h; const cx=cv.getContext("2d",{willReadFrequently:true}); cx.drawImage(img,0,0,w,h); const D=cx.getImageData(0,0,w,h).data;
+  /* farba papiera = medián okrajových pixelov */
+  const R=[],G=[],B=[]; const push=(x,y)=>{ const i=(y*w+x)*4; R.push(D[i]); G.push(D[i+1]); B.push(D[i+2]); };
+  const bw=Math.max(2,Math.round(Math.min(w,h)*.02)); for(let y=0;y<h;y+=2) for(let x=0;x<w;x+=2) if(x<bw||y<bw||x>=w-bw||y>=h-bw) push(x,y);
+  const med=a=>{ a.sort((p,q)=>p-q); return a[a.length>>1]; }; const br=med(R),bg=med(G),bb=med(B);
+  const N=w*h, M=new Uint8Array(N);
+  for(let p=0,i=0;p<N;p++,i+=4){ const dr=D[i]-br, dg=D[i+1]-bg, db=D[i+2]-bb; const mx=Math.max(D[i],D[i+1],D[i+2]), mn=Math.min(D[i],D[i+1],D[i+2]); M[p]=(dr*dr+dg*dg+db*db>2300||(mx-mn>70&&Math.abs(mx-Math.max(br,bg,bb))>25))?1:0; }
+  const box=(src,r,mode)=>{ /* mode 1 = dilatácia (aspoň 1), 0 = erózia (všetky) – cez integrálny obraz */
+    const I=new Int32Array((w+1)*(h+1)); for(let y=0;y<h;y++){ let s=0; for(let x=0;x<w;x++){ s+=src[y*w+x]; I[(y+1)*(w+1)+x+1]=I[y*(w+1)+x+1]+s; } }
+    const o=new Uint8Array(N); for(let y=0;y<h;y++){ const y0=Math.max(0,y-r), y1=Math.min(h,y+r+1); for(let x=0;x<w;x++){ const x0=Math.max(0,x-r), x1=Math.min(w,x+r+1); const s=I[y1*(w+1)+x1]-I[y0*(w+1)+x1]-I[y1*(w+1)+x0]+I[y0*(w+1)+x0]; o[y*w+x]=mode?(s>0?1:0):(s===(y1-y0)*(x1-x0)?1:0); } } return o; };
+  let A=box(box(M,2,0),2,1); /* otvorenie: zmizne písmo a linajky */
+  const rc=Math.max(3,Math.round(Math.max(w,h)*.012)); A=box(box(A,rc,1),rc,0); /* uzavretie: zaplnia sa svetlé miesta vo fotke */
+  const lab=new Int32Array(N), st=new Int32Array(N), boxes=[]; let nl=0;
+  for(let p=0;p<N;p++){ if(!A[p]||lab[p]) continue; nl++; let sp=0; st[sp++]=p; lab[p]=nl; let x0=w,y0=h,x1=0,y1=0,c=0;
+    while(sp){ const q=st[--sp], x=q%w, y=(q/w)|0; c++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;
+      if(x>0&&A[q-1]&&!lab[q-1]){lab[q-1]=nl;st[sp++]=q-1;} if(x<w-1&&A[q+1]&&!lab[q+1]){lab[q+1]=nl;st[sp++]=q+1;} if(y>0&&A[q-w]&&!lab[q-w]){lab[q-w]=nl;st[sp++]=q-w;} if(y<h-1&&A[q+w]&&!lab[q+w]){lab[q+w]=nl;st[sp++]=q+w;} }
+    const bwid=x1-x0+1, bhei=y1-y0+1, ba=bwid*bhei; if(ba<N*.012||bwid<Math.min(w,h)*.08||bhei<Math.min(w,h)*.08||ba>N*.92||c/ba<.5||bwid/bhei>5||bhei/bwid>5) continue;
+    boxes.push({x:x0,y:y0,w:bwid,h:bhei}); }
+  const inside=(a,b)=>a.x>=b.x-2&&a.y>=b.y-2&&a.x+a.w<=b.x+b.w+2&&a.y+a.h<=b.y+b.h+2;
+  let K=boxes.filter((a,i)=>!boxes.some((b,j)=>j!==i&&inside(a,b)&&b.w*b.h>a.w*a.h));
+  const mh=K.length?K.map(b=>b.h).sort((p,q)=>p-q)[K.length>>1]:1;
+  K.sort((a,b)=>Math.abs((a.y+a.h/2)-(b.y+b.h/2))<mh*.5?a.x-b.x:a.y-b.y);
+  return K.slice(0,24).map(b=>{ const ins=Math.round(Math.min(b.w,b.h)*.015); return {x:Math.round((b.x+ins)/sc),y:Math.round((b.y+ins)/sc),w:Math.round((b.w-2*ins)/sc),h:Math.round((b.h-2*ins)/sc)}; });
+}
+function vbGrid(img,cols,rows){ const W=img.naturalWidth,H=img.naturalHeight,o=[]; const cw=W/cols, ch=H/rows, p=.03; for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) o.push({x:Math.round(c*cw+cw*p),y:Math.round(r*ch+ch*p),w:Math.round(cw*(1-2*p)),h:Math.round(ch*(1-2*p))}); return o; }
+function vbGuess(name){ const g={id:"x",title:name||""}; const t=vbNorm(name)+" "; const tags=[]; for(const [k,s] of Object.entries(VB_TAG_SCN)){ const re=(VB_SCN_KEYS.find(x=>x[0]===s)||[])[1]; if(re&&re.test(t)) tags.push(k); } return tags.slice(0,2); }
+
+async function vbImportPhotos(files){
+  const items=[]; toast(`Pripravujem ${files.length} ${plural(files.length,"fotku","fotky","fotiek")}…`);
+  for(const f of files.slice(0,24)){ try{ const img=await vbLoad(f); const c=vbCrop(img,null,1400); const t=f.name.replace(/\.[a-z0-9]+$/i,"").replace(/^(img|dsc|photo|pxl|image)[-_ ]?\d.*$/i,"").replace(/[_-]+/g," ").trim().slice(0,80); items.push({c,url:c.toDataURL("image/jpeg",.7),title:t,horizon:S.vbHz||"rok",tags:S.vbTag?[S.vbTag]:vbGuess(t),keep:true}); }catch(e){ toast(`${f.name}: fotku sa nepodarilo načítať.`); } }
+  if(items.length){ S.vbImp={kind:"photos",items}; vbImpRender(); }
+}
+async function vbImportScan(file){
+  let img; try{ img=await vbLoad(file); }catch(e){ toast("Sken sa nepodarilo načítať."); return; }
+  S.vbImp={kind:"scan",img,mode:"auto",items:[]}; vbSplit("auto");
+}
+function vbSplit(mode){ const I=S.vbImp; if(!I||!I.img) return; I.mode=mode; let boxes;
+  if(mode==="auto"){ try{ boxes=vbDetect(I.img); }catch(e){ boxes=[]; } if(boxes.length<2){ boxes=boxes.length?boxes:vbGrid(I.img,2,2); if(!boxes.length) boxes=[{x:0,y:0,w:I.img.naturalWidth,h:I.img.naturalHeight}]; I.note=boxes.length<2?"Automaticky som našiel menej ako 2 fotky. Skús mriežku alebo celú stranu.":""; } else I.note=""; }
+  else if(mode==="full"){ boxes=[{x:0,y:0,w:I.img.naturalWidth,h:I.img.naturalHeight}]; I.note=""; }
+  else { const [c,r]=mode.split("x").map(Number); boxes=vbGrid(I.img,c,r); I.note=""; }
+  const prev=I.items; I.items=boxes.map((b,i)=>{ const c=vbCrop(I.img,b,1400); return {c,url:c.toDataURL("image/jpeg",.7),title:prev[i]?.title||"",horizon:prev[i]?.horizon||S.vbHz||"rok",tags:prev[i]?.tags||(S.vbTag?[S.vbTag]:[]),keep:true}; });
+  vbImpRender();
+}
+function vbRoot(){ let r=document.getElementById("vbRoot"); if(!r){ r=document.createElement("div"); r.id="vbRoot"; document.body.appendChild(r); } return r; }
+function vbClose(){ S.vbImp=null; S.vbEd=null; const r=document.getElementById("vbRoot"); if(r) r.innerHTML=""; document.documentElement.classList.remove("vb-lock"); }
+function vbHzSel(v,attr){ return `<select ${attr}>${Object.entries(HORIZON).map(([h,l])=>`<option value="${h}"${v===h?" selected":""}>${esc(l)}</option>`).join("")}</select>`; }
+function vbTagChips(sel,attr,pre){ return Object.entries(VB_TAGS).map(([k,t])=>`<button type="button" class="vb-tag sm${sel.includes(k)?" on":""}" ${attr}="${pre||""}${k}" style="--tc:${t.c}" title="${esc(t.l)}">${t.e} <span>${esc(t.l)}</span></button>`).join(""); }
+function vbImpRender(){
+  const I=S.vbImp; if(!I){ vbClose(); return; } document.documentElement.classList.add("vb-lock");
+  const n=I.items.filter(x=>x.keep).length;
+  vbRoot().innerHTML=`<div class="vb-ov" id="vbOv"><div class="vb-modal wide" role="dialog" aria-label="Import na nástenku">
+    <div class="vb-mh"><div><b>${I.kind==="scan"?"Sken diára → ciele":"Fotky → ciele"}</b><span>${I.items.length} ${plural(I.items.length,"obrázok","obrázky","obrázkov")} · ku každému dopíš, čo znamená</span></div><button class="vb-x" type="button" data-vbclose aria-label="Zavrieť">✕</button></div>
+    ${I.kind==="scan"?`<div class="vb-split"><span>Rozdelenie:</span>${[["auto","Automaticky"],["2x2","Mriežka 2×2"],["2x3","2×3"],["3x3","3×3"],["3x4","3×4"],["full","Celá strana"]].map(([k,l])=>`<button type="button" class="vb-chip${I.mode===k?" on":""}" data-vbsplit="${k}">${l}</button>`).join("")}</div>${I.note?`<div class="vb-note2">${esc(I.note)}</div>`:""}`:""}
+    ${S.sample?`<div class="vb-split"><button class="btn sm" type="button" id="vbAi" ${I.busy?"disabled":""}>${I.busy?'<span class="spin"></span> Claude navrhuje…':"✨ Navrhnúť názvy a tagy (AI)"}</button></div>`:""}
+    <div class="vb-imp">${I.items.map((x,i)=>`<div class="vb-ii${x.keep?"":" off"}"><div class="vb-ii-img"><img src="${x.url}" alt=""><button type="button" class="vb-ii-rm" data-vbkeep="${i}" aria-label="${x.keep?"Vynechať":"Vrátiť"}">${x.keep?"✕":"↺"}</button></div>
+      <input type="text" data-vbit="${i}" value="${esc(x.title)}" placeholder="Názov cieľa, napr. Dom pri jazere" maxlength="160">
+      ${vbHzSel(x.horizon,`data-vbih="${i}"`)}<div class="vb-tchips">${vbTagChips(x.tags,"data-vbitag",i+":")}</div></div>`).join("")}</div>
+    <div class="vb-mf"><span>${n} ${plural(n,"cieľ","ciele","cieľov")} pribudne na nástenku${S.assets?"":" (fotky sa uložia zmenšené priamo do záznamu)"}</span><button class="btn ghost" type="button" data-vbclose>Zrušiť</button><button class="btn primary" type="button" id="vbImpSave" ${n&&!I.saving?"":"disabled"}>${I.saving?'<span class="spin"></span> Ukladám…':"Pridať na nástenku"}</button></div>
+  </div></div>`;
+  const R=vbRoot();
+  R.querySelectorAll("[data-vbclose]").forEach(b=>b.onclick=vbClose);
+  $("#vbOv").onclick=e=>{ if(e.target.id==="vbOv"&&!I.saving) vbClose(); };
+  R.querySelectorAll("[data-vbsplit]").forEach(b=>b.onclick=()=>vbSplit(b.dataset.vbsplit));
+  R.querySelectorAll("[data-vbkeep]").forEach(b=>b.onclick=()=>{ const x=I.items[+b.dataset.vbkeep]; x.keep=!x.keep; vbImpRender(); });
+  R.querySelectorAll("[data-vbit]").forEach(inp=>inp.oninput=()=>{ I.items[+inp.dataset.vbit].title=inp.value; });
+  R.querySelectorAll("[data-vbih]").forEach(s=>s.onchange=()=>{ I.items[+s.dataset.vbih].horizon=s.value; });
+  R.querySelectorAll("[data-vbitag]").forEach(b=>b.onclick=()=>{ const [i,k]=b.dataset.vbitag.split(":"), x=I.items[+i]; x.tags=x.tags.includes(k)?x.tags.filter(t=>t!==k):[...x.tags,k]; b.classList.toggle("on"); });
+  $("#vbAi")&&($("#vbAi").onclick=vbAiSuggest);
+  $("#vbImpSave").onclick=vbImpSave;
+}
+async function vbAiSuggest(){ const I=S.vbImp; if(!I||!S.sample||I.busy) return; const K=I.items.filter(x=>x.keep); if(!K.length) return;
+  I.busy=true; vbImpRender();
+  try{ const lim=await S.sample.limits().catch(()=>null); const max=lim?.images?.maxCount||8; const part=K.slice(0,max);
+    const imgs=[]; for(const x of part){ const b=await vbBlob(vbCrop(x.c,null,768),.8); imgs.push(new File([b],"ciel.jpg",{type:"image/jpeg"})); }
+    const r=await S.sample.json(`Toto sú obrázky z nástenky snov (vision board) Mareka. Ku každému obrázku v poradí navrhni krátky slovenský názov cieľa alebo sna v prvej osobe (max 60 znakov, napr. "Rodinný dom so záhradou", "Maratón pod 4 hodiny"), horizont jeden z: rok (do konca roka), dalsi (do konca budúceho roka), 5r (do 5 rokov), zivot (životný sen), a 1–2 tagy z: ${Object.keys(VB_TAGS).join(", ")}. Ak je na obrázku čitateľný text, použi ho. Nič nevymýšľaj nad rámec obrázka.
+Odpovedz IBA JSON: {"items":[{"title":"...","horizon":"rok","tags":["..."]}]}`,{images:imgs,cache:false});
+    (Array.isArray(r?.items)?r.items:[]).forEach((s,i)=>{ const x=part[i]; if(!x||!s) return; if(s.title&&!x.title.trim()) x.title=String(s.title).slice(0,160); if(HORIZON[s.horizon]) x.horizon=s.horizon; const t=(Array.isArray(s.tags)?s.tags:[]).filter(k=>VB_TAGS[k]); if(t.length) x.tags=t.slice(0,3); });
+  }catch(e){ toast(typeof sErr==="function"?sErr(e):"AI návrh zlyhal."); }
+  I.busy=false; if(S.vbImp===I) vbImpRender(); }
+async function vbImpSave(){ const I=S.vbImp; if(!I||I.saving) return; const K=I.items.filter(x=>x.keep); if(!K.length) return;
+  I.saving=true; vbImpRender(); let ok=0, i=0; const now=new Date().toISOString();
+  for(const x of K){ i++; const st=await vbStore(x.c); if(!st){ continue; }
+    const tags=x.tags.filter(t=>VB_TAGS[t]), h=HORIZON[x.horizon]?x.horizon:"rok";
+    const rec={title:(x.title.trim()||`Sen ${i}`).slice(0,160),horizon:h,tags,area:VB_TAG2AREA[tags[0]]||"",due:vbDueDef(h),progress:0,image:st.image,img:st.img,why:"",steps:"",target:null,saved:null,monthly:null,assetId:"",status:"aktivny",source:I.kind==="scan"?"sken-diara":"fotka",updated:now,created:now};
+    if(await put("goals",rid(),rec)) ok++; }
+  vbClose(); toast(ok?`Na nástenke ${plural(ok,"pribudol","pribudli","pribudlo")} ${ok} ${plural(ok,"cieľ","ciele","cieľov")}`:"Uloženie zlyhalo."); S.vbHz=""; S.vbTag=""; renderView(); }
+
+/* ---------- Editor cieľa ---------- */
+function goalForm(g,def){
+  const base=g?{...g}:{horizon:"rok",progress:0,...(def||{})};
+  const h=hz(base); S.vbEd={id:g?.id||"",created:g?.created||"",d:{...base,horizon:h,tags:g?gTags(g):(Array.isArray(base.tags)?base.tags:[]),due:g?(base.due||""):(base.due||vbDueDef(h)),progress:num(base.progress)||0},dueTouched:!!g,del:false,newImg:null};
+  vbEdRender(); }
+function vbEdRender(){
+  const E=S.vbEd; if(!E){ vbClose(); return; } document.documentElement.classList.add("vb-lock"); const d=E.d;
+  const src=E.newImg?E.newImg.url:(E.dropImg?"":vbImg(d)); const ao=C.assets.map(a=>`<option value="${esc(a.id)}"${d.assetId===a.id?" selected":""}>${esc(a.name)} (${eur0(a.value)})</option>`).join("");
+  const hasFin=num(d.target)>0||num(d.saved)>0||num(d.monthly)>0;
+  vbRoot().innerHTML=`<div class="vb-ov" id="vbOv"><div class="vb-modal" role="dialog" aria-label="${E.id?"Upraviť cieľ":"Nový sen alebo cieľ"}">
+    <div class="vb-mh"><div><b>${E.id?"Upraviť sen / cieľ":"Nový sen alebo cieľ"}</b><span>${esc(VB_HZ_HINT[d.horizon])}</span></div><button class="vb-x" type="button" data-vbclose aria-label="Zavrieť">✕</button></div>
+    <div class="vb-ed">
+      <div class="vb-ed-img"><div class="vb-ph">${src?`<img src="${esc(src)}" alt="">`:vbScene({...d,id:E.id||d.title})}</div>
+        <div class="vb-ed-ib"><label class="btn sm" for="vbEdFile">${src?"Zmeniť fotku":"📷 Nahrať fotku"}</label><input type="file" id="vbEdFile" accept="image/*" hidden>${src?`<button class="btn sm ghost" type="button" id="vbEdRm">Odstrániť fotku</button>`:`<small>Bez fotky sa ukáže ilustrácia podľa názvu.</small>`}</div></div>
+      <div class="vb-ed-f">
+        <label class="f wide"><span>Názov</span><input type="text" id="vbT" value="${esc(d.title||"")}" placeholder="napr. Rodinná dovolenka v Nórsku" maxlength="160"></label>
+        <div class="f wide"><span>Kedy</span><div class="vb-chips">${Object.entries(HORIZON).map(([k,l])=>`<button type="button" class="vb-chip${d.horizon===k?" on":""}" data-vbeh="${k}">${esc(l)}</button>`).join("")}</div></div>
+        <div class="f wide"><span>Oblasť</span><div class="vb-tchips">${vbTagChips(d.tags,"data-vbet")}</div></div>
+        <label class="f"><span>Termín</span><input type="date" id="vbDue" value="${esc(d.due||"")}"></label>
+        <label class="f"><span>Splnené: <b id="vbPv">${num(d.progress)||0} %</b></span><input type="range" id="vbP" min="0" max="100" step="5" value="${num(d.progress)||0}"></label>
+        <label class="f wide"><span>Prečo to chcem</span><textarea id="vbWhy" rows="2" maxlength="3000">${esc(d.why||"")}</textarea></label>
+        <label class="f wide"><span>Kroky a míľniky</span><textarea id="vbSteps" rows="3" maxlength="3000" placeholder="každý krok na nový riadok">${esc(d.steps||"")}</textarea></label>
+        <details class="f wide vb-fin"${hasFin?" open":""}><summary>💶 Financovanie (ak cieľ stojí peniaze)</summary><div class="vb-fin-g">
+          <label class="f"><span>Cieľová suma (€)</span><input type="number" inputmode="decimal" id="vbTg" value="${d.target!=null?esc(d.target):""}"></label>
+          <label class="f"><span>Už našetrené (€)</span><input type="number" inputmode="decimal" id="vbSv" value="${d.saved!=null?esc(d.saved):""}"></label>
+          <label class="f"><span>Mesačne odkladám (€)</span><input type="number" inputmode="decimal" id="vbMo" value="${d.monthly!=null?esc(d.monthly):""}"></label>
+          ${C.assets.length?`<label class="f"><span>Šetrím na (Majetok)</span><select id="vbAs"><option value="">—</option>${ao}</select></label>`:""}</div></details>
+      </div></div>
+    <div class="vb-mf">${E.id?(E.del?`<span class="vb-del">Naozaj zmazať?</span><button class="btn sm danger" type="button" id="vbDelY">Zmazať</button><button class="btn sm ghost" type="button" id="vbDelN">Nie</button>`:`<button class="btn sm ghost vb-delb" type="button" id="vbDel">Zmazať</button>`):"<span></span>"}<button class="btn ghost" type="button" data-vbclose>Zrušiť</button><button class="btn primary" type="button" id="vbSave" ${E.saving?"disabled":""}>${E.saving?'<span class="spin"></span> Ukladám…':"Uložiť"}</button></div>
+  </div></div>`;
+  const R=vbRoot(), sync=()=>{ const v=id=>R.querySelector("#"+id); d.title=v("vbT").value; d.due=v("vbDue").value; d.progress=+v("vbP").value; d.why=v("vbWhy").value; d.steps=v("vbSteps").value; d.target=v("vbTg").value; d.saved=v("vbSv").value; d.monthly=v("vbMo").value; if(v("vbAs")) d.assetId=v("vbAs").value; };
+  E.sync=sync;
+  R.querySelectorAll("[data-vbclose]").forEach(b=>b.onclick=vbClose);
+  $("#vbOv").onclick=e=>{ if(e.target.id==="vbOv"&&!E.saving) vbClose(); };
+  R.querySelectorAll("[data-vbeh]").forEach(b=>b.onclick=()=>{ sync(); d.horizon=b.dataset.vbeh; if(!E.dueTouched||!d.due) d.due=vbDueDef(d.horizon); vbEdRender(); });
+  R.querySelectorAll("[data-vbet]").forEach(b=>b.onclick=()=>{ const k=b.dataset.vbet; d.tags=d.tags.includes(k)?d.tags.filter(t=>t!==k):[...d.tags,k]; b.classList.toggle("on"); });
+  $("#vbDue").onchange=()=>{ E.dueTouched=true; };
+  $("#vbP").oninput=e=>{ $("#vbPv").textContent=e.target.value+" %"; };
+  $("#vbT").oninput=()=>{ if(!src&&!E.titleT){ E.titleT=setTimeout(()=>{ E.titleT=0; if(S.vbEd!==E) return; const ph=R.querySelector(".vb-ed-img .vb-ph"); if(ph&&!E.newImg&&!vbImg(d)) ph.innerHTML=vbScene({...d,title:$("#vbT").value,id:E.id||$("#vbT").value}); },500); } };
+  $("#vbEdFile").onchange=async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; sync(); try{ const img=await vbLoad(f); const c=vbCrop(img,null,1400); E.newImg={c,url:c.toDataURL("image/jpeg",.75)}; E.dropImg=false; vbEdRender(); }catch(x){ toast("Fotku sa nepodarilo načítať."); } };
+  $("#vbEdRm")&&($("#vbEdRm").onclick=()=>{ sync(); E.newImg=null; E.dropImg=true; vbEdRender(); });
+  $("#vbDel")&&($("#vbDel").onclick=()=>{ sync(); E.del=true; vbEdRender(); });
+  $("#vbDelN")&&($("#vbDelN").onclick=()=>{ sync(); E.del=false; vbEdRender(); });
+  $("#vbDelY")&&($("#vbDelY").onclick=async()=>{ const id=E.id; vbClose(); await delDoc("goals",id); toast("Cieľ zmazaný"); });
+  $("#vbSave").onclick=vbEdSave;
+  setTimeout(()=>{ if(!E.id&&!d.title) R.querySelector("#vbT")?.focus({preventScroll:true}); },40);
+}
+async function vbEdSave(){ const E=S.vbEd; if(!E||E.saving) return; E.sync(); const d=E.d;
+  if(!String(d.title||"").trim()){ toast("Zadaj názov."); $("#vbT")?.focus(); return; }
+  E.saving=true; vbEdRender();
+  let image=/^[0-9a-f]{32}$/.test(d.image||"")?d.image:"", img=d.img||"";
+  if(E.dropImg){ image=""; img=""; }
+  if(E.newImg){ const st=await vbStore(E.newImg.c); if(st){ image=st.image; img=st.img; } else { E.saving=false; vbEdRender(); return; } }
+  const p=Math.max(0,Math.min(100,Math.round(num(d.progress)||0))), tags=d.tags.filter(t=>VB_TAGS[t]), g=E.id?byId("goals",E.id):null;
+  const rec={...(g||{}),title:String(d.title).trim().slice(0,160),horizon:HORIZON[d.horizon]?d.horizon:"rok",tags,area:VB_TAG2AREA[tags[0]]||(g&&g.area)||"",due:ISO_RE.test(d.due||"")?d.due:"",progress:p,image,img,why:String(d.why||"").slice(0,3000),steps:String(d.steps||"").slice(0,3000),target:num(d.target)>0?r2(num(d.target)):null,saved:num(d.saved)>=0&&String(d.saved).trim()!==""?r2(num(d.saved)):null,monthly:num(d.monthly)>=0&&String(d.monthly).trim()!==""?r2(num(d.monthly)):null,assetId:C.assets.some(a=>a.id===d.assetId)?d.assetId:"",status:p>=100?"splneny":"aktivny",updated:new Date().toISOString(),created:E.created||new Date().toISOString()};
+  delete rec.id;
+  const ok=await put("goals",E.id||rid(),rec);
+  if(ok){ vbClose(); toast(p>=100?"Splnené. Gratulujem!":"Uložené"); } else { E.saving=false; vbEdRender(); } }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&(S.vbEd||S.vbImp)&&!(S.vbEd?.saving||S.vbImp?.saving)) vbClose(); });
 
 function viewPrehlad(){
   return dsView();
@@ -3931,7 +4339,7 @@ function advContext(D){ const L=[];
   if(jarsCfg().length){ const jb=jarBalances(); L.push("7 DŽBÁNOV: "+jarsCfg().map(j=>`${j.name} ${j.pct} % (zostatok ${eur((jb[j.id]?.alloc||0)-(jb[j.id]?.spent||0))})`).join("; ")); } else L.push("7 DŽBÁNOV: nenastavené");
   for(const u of units()){ const s=bzMonth(D.td.slice(0,7),u.id), od=bzOpen(u.id).filter(x=>x.due&&x.due<D.td); L.push(`FIRMA ${u.name} (mimo osobných peňazí): tento mesiac príjmy ${eur(r2(s.recv+s.exp))}, výdaje ${eur(s.costs)}, saldo ${eur(s.net)}${od.length?`, po splatnosti ${eur(sumAmt(od))}`:""}${bzSet(u.id).bal!=null?`, stav účtu ${eur(bzSet(u.id).bal)}`:""}`); }
   L.push(`CIELE Z NÁSTENKY (${D.goals.length} aktívnych):`);
-  for(const g of D.goals){ const f=goalFin(g); L.push(`- [${HORIZON[g.horizon]||"Cieľ"}] ${g.title}${g.due?" do "+g.due:" bez termínu"}, splnené ${num(g.progress)||0} %${g.area?", oblasť "+(AREAS[g.area]||g.area):""}`+(f?`; cieľová suma ${eur(f.t)}, našetrené ${eur(f.saved)}${f.asset?" (na „"+f.asset.name+"“)":""}, chýba ${eur(f.left)}, ${f.need!=null?"treba "+eur(f.need)+" mesačne":"bez termínu"}, odkladám ${eur(f.mon)} mesačne${f.eta?", pri tomto tempe hotové "+f.eta:""}`:"; bez cieľovej sumy")+(g.why?`; prečo: ${String(g.why).slice(0,200)}`:"")); }
+  for(const g of D.goals){ const f=goalFin(g); L.push(`- [${HORIZON[hz(g)]||"Cieľ"}] ${g.title}${g.due?" do "+g.due:" bez termínu"}, splnené ${num(g.progress)||0} %${g.area?", oblasť "+(AREAS[g.area]||g.area):""}`+(f?`; cieľová suma ${eur(f.t)}, našetrené ${eur(f.saved)}${f.asset?" (na „"+f.asset.name+"“)":""}, chýba ${eur(f.left)}, ${f.need!=null?"treba "+eur(f.need)+" mesačne":"bez termínu"}, odkladám ${eur(f.mon)} mesačne${f.eta?", pri tomto tempe hotové "+f.eta:""}`:"; bez cieľovej sumy")+(g.why?`; prečo: ${String(g.why).slice(0,200)}`:"")); }
   L.push(`Na ciele treba spolu ${eur(D.goalNeed)} mesačne, odkladám ${eur(D.goalPlan)}, voľné peniaze ${eur(D.free)}.`);
   L.push("KONTROLY APLIKÁCIE: "+D.K.map(k=>`${k.l}: ${k.v} (${{ok:"v poriadku",warn:"pozor",crit:"problém",info:"info",na:"bez údajov"}[k.s]})`).join("; ")+`; skóre ${D.score??"—"} % (${advGrade(D.score)}).`);
   const prev=C.advice.filter(a=>a.kind==="review").sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
@@ -3984,7 +4392,7 @@ function finPoradca(){ const D=advData(), td=D.td, col={ok:"var(--ok)",warn:"var
     <div class="summary"><span>príjmy <b>${eur(D.inc)}</b></span><span>výdavky <b>${eur(D.exp)}</b></span><span>splátky <b>${eur(D.loan)}</b></span><span>voľné <b class="${D.free<0?"neg":""}">${eur(D.free)}</b></span><span>čistý majetok <b>${eur(r2(D.allAssets-D.debt))}</b></span></div></div></div></section>
   <div class="adv-checks">${D.K.map(k=>`<div class="adv-ck" style="--sc:${col[k.s]}"><div class="h"><span>${esc(k.l)}</span><em>${word[k.s]}</em></div><div class="v">${esc(k.v)}</div><div class="m">${esc(k.m)}</div><div class="src">${esc(k.src)}</div></div>`).join("")}</div>
   <section class="panel"><div class="panel-h"><h2>Ciele a peniaze</h2><span class="count">treba ${eur(D.goalNeed)}/mes. · odkladáš ${eur(D.goalPlan)} · voľné ${eur(D.free)}</span></div>
-    ${goalRows.length?`<div class="tblwrap"><table class="tbl"><thead><tr><th>Cieľ z nástenky</th><th class="n">Cieľ</th><th class="n">Našetrené</th><th class="n">Treba / mes.</th><th class="n">Odkladám</th><th>Stav</th></tr></thead><tbody>${goalRows.map(({g,f})=>`<tr data-advgoal="${esc(g.id)}" style="cursor:pointer"><td style="min-width:150px"><b style="font-weight:600">${esc(g.title)}</b><div style="font-size:12px;color:var(--muted)">${esc(HORIZON[g.horizon]||"")}${g.due?" · do "+fmtDate(g.due):" · bez termínu"}</div>${f?`<div class="bar" style="margin-top:5px"><i style="width:${f.pct.toFixed(1)}%;background:var(--ok)"></i></div>`:""}</td>
+    ${goalRows.length?`<div class="tblwrap"><table class="tbl"><thead><tr><th>Cieľ z nástenky</th><th class="n">Cieľ</th><th class="n">Našetrené</th><th class="n">Treba / mes.</th><th class="n">Odkladám</th><th>Stav</th></tr></thead><tbody>${goalRows.map(({g,f})=>`<tr data-advgoal="${esc(g.id)}" style="cursor:pointer"><td style="min-width:150px"><b style="font-weight:600">${esc(g.title)}</b><div style="font-size:12px;color:var(--muted)">${esc(HORIZON[hz(g)]||"")}${g.due?" · do "+fmtDate(g.due):" · bez termínu"}</div>${f?`<div class="bar" style="margin-top:5px"><i style="width:${f.pct.toFixed(1)}%;background:var(--ok)"></i></div>`:""}</td>
       ${f?`<td class="n">${eur0(f.t)}</td><td class="n">${eur0(f.saved)}${f.asset?`<div style="font-size:11px;color:var(--muted)">${esc(f.asset.name)}</div>`:""}</td><td class="n">${f.need==null?"—":eur(f.need)}</td><td class="n">${eur(f.mon)}</td><td style="font-size:13px">${f.left<=0?'<span style="color:var(--ok)">našetrené</span>':f.late?`<span style="color:var(--crit)">${f.mon?"nestihneš – "+fmtDate(f.eta):"neodkladáš"}</span>`:f.eta?`<span style="color:var(--ok)">hotové ${fmtDate(f.eta)}</span>`:"doplň termín"}</td>`:`<td colspan="5" style="font-size:13px;color:var(--warn)">Doplň cieľovú sumu, našetrené a koľko mesačne odkladáš →</td>`}</tr>`).join("")}</tbody></table></div>`:`<div class="empty">Na nástenke Ciele a sny zatiaľ nie sú ciele. Pridaj finančný cieľ (rezerva, auto, dovolenka, splatenie úveru…) so sumou a termínom.</div>`}</section>
   <section class="panel"><div class="panel-h"><h2>${S.adv.busy||S.adv.text?(S.adv.q?"Odpoveď poradcu":"Spätná väzba"):shown?(shown.kind==="q"?"Odpoveď poradcu":"Posledná spätná väzba"):"Spätná väzba od poradcu"}</h2><span class="count">${S.adv.busy?'<span class="spin"></span>':shown&&!S.adv.text?fmtDate(String(shown.date).slice(0,10))+(shown.score!=null?" · skóre "+shown.score+" %":""):""}</span></div>
     <div class="panel-b" style="display:flex;flex-direction:column;gap:12px">${(S.adv.q||shown?.q)?`<div style="font-size:13px;color:var(--muted)">Otázka: ${esc(S.adv.q||shown.q)}</div>`:""}
@@ -4685,23 +5093,23 @@ function bindNakupy(){
 }
 
 /* ========== CIELE A SNY ========== */
-function viewCiele(){
+function viewCieleOld(){
   const active=C.goals.filter(g=>g.status!=="splneny"), done=C.goals.filter(g=>g.status==="splneny");
   const vis=active.filter(g=>g.image||g.horizon==="sen").sort((a,b)=>(a.horizon==="sen"?0:1)-(b.horizon==="sen"?0:1));
   return `<div class="view"><div class="band" style="--b1:var(--wm-1);--b2:var(--wm-2)"><div><div class="eyebrow">Nástenka cieľov</div><h1>Ciele a sny</h1></div><div class="actions"><button class="btn primary" type="button" id="goalAdd">+ Sen alebo cieľ</button></div></div>${stateBanner()}${formPanel()}
   ${(()=>{ const F=C.goals.filter(g=>g.status!=="splneny"&&goalFin(g)); if(!C.goals.some(g=>g.status!=="splneny")) return ""; const need=r2(F.reduce((s,g)=>s+(goalFin(g).need||0),0)); return `<section class="panel"><div class="panel-b" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="min-width:0"><b>Financovanie cieľov</b><div style="font-size:13px;color:var(--muted)">${F.length?`${F.length} ${plural(F.length,"cieľ","ciele","cieľov")} so sumou · treba ${eur(need)} mesačne`:"Doplň k cieľom cieľovú sumu – poradca k nim pripojí stratégiu."}</div></div><button class="btn sm" type="button" data-go="financie/poradca">Finančný poradca →</button></div></section>`; })()}
-  <section><div class="vision">${vis.map(g=>`<div class="vtile ${g.image?"":"noimg"}" data-goal="${esc(g.id)}" role="button" tabindex="0">${g.image?`<img src="_blob/${esc(g.image)}" alt="${esc(g.title)}" loading="lazy">`:""}<div class="cap">${esc(g.title)}<span>${esc(HORIZON[g.horizon]||"")}${g.due?" · do "+fmtDate(g.due):""}</span></div></div>`).join("")
+  <section><div class="vision">${vis.map(g=>`<div class="vtile ${g.image?"":"noimg"}" data-goal="${esc(g.id)}" role="button" tabindex="0">${g.image?`<img src="_blob/${esc(g.image)}" alt="${esc(g.title)}" loading="lazy">`:""}<div class="cap">${esc(g.title)}<span>${esc(HORIZON[hz(g)]||"")}${g.due?" · do "+fmtDate(g.due):""}</span></div></div>`).join("")
     ||`<div class="vtile noimg" id="goalAdd2" role="button" tabindex="0"><div class="cap">+ Pridaj prvý sen s fotkou<span>Dom, cesta, rodina, auto… čokoľvek, čo chceš vidieť každý deň.</span></div></div>`}</div></section>
   ${Object.entries(HORIZON).map(([h,l])=>{ const L=active.filter(g=>(g.horizon||"rok")===h); return `<section class="panel"><div class="panel-h"><h2>${l}</h2><span class="count">${L.length}</span></div><div>${L.map(goalRow).join("")||`<div class="empty">${h==="mesiac"?"Mesačné targety, ktoré ťa posunú k ročným cieľom.":h==="rok"?"Čo chceš dosiahnuť tento rok.":"Veľké sny bez termínu."}</div>`}</div></section>`; }).join("")}
   ${done.length?`<section class="panel"><div class="panel-h"><h2>Splnené</h2><button class="btn sm ghost" type="button" id="goalDoneT">${S.goalShowDone?"Skryť":"Zobraziť"} (${done.length})</button></div>${S.goalShowDone?`<div>${done.map(goalRow).join("")}</div>`:""}</section>`:""}</div>`; }
 function goalRow(g){ const p=Math.max(0,Math.min(100,num(g.progress)||0));
   return `<div class="goalrow" data-goal="${esc(g.id)}" role="button" tabindex="0"><div class="th">${g.image?`<img src="_blob/${esc(g.image)}" alt="" loading="lazy">`:""}</div><div style="min-width:0"><div style="font-weight:600">${esc(g.title)}</div><div style="font-size:12px;color:var(--muted)">${[AREAS[g.area],g.due?"do "+fmtDate(g.due):"",(f=>f?`${eur0(f.saved)} z ${eur0(f.t)}${f.left>0&&f.need!=null?" · treba "+eur0(f.need)+"/mes.":""}`:"")(goalFin(g))].filter(Boolean).join(" · ")}</div></div><div><div class="bar"><i style="width:${p}%;background:var(--ok)"></i></div><div class="pc">${p} %</div></div></div>`; }
-function goalForm(g,def){ const ao={"":"—"}; for(const a of C.assets) ao[a.id]=`${a.name} (${eur0(a.value)})`; openForm({title:g?"Upraviť":"Nový sen alebo cieľ",data:g?{...g}:{horizon:"rok",progress:"0",...(def||{})},fields:[{k:"title",l:"Názov",ph:"napr. Rodinná dovolenka v Nórsku",wide:true},{k:"horizon",l:"Typ",t:"select",o:HORIZON},{k:"area",l:"Oblasť",t:"select",o:{"":"—",...AREAS}},{k:"due",l:"Termín",t:"date"},{k:"progress",l:"Splnené (%)",t:"number"},{k:"target",l:"Cieľová suma (€) – ak cieľ stojí peniaze",t:"number"},{k:"saved",l:"Už našetrené (€)",t:"number"},{k:"monthly",l:"Mesačne odkladám (€)",t:"number"},...(C.assets.length?[{k:"assetId",l:"Šetrím na (Majetok – našetrené sa vezme odtiaľ)",t:"select",o:ao}]:[]),{k:"image",l:"Fotka na nástenku",t:"image"},{k:"why",l:"Prečo to chcem",t:"textarea",wide:true},{k:"steps",l:"Kroky a míľniky",t:"textarea",wide:true,ph:"každý krok na nový riadok"}],
+function goalFormOld(g,def){ const ao={"":"—"}; for(const a of C.assets) ao[a.id]=`${a.name} (${eur0(a.value)})`; openForm({title:g?"Upraviť":"Nový sen alebo cieľ",data:g?{...g}:{horizon:"rok",progress:"0",...(def||{})},fields:[{k:"title",l:"Názov",ph:"napr. Rodinná dovolenka v Nórsku",wide:true},{k:"horizon",l:"Typ",t:"select",o:HORIZON},{k:"area",l:"Oblasť",t:"select",o:{"":"—",...AREAS}},{k:"due",l:"Termín",t:"date"},{k:"progress",l:"Splnené (%)",t:"number"},{k:"target",l:"Cieľová suma (€) – ak cieľ stojí peniaze",t:"number"},{k:"saved",l:"Už našetrené (€)",t:"number"},{k:"monthly",l:"Mesačne odkladám (€)",t:"number"},...(C.assets.length?[{k:"assetId",l:"Šetrím na (Majetok – našetrené sa vezme odtiaľ)",t:"select",o:ao}]:[]),{k:"image",l:"Fotka na nástenku",t:"image"},{k:"why",l:"Prečo to chcem",t:"textarea",wide:true},{k:"steps",l:"Kroky a míľniky",t:"textarea",wide:true,ph:"každý krok na nový riadok"}],
   onSave:async d=>{ if(!String(d.title||"").trim()){ toast("Zadaj názov."); return false; } const p=Math.max(0,Math.min(100,num(d.progress)||0));
     const rec={title:String(d.title).slice(0,160),horizon:HORIZON[d.horizon]?d.horizon:"rok",area:AREAS[d.area]?d.area:"",due:ISO_RE.test(d.due||"")?d.due:"",progress:p,image:/^[0-9a-f]{32}$/.test(d.image||"")?d.image:"",why:String(d.why||"").slice(0,3000),steps:String(d.steps||"").slice(0,3000),target:num(d.target)>0?r2(num(d.target)):null,saved:num(d.saved)>=0?r2(num(d.saved)):null,monthly:num(d.monthly)>=0?r2(num(d.monthly)):null,assetId:ao[d.assetId]&&d.assetId?d.assetId:"",status:p>=100?"splneny":"aktivny",updated:new Date().toISOString(),created:g?.created||new Date().toISOString()};
     const ok=await put("goals",g?.id||rid(),rec); if(ok) toast(p>=100?"Splnené. Gratulujem!":"Uložené"); return ok; },
   onDelete:g?()=>delDoc("goals",g.id):null}); }
-function bindCiele(){
+function bindCieleOld(){
   $("#goalAdd").onclick=()=>goalForm(null);
   $("#goalAdd2")&&($("#goalAdd2").onclick=()=>goalForm(null));
   document.querySelectorAll("[data-goal]").forEach(el=>{ el.onclick=()=>goalForm(byId("goals",el.dataset.goal)); el.onkeydown=e=>{ if(e.key==="Enter") el.onclick(); }; });
@@ -4869,7 +5277,7 @@ function lifeContext(){ const L=[], m0=today().slice(0,7);
   { const A=C.recur.filter(subActive); if(A.length) L.push("- Pravidelné výdaje (aktívne): "+A.map(r=>`${r.name} ${eur(r.amount)} ${(SUB_FREQ[r.freq]||"mesačne").toLowerCase()}${subNext(r)?", ďalšia platba "+subNext(r):""}`).join("; ")+`; spolu ${eur(recurMonthly())} mesačne`); }
   for(const c of C.cars) L.push(`- Auto ${c.name}${c.plate?" ("+c.plate+")":""}: ${num(c.km)!=null?fmtKm(c.km):""}; `+carDeadlines(c).map(d=>`${d.l} ${d.date?fmtDate(d.date):""}${d.km!=null?" / "+fmtKm(d.km):""}`).join(", "));
   for(const t of C.trips.filter(t=>!t.end||t.end>=today())) L.push(`- Výlet ${t.name} (${t.dest||""}) ${tripDates(t)}; príprava ${tripProg(t.prep).d}/${tripProg(t.prep).n}, balenie ${tripProg(t.packing).d}/${tripProg(t.packing).n}; nevybavené: ${(t.prep||[]).filter(x=>!x.done).map(x=>x.t).slice(0,8).join("; ")}`);
-  for(const g of C.goals.filter(g=>g.status!=="splneny")) L.push(`- Cieľ (${HORIZON[g.horizon]||""}): ${g.title}${g.due?" do "+g.due:""}, ${num(g.progress)||0} %`);
+  for(const g of C.goals.filter(g=>g.status!=="splneny")) L.push(`- Cieľ (${HORIZON[hz(g)]||""}): ${g.title}${g.due?" do "+g.due:""}, ${num(g.progress)||0} %`);
   for(const u of units()){ const co=u.id, op=bzOpen(co), od=op.filter(x=>x.due&&x.due<today()), ms=bzMonth(m0,co), outs=bzOut(co), ec=bzExpByCat(m0+"-01",mEnd(m0),co); if(op.length||outs.length||bzPaid(co).length||bzExp(co).length) L.push(`- ${u.name} (${UNIT_KIND[u.kind]||"modul"}, mimo osobnej bilancie, sumy v hrubom${u.vatPayer?" s DPH":""}): očakávané príjmy ${eur(sumAmt(op))} (${op.length} položiek${od.length?`, po splatnosti ${eur(sumAmt(od))}: ${od.map(x=>(x.title||"")+" "+eur(x.amount)+" splatná "+x.due).join(", ")}`:""}); prijaté v ${monthName(m0)} ${eur(ms.recv)}; výdaje v ${monthName(m0)} ${eur(ms.costs)} (${ec.cats.map(([k,v])=>(BZ_OUT[k]||k)+" "+eur(v)).join(", ")||"-"}); pravidelné výdaje: ${outs.map(o=>`${o.title} ${eur(o.amount)} ${(BZ_FREQ[o.freq]||"").toLowerCase()}`).join("; ")||"-"}`); }
   { const hc=healthContext(); if(hc) L.push(hc); }
   { const pc=peopleContext(); if(pc) L.push(pc); }
