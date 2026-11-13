@@ -3128,11 +3128,18 @@ const daysTxt=n=>n==null?"":n<0?`${-n} ${plural(-n,"deň","dni","dní")} po term
 const fmtKm=n=>new Intl.NumberFormat("sk-SK").format(Math.round(+n))+" km";
 const openAttr=it=>it._go?`data-go="${esc(it._go)}"`:`data-open="${esc(it.id)}"`;
 function mount(m,view,bind){
+  /* Pozícia sa pri prekreslení zachová (Safari/iPad pri zániku zaostreného prvku skáče hore) */
+  const se=document.scrollingElement, st=m.scrollTop, wt=se?se.scrollTop:0;
   const ae=document.activeElement; const fid=ae&&m.contains(ae)?ae.id:""; let sel=null; try{ if(fid&&ae.selectionStart!=null) sel=[ae.selectionStart,ae.selectionEnd]; }catch(e){}
+  let ck=""; if(!fid&&ae&&m.contains(ae)&&ae.matches("input[type=checkbox],input[type=radio],button")){ const a=[...ae.attributes].find(x=>x.name.startsWith("data-")); if(a) ck=`[${a.name}="${CSS.escape(a.value)}"]`; }
+  if(ae&&m.contains(ae)&&!fid) ae.blur();
   const keep={}; m.querySelectorAll("[data-keep]").forEach(el=>{ if(el.id) keep[el.id]=el.value; });
   m.innerHTML=view(); bind(); bindForm();
   for(const k in keep){ const el=document.getElementById(k); if(el) el.value=keep[k]; }
+  m.scrollTop=st; if(se&&se.scrollTop!==wt) se.scrollTop=wt;
   if(fid){ const el=document.getElementById(fid); if(el){ el.focus({preventScroll:true}); try{ if(sel) el.setSelectionRange(sel[0],sel[1]); }catch(e){} } }
+  else if(ck){ try{ m.querySelector(ck)?.focus({preventScroll:true}); }catch(e){} }
+  if(st>40){ const fix=()=>{ if(m.isConnected&&m.scrollTop<8) m.scrollTop=st; }; requestAnimationFrame(fix); setTimeout(fix,60); setTimeout(fix,250); }
 }
 const tabsHtml=(cur,arr,attr)=>`<div class="vtabs" role="tablist">${arr.map(([k,l])=>`<button type="button" role="tab" ${attr}="${k}" aria-selected="${cur===k}">${l}</button>`).join("")}</div>`;
 function fField(f,v){
