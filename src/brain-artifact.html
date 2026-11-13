@@ -958,6 +958,196 @@ a.btn{text-decoration:none;color:inherit}
   .bottomnav .fab-wrap{filter:drop-shadow(0 6px 14px rgba(47,123,255,.55))}
   .bottomnav .fab{width:60px;height:68px;margin-top:-36px;border-radius:0;box-shadow:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#8fd0ff,var(--h1) 35%,var(--h2) 75%,var(--h3))}
 }
+
+/* ===== Riadiace centrum – grafická nástenka (modré pozadie, sklenené karty) ===== */
+.main.cc-bg{background:
+  radial-gradient(900px 520px at 78% -8%,rgba(92,170,255,.32),transparent 60%),
+  radial-gradient(700px 500px at 0% 30%,rgba(40,110,255,.22),transparent 65%),
+  linear-gradient(165deg,#0d3283 0%,#0a2563 38%,#071a49 70%,#050f2e 100%);background-attachment:local}
+.view-dash.cc{--cc-glass:linear-gradient(160deg,rgba(64,128,255,.20),rgba(18,48,120,.30));--cc-line:rgba(130,185,255,.24);--cc-ink:#eef5ff;--cc-mut:#a9c3ea;--cc-cy:#7fd4ff;
+  max-width:1320px;gap:16px;color:var(--cc-ink)}
+.cc .sp{flex:1}
+.cc-card,.cc-kpi,.cc-head{background:var(--cc-glass);border:1px solid var(--cc-line);border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 34px rgba(2,10,40,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.cc-card{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative}
+.cc-card[data-go]{cursor:pointer;transition:transform .16s ease,border-color .16s ease}
+.cc-card[data-go]:hover,.cc-kpi:hover{transform:translateY(-2px);border-color:rgba(160,210,255,.5)}
+.cc-h{display:flex;align-items:center;gap:8px;min-width:0}
+.cc-h h2{font-size:15px;font-weight:720;display:flex;align-items:center;gap:8px;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-h h2 svg{width:18px;height:18px;color:var(--cc-cy);flex:none}
+.cc-pill{font-size:11.5px;font-weight:600;color:var(--cc-mut);background:rgba(255,255,255,.07);border:1px solid var(--cc-line);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.cc-link{border:0;background:none;color:var(--cc-cy);font-weight:650;font-size:13px;cursor:pointer;padding:4px 6px;border-radius:8px;white-space:nowrap}
+.cc-link:hover{background:rgba(255,255,255,.08)}
+.cc-empty,.cc-note{font-size:13.5px;color:var(--cc-mut);line-height:1.45}
+.cc-sub{font-size:13px;color:var(--cc-mut)}
+.cc .pos{color:#5fe3a8}.cc .neg{color:#ff8a80}
+.cc .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.10);border:0;overflow:hidden}
+.cc .bar i{background:linear-gradient(90deg,#2f7bff,#7fd4ff);border-radius:4px}
+
+/* Hlavička */
+.cc-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.8fr) minmax(0,1fr);gap:16px;align-items:center;padding:18px 22px;
+  background:radial-gradient(70% 140% at 55% 50%,rgba(127,212,255,.20),transparent 60%),linear-gradient(120deg,rgba(47,123,255,.35),rgba(11,44,122,.45));overflow:hidden}
+.cc-eyebrow{font-size:12px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-mut)}
+.cc-head h1{font-size:40px;font-weight:800;font-stretch:118%;line-height:1.05;margin-top:4px}
+.cc-head-sub{font-size:14px;color:var(--cc-mut);margin-top:4px}
+.cc-mini{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px}
+.cc-mini div{display:flex;flex-direction:column;gap:2px}
+.cc-mini span{font-size:11.5px;color:var(--cc-mut);font-weight:600}
+.cc-mini b{font-family:var(--f-display);font-stretch:112%;font-size:22px;font-weight:760;font-variant-numeric:tabular-nums}
+.cc-head-m{display:flex;justify-content:center;min-width:0}
+.cc-ill{width:100%;max-width:260px;height:auto;filter:drop-shadow(0 10px 24px rgba(47,123,255,.45))}
+.cc-head-r{display:flex;flex-direction:column;align-items:flex-end;gap:12px;min-width:0}
+.cc-clock{text-align:right}
+.cc-clock .hero-time{font-size:54px;color:#fff}
+.cc-nd{font-size:13px;color:var(--cc-mut);margin-top:6px}.cc-nd b{color:var(--cc-ink)}
+.cc-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.cc-btn{border:1px solid var(--cc-line);background:rgba(255,255,255,.10);color:#fff;border-radius:999px;padding:8px 14px;font-weight:650;font-size:13.5px;cursor:pointer;text-decoration:none;white-space:nowrap;min-height:38px;display:inline-flex;align-items:center}
+.cc-btn:hover{background:rgba(255,255,255,.18)}
+.cc-btn.pri{background:linear-gradient(160deg,#8fd0ff,#2f7bff);color:#041530;border-color:transparent}
+
+/* KPI */
+.cc-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.cc-kpi{position:relative;overflow:hidden;text-align:left;color:var(--cc-ink);padding:12px 14px 13px;display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0;transition:transform .16s ease,border-color .16s ease;font:inherit}
+.cc-kpi::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--cc-cy)}
+.cc-kpi.ok::before{background:#3ed6a0}.cc-kpi.warn::before{background:#ffc24a}.cc-kpi.crit::before{background:#ff6b5e}
+.cc-kpi-h{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:var(--cc-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-ic{width:26px;height:26px;border-radius:8px;background:rgba(127,212,255,.14);display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--cc-cy)}
+.cc-ic svg{width:16px;height:16px}
+.cc-kpi-v{font-family:var(--f-display);font-stretch:115%;font-weight:800;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.cc-kpi.crit .cc-kpi-v{color:#ffb0a8}
+.cc-kpi-s{font-size:12.5px;color:var(--cc-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-kpi-sp{position:absolute;right:8px;top:10px;color:var(--cc-cy);opacity:.9}
+.cc-spark{width:76px;height:26px;display:block}
+
+/* Mriežka */
+.cc-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.cc-dnes{grid-column:span 8}.cc-pri{grid-column:span 4}
+.cc-acc-c{grid-column:span 4}.cc-year{grid-column:span 8}
+.cc-don{grid-column:span 4}.cc-cf{grid-column:span 4}.cc-wk{grid-column:span 4}
+.cc-car,.cc-trip,.cc-goalc{grid-column:span 4}
+
+/* Dnes – časová os */
+.cc-tl{display:flex;flex-direction:column;gap:6px}
+.cc-tl-ticks{position:relative;height:16px;margin:0 14px}
+.cc-tl-ticks span{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--cc-mut);font-family:var(--f-mono)}
+.cc-tl-track{position:relative;margin:0 14px;background:rgba(3,12,40,.35);border:1px solid var(--cc-line);border-radius:12px;min-height:56px}
+.cc-tl-track>i{position:absolute;top:0;bottom:0;width:1px;background:rgba(160,200,255,.10)}
+.cc-tl-ev{position:absolute;height:34px;border:0;border-radius:9px;line-height:1.15;background:linear-gradient(90deg,color-mix(in srgb,var(--cc) 75%,#0a2563),color-mix(in srgb,var(--cc) 35%,#0a2563));box-shadow:inset 3px 0 0 var(--cc),0 4px 12px rgba(0,0,0,.25);color:#fff;font-size:12.5px;font-weight:600;padding:0 9px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;min-width:36px}
+.cc-tl-ev b{font-family:var(--f-mono);font-weight:500;opacity:.85}
+.cc-tl-none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--cc-mut)}
+.cc-tl-now{position:absolute;top:-6px;bottom:-6px;width:2px;background:#7fd4ff;box-shadow:0 0 10px #7fd4ff;transform:translateX(-1px);pointer-events:none}
+.cc-tl-now span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:#7fd4ff;color:#041530;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;font-family:var(--f-mono)}
+.cc-chips{margin-top:2px}
+.cc .hchip{color:#fff}
+
+/* Priority */
+.cc-pri .hp{background:rgba(3,12,40,.30);border:1px solid var(--cc-line);color:#fff}
+.cc-pri .chk{border-color:rgba(255,255,255,.6);background:transparent}
+
+/* Účty – kartičky na sebe */
+.cc-acc{display:flex;flex-direction:column}
+.cc-acc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;margin-bottom:-6px;position:relative;cursor:pointer;border:1px solid rgba(255,255,255,.16);box-shadow:0 -4px 14px rgba(0,0,0,.18)}
+.cc-acc-row span{font-size:13px;font-weight:600;color:rgba(255,255,255,.85)}
+.cc-acc-row b{font-family:var(--f-mono);font-size:14.5px;font-weight:500}
+.cc-acc-row.a1{background:linear-gradient(100deg,#ffb85c,#e0773c);z-index:1}.cc-acc-row.a1 span,.cc-acc-row.a1 b{color:#2a1300}
+.cc-acc-row.a2{background:linear-gradient(100deg,#4aa8ff,#2f5fe0);z-index:2}
+.cc-acc-row.a3{background:linear-gradient(100deg,#2fc3a0,#16807a);z-index:3}
+.cc-acc-tot{position:relative;z-index:4;background:linear-gradient(170deg,#123a8c,#0a2160);border:1px solid rgba(160,210,255,.35);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.cc-acc-tot>span{font-size:12px;color:var(--cc-mut);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.cc-acc-tot>b{font-family:var(--f-display);font-stretch:112%;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.cc-acc-io{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.cc-acc-io div{background:rgba(255,255,255,.07);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column}
+.cc-acc-io span{font-size:11.5px;color:var(--cc-mut)}
+.cc-acc-io b{font-family:var(--f-mono);font-weight:500;font-size:14px}
+.cc-acc-debt{display:flex;align-items:baseline;gap:8px;margin-top:10px;padding:8px 12px;border-radius:12px;background:rgba(255,107,94,.10);border:1px solid rgba(255,107,94,.25);cursor:pointer;flex-wrap:wrap}
+.cc-acc-debt span{font-size:13px;color:var(--cc-mut);flex:1}.cc-acc-debt b{font-family:var(--f-mono);font-weight:500;color:#ffb0a8}.cc-acc-debt small{font-size:12px;color:var(--cc-mut);width:100%}
+
+/* Grafy */
+.cc-svg{width:100%;height:auto;display:block;overflow:visible}
+.cc-gl{stroke:rgba(160,200,255,.12);stroke-width:1}
+.cc-zero{stroke:rgba(200,225,255,.35);stroke-width:1;stroke-dasharray:3 4}
+.cc-ax{fill:#a9c3ea;font-size:11px;font-family:var(--f-mono)}
+.cc-ax-cur{fill:#fff;font-weight:700}
+.cc-fut{fill:rgba(255,255,255,.10)}
+.cc-cur{filter:drop-shadow(0 0 6px rgba(127,212,255,.8))}
+.cc-hl{stroke:#7fd4ff;stroke-width:1.2;stroke-dasharray:2 3}
+.cc-tip{fill:#e9f6ff}.cc-tipt{fill:#05204f;font-size:11.5px;font-weight:700;font-family:var(--f-body)}
+.cc-dot{fill:#0a2563;stroke:#7fd4ff;stroke-width:2}.cc-dot.neg{stroke:#ff8a80}
+.cc-legrow{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--cc-mut);font-weight:600}
+.cc-legrow span{display:inline-flex;align-items:center;gap:6px}.cc-legrow i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.cc-donut{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:14px;align-items:center}
+.cc-donut svg{width:100%;height:auto}
+.cc-dn-v{fill:#fff;font-size:12px;font-weight:800;font-family:var(--f-display)}.cc-dn-s{fill:#a9c3ea;font-size:7px}
+.cc-leg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.cc-leg li{display:flex;align-items:center;gap:8px;font-size:12.5px;min-width:0}
+.cc-leg i{width:10px;height:10px;border-radius:3px;flex:none}
+.cc-leg span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--cc-mut)}
+.cc-leg b{font-family:var(--f-mono);font-weight:500}
+.cc-gauge{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.cc-g-v{fill:#fff;font-size:30px;font-weight:800;font-family:var(--f-display)}.cc-g-s{fill:#a9c3ea;font-size:11px}
+.cc-part{display:grid;grid-template-columns:5.2em minmax(0,1fr) 3.4em;gap:8px;align-items:center;font-size:12.5px;color:var(--cc-mut)}
+.cc-part b{text-align:right;font-family:var(--f-mono);font-weight:500;color:var(--cc-ink)}
+
+/* Auto, výlet, cieľ */
+.cc-car-pic{display:flex;justify-content:center;align-items:center;min-height:110px;background:radial-gradient(60% 70% at 50% 70%,rgba(127,212,255,.22),transparent 70%);border-radius:14px}
+.cc-car-pic svg,.cc-car-pic img{width:100%;max-width:280px;height:auto;max-height:130px;object-fit:contain;border-radius:12px}
+.cc-car-n{font-weight:720;font-size:16px}.cc-car-n small{font-size:12px;color:var(--cc-mut);font-weight:500;margin-left:6px}
+.cc-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cc-dl li{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.06);box-shadow:inset 3px 0 0 #3ed6a0}
+.cc-dl li.warn{box-shadow:inset 3px 0 0 #ffc24a}.cc-dl li.crit{box-shadow:inset 3px 0 0 #ff6b5e;background:rgba(255,107,94,.12)}
+.cc-dl b{font-family:var(--f-mono);font-weight:500}
+.cc-trip-top{position:relative;border-radius:14px;overflow:hidden;height:118px}
+.cc-trip-ill{width:100%;height:100%;display:block}
+.cc-trip-cd{position:absolute;left:14px;bottom:10px;display:flex;align-items:baseline;gap:8px;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.cc-trip-cd b{font-family:var(--f-display);font-stretch:118%;font-size:42px;font-weight:800;line-height:1}
+.cc-trip-cd span{font-size:13px;font-weight:600}
+.cc-trip-n{font-weight:720;font-size:16px}
+.cc-prog{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;font-size:12.5px;color:var(--cc-mut)}
+.cc-goal{position:relative;border-radius:14px;overflow:hidden;min-height:220px;display:flex;align-items:flex-end;background:linear-gradient(160deg,#3557e8,#0d1a5a)}
+.cc-goal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cc-goal-cap{position:relative;width:100%;padding:12px 14px;background:linear-gradient(180deg,transparent,rgba(3,12,40,.88) 40%);display:flex;flex-direction:column;gap:5px}
+.cc-goal-cap b{font-size:17px;font-weight:720}.cc-goal-cap span,.cc-goal-cap small{font-size:12.5px;color:var(--cc-mut)}
+
+/* Moduly – pôvodné widgety ako farebné dlaždice */
+.cc-modh{display:flex;align-items:center;gap:8px;margin-top:4px}
+.cc-modh h2{font-size:17px;font-weight:740}
+.cc-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.cc-mods .hx{width:auto;height:auto;min-height:150px;top:auto!important;align-items:flex-start;text-align:left;justify-content:flex-start;padding:14px 15px 15px;gap:4px;border-radius:18px;overflow:hidden}
+.cc-mods .hx::before{inset:0;clip-path:inset(0 round 18px)}
+.cc-mods .hx::after{inset:1px;clip-path:inset(0 round 17px)}
+.cc-mods .hx .sq-h{justify-content:flex-start;flex-wrap:nowrap;font-size:12px;text-transform:uppercase;width:100%}
+.cc-mods .hx .sq-h svg{width:17px;height:17px}
+.cc-mods .hx .sq-h .pill{margin-left:auto!important}
+.cc-mods .hx .w-big{font-size:32px;margin-top:6px!important}
+.cc-mods .hx .sq-sub,.cc-mods .hx .sq-line{font-size:12.5px}
+.cc-mods .hx .sq-line{margin-top:auto!important;padding-top:4px}
+.cc-mods .hx .sq-cal-d{align-items:flex-start;flex-direction:row;gap:8px;align-items:baseline}
+.cc-mods .hx .sq-cal-d .dn{font-size:34px}
+.cc-mods .hx .sq-img{inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);clip-path:inset(0 round 17px)}
+.cc-mods .hx .sq-edit{bottom:8px}
+.cc-mods .hx:hover{transform:translateY(-2px)}
+
+/* Tablet a menšie notebooky */
+@container dash (max-width:1060px){
+  .cc-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cc-head{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+  .cc-head-m{display:none}
+}
+@container dash (max-width:860px){
+  .cc-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .cc-dnes,.cc-year{grid-column:span 6}
+  .cc-pri,.cc-acc-c,.cc-don,.cc-cf,.cc-wk,.cc-car,.cc-trip,.cc-goalc{grid-column:span 3}
+}
+@container dash (max-width:600px){
+  .cc-head{grid-template-columns:minmax(0,1fr);padding:16px}
+  .cc-head-r{align-items:flex-start}.cc-clock{text-align:left}.cc-acts{justify-content:flex-start}
+  .cc-head h1{font-size:30px}
+  .cc-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .cc-kpi-v{font-size:24px}.cc-kpi-sp{display:none}
+  .cc-grid{grid-template-columns:minmax(0,1fr)}
+  .cc-grid>*{grid-column:auto!important}
+  .cc-mods{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){.cc-card,.cc-kpi{transition:none}}
 </style>
 
 <div class="app">
@@ -1282,6 +1472,7 @@ function stateBanner(){
 }
 function renderView(){
   const m=$("#main");
+  m.classList.toggle("cc-bg",S.view==="prehlad"&&dashStyle()==="cc");
   if(S.view==="prehlad") mount(m,viewPrehlad,bindPrehlad);
   else if(S.view==="posta") mount(m,viewPosta,()=>{});
   else if(S.view==="firma") mount(m,viewFirma,bindFirma);
@@ -1437,11 +1628,224 @@ function sqTile(id,cfg){
   const hid=cfg.hidden.has(id);
   return `<section class="hx ${cls} ${S.dashEdit&&hid?"sq-hidden":""}" ${S.dashEdit?"":`data-go="${esc(go)}"`} role="button" tabindex="0" aria-label="${esc(DASH_NAMES[id])}" style="${style}">${inner}${S.dashEdit?`<div class="sq-edit"><button type="button" data-dmove="${id}" data-dir="-1" aria-label="Posunúť ${esc(DASH_NAMES[id])} dopredu">◀</button><button type="button" data-dhide="${id}">${hid?"Zobraziť":"Skryť"}</button><button type="button" data-dmove="${id}" data-dir="1" aria-label="Posunúť ${esc(DASH_NAMES[id])} dozadu">▶</button></div>`:""}</section>`;
 }
+/* ========== RIADIACE CENTRUM – grafická nástenka (od 13. 11. 2026) ==========
+   Štýl „cc“ (predvolený) alebo pôvodný „plast“; voľba sa pamätá na zariadení (localStorage dm.dashStyle). */
+const dashStyle=()=>lsGet("dashStyle","cc")==="plast"?"plast":"cc";
+const ccMin=t=>{ const m=/^(\d{1,2}):(\d{2})/.exec(t||""); return m?Math.min(24*60,(+m[1])*60+(+m[2])):null; };
+const ccHM=n=>String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+const ccSign=n=>(n>0?"+":"")+eur0(n);
+const ccMonSh=mk=>MONTHS_N[+mk.slice(5,7)-1].slice(0,3);
+/* Súhrn dát pre nástenku – počíta sa raz na vykreslenie */
+function ccData(){
+  const td=today(), m0=td.slice(0,7), y=td.slice(0,4);
+  const F=finCarry(m0), incT=sumAmt(incMonth(m0)), st=expStats(m0), bal=r2(incT-st.total);
+  const loans=activeLoans(), debt=loans.reduce((s,l)=>s+(num(l.balance)||0),0), payM=loans.reduce((s,l)=>s+(num(l.payment)||0),0);
+  const assetsT=C.assets.reduce((s,a)=>s+(num(a.value)||0),0);
+  const sz=bzSet("safety"), safBal=sz.bal!=null&&sz.date?bzBalAt(td,"safety"):null, safM=bzMonth(m0,"safety");
+  const safLate=bzOpen("safety").filter(x=>x.due&&x.due<td), safOpen=bzOpen("safety");
+  const months=[]; for(let i=1;i<=12;i++){ const mk=y+"-"+String(i).padStart(2,"0"); const fut=mk>m0; months.push({mk,fut,inc:fut?0:sumAmt(incMonth(mk)),exp:fut?0:expStats(mk).total}); }
+  const six=[]; for(let k=5;k>=0;k--){ const mk=shiftMonth(m0,-k); six.push(r2(sumAmt(incMonth(mk))-expStats(mk).total)); }
+  const tasks=items().filter(isOpenTask), late=tasks.filter(t=>t.due&&t.due<td), dueToday=tasks.filter(t=>t.due===td);
+  const mailImp=S.mail.filter(x=>x.cat==="dolezite"&&!x.handled);
+  const pend=pendingDue();
+  const ws=weekStart(td), sc=weekScore(ws);
+  const Hh=activeHabits(), jt=jDoc(td), habDone=Hh.filter(h=>jt?.habits?.[h.id]).length;
+  const incToday=sumAmt(C.income.filter(i=>i.date===td)), expToday=sumAmt(expenses().filter(i=>i.date===td));
+  return {td,m0,y,F,incT,st,bal,debt,payM,assetsT,sz,safBal,safM,safLate,safOpen,months,six,tasks,late,dueToday,mailImp,pend,ws,sc,Hh,habDone,incToday,expToday,wp:weekPay()};
+}
+/* ---- Grafy (SVG) ---- */
+function ccYearBars(M,curMk){
+  const W=640,H=230,pl=44,pr=8,pt=26,pb=28, iw=W-pl-pr, ih=H-pt-pb;
+  const mx=Math.max(1,...M.map(m=>Math.max(m.inc,m.exp)));
+  const step=Math.pow(10,Math.floor(Math.log10(mx))); const top=Math.ceil(mx/step)*step||1;
+  const grid=[0,.25,.5,.75,1].map(f=>{ const yy=pt+ih-f*ih; return `<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" class="cc-gl"/><text x="${pl-6}" y="${yy+4}" class="cc-ax" text-anchor="end">${f?fmtN(top*f/1000,top>=4000?0:1)+"k":"0"}</text>`; }).join("");
+  const cw=iw/12, bw=Math.min(16,cw*.32);
+  let bars="", lab="", hi="";
+  M.forEach((m,i)=>{ const cx=pl+cw*i+cw/2, hI=m.inc/top*ih, hE=m.exp/top*ih, cur=m.mk===curMk;
+    if(m.fut){ bars+=`<rect x="${cx-bw-1}" y="${pt+ih-3}" width="${bw*2+2}" height="3" rx="1.5" class="cc-fut"/>`; }
+    else{ bars+=`<rect x="${cx-bw-1}" y="${(pt+ih-hI).toFixed(1)}" width="${bw}" height="${Math.max(0,hI).toFixed(1)}" rx="3" fill="url(#ccgI)" ${cur?'class="cc-cur"':""}><title>${esc(MONTHS_N[i])}: príjmy ${eur(m.inc)}</title></rect><rect x="${cx+1}" y="${(pt+ih-hE).toFixed(1)}" width="${bw}" height="${Math.max(0,hE).toFixed(1)}" rx="3" fill="url(#ccgE)"><title>${esc(MONTHS_N[i])}: výdavky ${eur(m.exp)}</title></rect>`; }
+    lab+=`<text x="${cx}" y="${H-8}" class="cc-ax ${cur?"cc-ax-cur":""}" text-anchor="middle">${MONTHS_N[i].slice(0,3)}</text>`;
+    if(cur){ const yy=Math.max(14,pt+ih-Math.max(hI,hE)-10); const t=`${MONTHS_N[i].slice(0,3)} · ${ccSign(r2(m.inc-m.exp))}`; const tw=t.length*6.6+16, tx=Math.min(W-pr-tw,Math.max(pl,cx-tw/2));
+      hi=`<line x1="${cx}" x2="${cx}" y1="${yy+4}" y2="${pt+ih}" class="cc-hl"/><rect x="${tx}" y="${yy-16}" width="${tw}" height="20" rx="10" class="cc-tip"/><text x="${tx+tw/2}" y="${yy-2}" class="cc-tipt" text-anchor="middle">${esc(t)}</text>`; } });
+  return `<svg class="cc-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Príjmy a výdavky po mesiacoch"><defs><linearGradient id="ccgI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#2f7bff"/></linearGradient><linearGradient id="ccgE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc977"/><stop offset="1" stop-color="#e0773c"/></linearGradient></defs>${grid}${hi}${bars}${lab}</svg>`;
+}
+function ccDonut(arr,labels,center,sub){
+  const tot=arr.reduce((s,x)=>s+x[1],0);
+  if(!(tot>0)) return `<div class="cc-empty">Tento mesiac zatiaľ bez výdavkov. Odfoť bloček alebo pridaj výdavok.</div>`;
+  const top=arr.slice(0,5), rest=arr.slice(5).reduce((s,x)=>s+x[1],0);
+  const cols=["#4aa8ff","#ffb85c","#3ed6a0","#b18cff","#ff7a9c","#8aa0bf"];
+  const segs=[...top.map(([k,v],i)=>({l:labels[k]||k,v,c:cols[i]})),...(rest>0?[{l:"Ostatné",v:rest,c:cols[5]}]:[])];
+  const r=40, Cc=2*Math.PI*r; let off=0;
+  const rings=segs.map(s=>{ const len=s.v/tot*Cc; const g=Math.min(2,len*.15); const el=`<circle cx="50" cy="50" r="${r}" fill="none" stroke="${s.c}" stroke-width="13" stroke-dasharray="${Math.max(0,len-g).toFixed(2)} ${(Cc-len+g).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)"><title>${esc(s.l)}: ${eur(s.v)}</title></circle>`; off+=len; return el; }).join("");
+  return `<div class="cc-donut"><svg viewBox="0 0 100 100" role="img" aria-label="Výdavky podľa kategórií"><circle cx="50" cy="50" r="${r}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="13"/>${rings}<text x="50" y="49" text-anchor="middle" class="cc-dn-v">${esc(center)}</text><text x="50" y="61" text-anchor="middle" class="cc-dn-s">${esc(sub)}</text></svg>
+    <ul class="cc-leg">${segs.map(s=>`<li><i style="background:${s.c}"></i><span>${esc(s.l)}</span><b>${Math.round(s.v/tot*100)} %</b></li>`).join("")}</ul></div>`;
+}
+function ccArea(vals,labels,{neg=false}={}){
+  const W=300,H=150,pl=10,pr=10,pt=28,pb=22, iw=W-pl-pr, ih=H-pt-pb;
+  const mn=Math.min(0,...vals), mx=Math.max(...vals,1), rg=mx-mn||1;
+  const X=i=>pl+(vals.length<2?iw/2:i/(vals.length-1)*iw), Y=v=>pt+ih-(v-mn)/rg*ih;
+  const pts=vals.map((v,i)=>[X(i),Y(v)]);
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=line+` L${X(vals.length-1).toFixed(1)} ${(pt+ih).toFixed(1)} L${X(0).toFixed(1)} ${(pt+ih).toFixed(1)} Z`;
+  const zero=mn<0?`<line x1="${pl}" x2="${W-pr}" y1="${Y(0)}" y2="${Y(0)}" class="cc-zero"/>`:"";
+  const last=pts[pts.length-1];
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===0?4:3}" class="${vals[i]<0?"cc-dot neg":"cc-dot"}"><title>${esc(labels[i])}: ${eur(vals[i])}</title></circle>`).join("");
+  const lab=labels.map((l,i)=>`<text x="${X(i)}" y="${H-6}" text-anchor="middle" class="cc-ax">${esc(l)}</text>`).join("");
+  const t=eur0(vals[vals.length-1]), tw=t.length*6.6+16, tx=Math.min(W-pr-tw,Math.max(pl,last[0]-tw/2)), ty=Math.max(4,last[1]-28);
+  return `<svg class="cc-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Predpoveď zostatku"><defs><linearGradient id="ccgA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa8ff" stop-opacity=".55"/><stop offset="1" stop-color="#4aa8ff" stop-opacity="0"/></linearGradient></defs>
+    ${[0,.5,1].map(f=>`<line x1="${pl}" x2="${W-pr}" y1="${pt+ih*f}" y2="${pt+ih*f}" class="cc-gl"/>`).join("")}${zero}<path d="${area}" fill="url(#ccgA)"/><path d="${line}" fill="none" stroke="#7fd4ff" stroke-width="2.5" stroke-linejoin="round"/>${dots}
+    <rect x="${tx}" y="${ty}" width="${tw}" height="20" rx="10" class="cc-tip"/><text x="${tx+tw/2}" y="${ty+14}" text-anchor="middle" class="cc-tipt">${esc(t)}</text>${lab}</svg>`;
+}
+function ccNetBars(vals,labels,curIdx){
+  const W=300,H=150,pt=16,pb=22,pl=8,pr=8, ih=H-pt-pb, iw=W-pl-pr;
+  const mx=Math.max(1,...vals.map(Math.abs)), hasNeg=vals.some(v=>v<0), z=hasNeg?pt+ih/2:pt+ih, sc=(hasNeg?ih/2:ih)/mx, cw=iw/vals.length, bw=Math.min(34,cw*.5);
+  return `<svg class="cc-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Čistý cash flow po mesiacoch"><line x1="${pl}" x2="${W-pr}" y1="${z}" y2="${z}" class="cc-zero"/>${vals.map((v,i)=>{ const cx=pl+cw*i+cw/2, h=Math.abs(v)*sc; return `<rect x="${cx-bw/2}" y="${(v>=0?z-h:z).toFixed(1)}" width="${bw}" height="${Math.max(1,h).toFixed(1)}" rx="4" fill="${v>=0?"url(#ccgI2)":"#f2675c"}" opacity="${i>curIdx?.55:1}"><title>${esc(labels[i])}: ${eur(v)}</title></rect><text x="${cx}" y="${H-6}" text-anchor="middle" class="cc-ax ${i===curIdx?"cc-ax-cur":""}">${esc(labels[i])}</text>`; }).join("")}<defs><linearGradient id="ccgI2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#2f7bff"/></linearGradient></defs></svg>`;
+}
+function ccGauge(v){
+  const p=v==null?0:Math.max(0,Math.min(100,v));
+  return `<svg class="cc-gauge" viewBox="0 0 200 118" role="img" aria-label="Skóre týždňa ${v==null?"bez údajov":Math.round(p)+" %"}"><defs><linearGradient id="ccgG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f2675c"/><stop offset=".5" stop-color="#ffc24a"/><stop offset="1" stop-color="#3ed6a0"/></linearGradient></defs>
+    <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="16" stroke-linecap="round"/>
+    <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#ccgG)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="${p.toFixed(1)} 100"/>
+    <text x="100" y="92" text-anchor="middle" class="cc-g-v">${v==null?"–":Math.round(p)+" %"}</text><text x="100" y="112" text-anchor="middle" class="cc-g-s">skóre týždňa</text></svg>`;
+}
+const ccSpark=vals=>{ if(vals.length<2||vals.every(v=>!v)) return ""; const w=120,h=34, mn=Math.min(...vals), mx=Math.max(...vals), r=mx-mn||1;
+  const pts=vals.map((x,i)=>[(i/(vals.length-1)*(w-4)+2),(h-4-(x-mn)/r*(h-8))]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  return `<svg class="cc-spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w-2} ${h} L2 ${h} Z" fill="currentColor" opacity=".16"/><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`; };
+/* ---- Ilustrácie ---- */
+const CC_HOUSE=`<svg class="cc-ill" viewBox="0 0 260 170" aria-hidden="true"><defs><linearGradient id="cch1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient><linearGradient id="cch2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f7bff"/><stop offset="1" stop-color="#0b2c7a"/></linearGradient><radialGradient id="cch3" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7fd4ff" stop-opacity=".55"/><stop offset="1" stop-color="#7fd4ff" stop-opacity="0"/></radialGradient></defs>
+  <ellipse cx="130" cy="146" rx="118" ry="20" fill="url(#cch3)"/><ellipse cx="130" cy="146" rx="96" ry="14" fill="none" stroke="#7fd4ff" stroke-opacity=".55" stroke-width="1.5"/><ellipse cx="130" cy="146" rx="70" ry="9" fill="none" stroke="#7fd4ff" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="4 5"/>
+  <path d="M78 140V86l52-34 52 34v54z" fill="url(#cch2)" stroke="#8fd0ff" stroke-opacity=".7"/><path d="M66 90l64-44 64 44" fill="none" stroke="#bfe6ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="skewX(-22) translate(54 0)"><rect x="96" y="58" width="44" height="22" rx="2" fill="#0a1f5c" stroke="#7fd4ff" stroke-width="1.2"/><path d="M107 58v22M118 58v22M129 58v22M96 69h44" stroke="#7fd4ff" stroke-opacity=".7" stroke-width=".9"/></g>
+  <rect x="96" y="102" width="22" height="20" rx="2" fill="url(#cch1)" opacity=".9"/><rect x="142" y="102" width="22" height="20" rx="2" fill="url(#cch1)" opacity=".9"/><rect x="121" y="112" width="18" height="28" rx="2" fill="#071433" stroke="#8fd0ff" stroke-opacity=".6"/>
+  <circle cx="206" cy="40" r="12" fill="#ffd36b"/><g stroke="#ffd36b" stroke-width="2" stroke-linecap="round"><path d="M206 18v-6M206 68v-6M184 40h-6M234 40h-6M190 24l-4-4M226 60l-4-4M190 56l-4 4M226 20l-4 4"/></g>
+  <path d="M206 54l-30 18" stroke="#ffd36b" stroke-opacity=".5" stroke-dasharray="3 4"/></svg>`;
+const CC_TRIP=`<svg class="cc-trip-ill" viewBox="0 0 320 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cct1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa6f0"/><stop offset="1" stop-color="#0b3f6e"/></linearGradient></defs><rect width="320" height="120" fill="url(#cct1)"/><circle cx="250" cy="34" r="16" fill="#ffd36b" opacity=".9"/><path d="M0 120L70 52l40 34 50-56 70 70 40-30 50 50z" fill="#0a2a55" opacity=".85"/><path d="M0 120l50-36 50 30 60-40 80 46H0z" fill="#06203f"/><path d="M150 30l-4-8M50 40q30-20 70-6" stroke="#bfe6ff" stroke-width="1.5" fill="none" stroke-dasharray="3 4" opacity=".7"/><path d="M118 33l10-3-3-4 4-1 5 4 9-2 2 2-9 4 1 6-3 1-3-5-9 3-2 2-2-1z" fill="#fff"/></svg>`;
+/* ---- Časová os dňa ---- */
+function ccTimeline(D){
+  const ev=agenda(D.td,D.td,{filter:it=>it.type==="udalost"});
+  const timed=ev.map(e=>{ const s=ccMin(e.it.time); if(s==null) return null; let en=ccMin(e.it._end||e.it.timeEnd||""); if(en==null||en<=s) en=s+60; return {e,s,en}; }).filter(Boolean).sort((a,b)=>a.s-b.s);
+  let h0=6*60, h1=20*60; for(const t of timed){ h0=Math.min(h0,Math.floor(t.s/60)*60); h1=Math.max(h1,Math.ceil(t.en/60)*60); } h1=Math.min(h1,24*60);
+  const span=h1-h0, minW=Math.round(span*.23), lanes=[]; for(const t of timed){ t.ve=Math.max(t.en,t.s+minW); if(t.ve>h1){ t.vs=Math.max(h0,h1-(t.ve-t.s)); t.ve=h1; } else t.vs=t.s; let l=lanes.findIndex(x=>x<=t.vs); if(l<0){ l=lanes.length; lanes.push(0); } lanes[l]=t.ve+5; t.l=l; }
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+  const hrs=[]; for(let h=h0; h<=h1; h+=60) hrs.push(h);
+  const stepH=span>9*60?2:1;
+  const ticks=hrs.filter((h,i)=>i%stepH===0).map(h=>`<span style="left:${((h-h0)/span*100).toFixed(2)}%">${String(h/60).padStart(2,"0")}:00</span>`).join("");
+  const grid=hrs.map(h=>`<i style="left:${((h-h0)/span*100).toFixed(2)}%"></i>`).join("");
+  const bars=timed.map(t=>`<button type="button" class="cc-tl-ev" ${openAttr(t.e.it)} style="left:${((t.vs-h0)/span*100).toFixed(2)}%;width:${((t.ve-t.vs)/span*100).toFixed(2)}%;top:${8+t.l*40}px;--cc:${calColor(t.e.it)}" title="${esc(t.e.it.time+" "+(t.e.it.title||""))}"><b>${esc(t.e.it.time)}</b> ${esc(t.e.it.title||"Bez názvu")}</button>`).join("");
+  const nowL=nm>=h0&&nm<=h1?`<div class="cc-tl-now" style="left:${((nm-h0)/span*100).toFixed(2)}%"><span>${ccHM(nm)}</span></div>`:"";
+  const H=Math.max(1,lanes.length)*40+16;
+  return {html:`<div class="cc-tl"><div class="cc-tl-ticks">${ticks}</div><div class="cc-tl-track" style="height:${H}px">${grid}${bars||`<div class="cc-tl-none">Dnes žiadne udalosti s časom.</div>`}${nowL}</div></div>`,n:timed.length};
+}
+function ccChips(D){
+  const td=D.td;
+  const ev=agenda(td,td,{filter:it=>it.type==="udalost"}).filter(e=>ccMin(e.it.time)==null);
+  const pend=D.pend.filter(x=>dayDiff(x.d)<=1);
+  return [
+    ...pend.map(x=>{ const n=dayDiff(x.d); return `<span class="hchip gold" ${x.go?`data-go="${esc(x.go)}"`:x.open?`data-open="${esc(x.open)}"`:""}>${n<0?"Po termíne":n===0?"Dnes":"Zajtra"}: ${esc(x.t)} <button type="button" data-confirm="${esc(x.key)}" data-clabel="${esc(x.t)}" ${x.car?`data-after="car:${esc(x.car)}:${esc(x.ck)}"`:""}>Hotovo</button></span>`; }),
+    ...D.tasks.filter(t=>t.due&&t.due<=td).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,4).map(t=>`<span class="hchip red" data-open="${esc(t.id)}">${t.due<td?"Mešká":"Dnes"}: ${esc(t.title)}</span>`),
+    ...ev.map(e=>`<span class="hchip" style="--cc:${calColor(e.it)}" ${openAttr(e.it)}>${esc(e.it.title)}</span>`),
+    ...inboxNew().slice(0,3).map(x=>`<span class="hchip red" data-go="ludia/odkazy">Odkaz od ${esc(x.from||"?")}: ${esc(String(x.text||"").slice(0,60))}</span>`),
+    ...waitLate().slice(0,2).map(w=>`<span class="hchip" style="--cc:var(--wf-gold)" data-go="ludia/cakam">Urgovať: ${esc(w.what)}${w.who?" ("+esc(w.who)+")":""}</span>`)];
+}
+function ccPriorities(){
+  const tg=jNorm(JSON.parse(JSON.stringify(jDoc(today())||{}))).targets.slice(0,3), wp=weekPriorities();
+  const ph=["Najdôležitejšia vec dnes","Druhá priorita","Tretia priorita"];
+  const rows=tg.map((x,i)=>x.t&&S.heroEdit!==i
+    ?`<div class="hp-row ${x.done?"done":""}"><input type="checkbox" class="chk" data-tgt="${i}" ${x.done?"checked":""} aria-label="Priorita ${i+1} splnená"><span class="n">${esc(x.t)}</span><button type="button" class="hp-x" data-tgtedit="${i}" aria-label="Upraviť prioritu ${i+1}">✎</button></div>`
+    :`<div class="hp-row"><span class="hp-num">${i+1}</span><input type="text" id="heroP${i}" ${S.heroEdit===i?"":"data-keep"} data-tgtin="${i}" value="${S.heroEdit===i?esc(x.t):""}" placeholder="${ph[i]}, potom Enter" autocomplete="off" aria-label="Priorita ${i+1}"></div>`).join("");
+  const set=tg.filter(x=>x.t).length, dn=tg.filter(x=>x.t&&x.done).length;
+  return {html:rows+(wp.length?`<div class="hp-w"><b>Týždeň:</b> ${wp.map(esc).join(" · ")}</div>`:""),set,dn};
+}
+const ccCard=(cls,title,right,body,go)=>`<section class="cc-card ${cls}" ${go?`data-go="${esc(go)}" role="button" tabindex="0"`:""}><div class="cc-h"><h2>${title}</h2><span class="sp"></span>${right||""}</div>${body}</section>`;
+const ccKpi=(ic,k,v,s,go,tone,extra)=>`<button type="button" class="cc-kpi ${tone||""}" data-go="${esc(go)}"><span class="cc-kpi-h"><span class="cc-ic">${ic}</span>${k}</span><span class="cc-kpi-v">${v}</span><span class="cc-kpi-s">${s}</span>${extra||""}</button>`;
+function ccView(cfg){
+  const D=ccData(), now=new Date(), td=D.td;
+  const evN=agenda(td,td,{filter:it=>it.type==="udalost"}).length;
+  const disp=D.F.pre?D.bal:D.F.disp;
+  const saveRate=D.incT>0?Math.round((D.incT-D.st.total)/D.incT*100):null;
+  /* KPI pás */
+  const kpis=[
+    ccKpi(ICONS.financie,"Osobné peniaze",eur0(disp),D.F.pre?"bilancia mesiaca":`bilancia ${MONTHS_N[now.getMonth()]}: ${ccSign(D.F.bal)}`,"financie/prehlad",disp<0?"crit":"ok",`<span class="cc-kpi-sp">${ccSpark(D.six)}</span>`),
+    ccKpi(ICONS.firma,"Safety Electric",D.safBal!=null?eur0(D.safBal):ccSign(D.safM.net),D.safBal!=null?`stav účtu dnes${D.safLate.length?` · po splatnosti ${eur0(sumAmt(D.safLate))}`:` · očakávané ${eur0(sumAmt(D.safOpen))}`}`:`cash flow ${MONTHS_N[now.getMonth()]}`,"financie/safety",D.safLate.length?"warn":""),
+    ccKpi(ICO.check,"Úlohy",String(D.tasks.length),D.late.length?`${D.late.length} mešká · ${D.dueToday.length} dnes`:`${D.dueToday.length} na dnes`,"lib/uloha",D.late.length?"crit":""),
+    ccKpi(ICO.mail,"Dôležitá pošta",String(D.mailImp.length),D.mailImp[0]?esc(D.mailImp[0].from||D.mailImp[0].subject||""):(S.mailMeta?"všetko vybavené":"agent ešte nebežal"),"posta",D.mailImp.length?"warn":"ok"),
+    ccKpi(ICO.clock,"Na potvrdenie",String(D.pend.length),D.pend[0]?esc(D.pend[0].t):"STK, poistky, splátky v poriadku",D.pend[0]?.go||"kalendar",D.pend.some(x=>dayDiff(x.d)<0)?"crit":D.pend.length?"warn":"ok"),
+    ccKpi(ICONS.revizia,"Týždeň",D.sc.score==null?"–":Math.round(D.sc.score)+" %",`návyky dnes ${D.habDone}/${D.Hh.length}`,"revizia","")
+  ].join("");
+  /* Účty */
+  const safRow=D.safBal!=null?D.safBal:null;
+  const total=r2((D.F.pre?0:D.F.disp)+(safRow||0)+D.assetsT);
+  const acc=`<div class="cc-acc">
+    <div class="cc-acc-row a1" data-go="financie/prehlad" role="button" tabindex="0"><span>Osobný účet</span><b>${D.F.pre?"—":eur0(D.F.disp)}</b></div>
+    <div class="cc-acc-row a2" data-go="financie/safety" role="button" tabindex="0"><span>Safety Electric · firma</span><b>${safRow!=null?eur0(safRow):"nastaviť"}</b></div>
+    <div class="cc-acc-row a3" data-go="financie/majetok" role="button" tabindex="0"><span>Úspory, zlato, investície</span><b>${eur0(D.assetsT)}</b></div>
+    <div class="cc-acc-tot"><span>Peniaze spolu</span><b>${eur(total)}</b>
+      <div class="cc-acc-io"><div><span>Príjem dnes</span><b class="pos">${ccSign(D.incToday)}</b></div><div><span>Výdavky dnes</span><b class="neg">${D.expToday?"−"+eur0(D.expToday):eur0(0)}</b></div></div></div>
+    ${D.debt>0?`<div class="cc-acc-debt" data-go="financie/uvery" role="button" tabindex="0"><span>Úvery a leasingy</span><b>−${eur0(D.debt)}</b><small>splátky ${eur0(D.payM)}/mes.</small></div>`:""}</div>`;
+  /* Dnes */
+  const TL=ccTimeline(D), chips=ccChips(D), P=ccPriorities();
+  const dnes=`${TL.html}${chips.length?`<div class="hchips cc-chips">${chips.slice(0,8).join("")}</div>`:""}`;
+  /* Financie rok */
+  const yInc=sumAmt(D.months.map(m=>({amount:m.inc}))), yExp=sumAmt(D.months.map(m=>({amount:m.exp})));
+  const yr=`<div class="cc-legrow"><span><i style="background:linear-gradient(#7fd4ff,#2f7bff)"></i>Príjmy ${eur0(yInc)}</span><span><i style="background:linear-gradient(#ffc977,#e0773c)"></i>Výdavky ${eur0(yExp)}</span><span class="${yInc-yExp>=0?"pos":"neg"}">Bilancia ${ccSign(r2(yInc-yExp))}</span></div>${ccYearBars(D.months,D.m0)}`;
+  /* Safety cash flow */
+  let cf;
+  if(D.sz.bal!=null&&D.sz.date){ const vals=[D.safBal??0], labs=["dnes"]; for(let k=0;k<6;k++){ const mk=shiftMonth(D.m0,k); const e=mEnd(mk); if(e<=td) continue; vals.push(bzBalAt(e,"safety")??0); labs.push(ccMonSh(mk)); if(vals.length>=6) break; } cf=ccArea(vals,labs); }
+  else { const vals=[], labs=[]; for(let k=-3;k<=2;k++){ const mk=shiftMonth(D.m0,k); vals.push(bzMonth(mk,"safety").net); labs.push(ccMonSh(mk)); } cf=ccNetBars(vals,labs,3)+`<div class="cc-note">Zadaj stav firemného účtu a ukážem predpoveď zostatku.</div>`; }
+  /* Auto */
+  const ord={crit:0,warn:1,ok:2};
+  const cd=C.cars.flatMap(c=>carDeadlines(c).map(x=>({...x,c}))).sort((a,b)=>(ord[a.state]-ord[b.state])||((a.days??9999)-(b.days??9999)));
+  const car=cd[0]?.c||C.cars[0];
+  const carHtml=car?`<div class="cc-car-pic">${carPic(car,"cc")}</div><div class="cc-car-n">${esc(car.name||"Auto")}${car.km?` <small>${fmtN(car.km,0)} km</small>`:""}</div><ul class="cc-dl">${cd.filter(x=>x.c===car).slice(0,3).map(x=>`<li class="${x.state}"><span>${esc(x.l)}</span><b>${x.days==null?"—":x.days<0?`${-x.days} d po`:x.days===0?"dnes":`${x.days} d`}</b></li>`).join("")||`<li><span>Všetko v poriadku</span></li>`}</ul>`:`<div class="cc-empty">Pridaj auto – budem strážiť STK, poistky a servis.</div>`;
+  /* Výlet */
+  const nt=C.trips.filter(t=>t.start&&(t.end||t.start)>=td).sort(tripSort)[0];
+  const tripHtml=nt?(()=>{ const n=dayDiff(nt.start), pr=tripProg(nt.prep), pk=tripProg(nt.packing); return `<div class="cc-trip-top">${CC_TRIP}<div class="cc-trip-cd"><b>${n>0?n:"Teraz"}</b><span>${n>0?plural(n,"deň","dni","dní")+" do odchodu":"prebieha"}</span></div></div><div class="cc-trip-n">${esc(nt.name||nt.dest||"Výlet")}</div><div class="cc-sub">${esc(nt.dest||"")}${nt.dest?" · ":""}${esc(tripDates(nt))}</div><div class="cc-prog"><span>Príprava ${pr.d}/${pr.n}</span><div class="bar"><i style="width:${pr.p}%"></i></div><span>Balenie ${pk.d}/${pk.n}</span><div class="bar"><i style="width:${pk.p}%"></i></div></div>`; })()
+    :`<div class="cc-trip-top">${CC_TRIP}</div><div class="cc-empty">Žiadny naplánovaný výlet.</div>`;
+  /* Cieľ */
+  const gs=C.goals.filter(g=>g.status!=="splneny");
+  const goal=gs.filter(g=>g.image).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"))[0]||gs.sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"))[0];
+  const goalHtml=goal?(()=>{ const p=Math.max(0,Math.min(100,num(goal.progress)||0)), f=goalFin(goal); return `<div class="cc-goal ${goal.image?"":"noimg"}">${goal.image?`<img src="/_blob/${esc(goal.image)}" alt="" loading="lazy">`:""}<div class="cc-goal-cap"><b>${esc(goal.title)}</b><span>${goal.due?"do "+fmtDate(goal.due):esc(HORIZON[goal.horizon]||"")}${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span><div class="bar"><i style="width:${p}%"></i></div><small>${p} % splnené · ${gs.length} ${plural(gs.length,"cieľ","ciele","cieľov")} spolu</small></div></div>`; })()
+    :`<div class="cc-empty">Pridaj si sen alebo cieľ s fotkou.</div>`;
+  /* Týždeň */
+  const sc=D.sc, part=(l,v)=>`<div class="cc-part"><span>${l}</span><div class="bar"><i style="width:${v==null?0:Math.round(Math.min(100,v))}%"></i></div><b>${pctR(v)}</b></div>`;
+  const wk=`${ccGauge(sc.score)}${part("Priority",sc.pri)}${part("Návyky",sc.hab)}${part("Pohyb",sc.mov)}`;
+  /* Moduly */
+  const tiles=cfg.order.filter(id=>S.dashEdit||!cfg.hidden.has(id)).map(id=>sqTile(id,cfg)).join("");
+  const sub=[evN?`${evN} ${plural(evN,"udalosť","udalosti","udalostí")}`:"bez udalostí",`${D.dueToday.length+D.late.length} ${plural(D.dueToday.length+D.late.length,"úloha","úlohy","úloh")} na dnes`,`${D.mailImp.length} ${plural(D.mailImp.length,"dôležitý mail","dôležité maily","dôležitých mailov")}`].join(" · ");
+  return `<div class="view view-dash cc">${stateBanner()}
+  <header class="cc-head">
+    <div class="cc-head-l"><div class="cc-eyebrow">Brain · riadiace centrum · ${DAYS[now.getDay()]} ${now.getDate()}. ${MONTHS[now.getMonth()]} ${now.getFullYear()}</div><h1>Prehľad dňa</h1><div class="cc-head-sub">${sub}</div>
+      <div class="cc-mini"><div><span>Príjmy · ${MONTHS_N[now.getMonth()]}</span><b>${eur0(D.incT)}</b></div><div><span>Výdavky · ${MONTHS_N[now.getMonth()]}</span><b>${eur0(D.st.total)}</b></div><div><span>Miera sporenia</span><b class="${saveRate==null?"":saveRate>=20?"pos":saveRate<0?"neg":""}">${saveRate==null?"–":saveRate+" %"}</b></div></div></div>
+    <div class="cc-head-m">${CC_HOUSE}</div>
+    <div class="cc-head-r"><div class="cc-clock"><div class="hero-time" id="heroTime">${clockTxt()}</div>${meninyFor(td)?`<div class="cc-nd">Meniny: <b>${esc(meninyFor(td))}</b></div>`:""}</div>
+      <div class="cc-acts"><a class="cc-btn" href="shortcuts://run-shortcut?name=Do%20mozgu">🎤 Nahovoriť</a><label class="cc-btn" for="photoAnyH">📷 Odfotiť</label><input type="file" id="photoAnyH" accept="image/*,application/pdf" hidden><button class="cc-btn" type="button" data-go="dennik">Denník</button><button class="cc-btn pri" type="button" data-view="zapis">+ Pridať</button></div></div>
+  </header>
+  <div class="cc-kpis">${kpis}</div>
+  <div class="cc-grid">
+    ${ccCard("cc-dnes",`${ICO.cal} Dnes`,`<span class="cc-pill">${TL.n} s časom · ${chips.length} ďalších</span><button class="cc-link" type="button" data-go="kalendar">Kalendár →</button>`,dnes)}
+    <section class="cc-card cc-pri"><div class="cc-h"><h2>${ICO.star} 3 priority dňa</h2><span class="sp"></span>${P.set?`<span class="cc-pill">${P.dn}/${P.set}</span>`:""}</div><div class="hp">${P.html}</div></section>
+    ${ccCard("cc-acc-c",`${ICONS.financie} Účty a peniaze`,`<button class="cc-link" type="button" data-go="financie/prehlad">Financie →</button>`,acc)}
+    ${ccCard("cc-year",`${ICO.coin} Financie ${D.y}`,`<span class="cc-pill">mesačne · príjmy a výdavky</span>`,yr)}
+    ${ccCard("cc-don",`Kam idú peniaze · ${MONTHS_N[now.getMonth()]}`,"",ccDonut(D.st.catArr,EXPCAT,eur0(D.st.total),"výdavky"),"financie/vydavky")}
+    ${ccCard("cc-cf",`${ICONS.firma} Safety · cash flow`,`<span class="cc-pill">${D.sz.bal!=null&&D.sz.date?"predpoveď zostatku":"čistý tok"}</span>`,cf,"financie/safety")}
+    ${ccCard("cc-wk",`${ICONS.revizia} Môj týždeň`,"",wk,"revizia")}
+    ${ccCard("cc-car",`${ICONS.auta} Autá`,"",carHtml,car?"auta/"+car.id:"auta")}
+    ${ccCard("cc-trip",`${ICONS.vylety} Najbližší výlet`,"",tripHtml,nt?"vylety/"+nt.id:"vylety")}
+    ${ccCard("cc-goalc",`${ICONS.ciele} Ciele a sny`,"",goalHtml,"ciele")}
+  </div>
+  <div class="cc-modh"><h2>Moduly</h2><span class="sp"></span><button class="cc-link" type="button" id="dashEditBtn">${S.dashEdit?"Hotovo":"Upraviť moduly"}</button><button class="cc-link" type="button" data-dstyle="plast">Pôvodný plást</button></div>
+  ${S.dashEdit?'<div class="cc-note">Šípkami presúvaš moduly, Skryť ich odstráni z nástenky.</div>':""}
+  <div class="cc-mods">${tiles}</div>
+  </div>`;
+}
+
 function viewPrehlad(){
   const cfg=dashCfg();
+  if(dashStyle()==="cc") return ccView(cfg);
   const tiles=cfg.order.filter(id=>S.dashEdit||!cfg.hidden.has(id)).map(id=>sqTile(id,cfg)).join("");
   return `<div class="view view-dash">${stateBanner()}${heroHtml()}<div class="hive">${tiles}</div>
-    <div class="dash-foot"><button class="btn sm ${S.dashEdit?"primary":"ghost"}" type="button" id="dashEditBtn">${S.dashEdit?"Hotovo":"Upraviť nástenku"}</button>${S.dashEdit?'<span style="font-size:13px;color:var(--muted)">Šípkami presúvaš widgety, Skryť ich odstráni z nástenky.</span>':""}</div></div>`;
+    <div class="dash-foot"><button class="btn sm ${S.dashEdit?"primary":"ghost"}" type="button" id="dashEditBtn">${S.dashEdit?"Hotovo":"Upraviť nástenku"}</button><button class="btn sm ghost" type="button" data-dstyle="cc">Grafická nástenka</button>${S.dashEdit?'<span style="font-size:13px;color:var(--muted)">Šípkami presúvaš widgety, Skryť ich odstráni z nástenky.</span>':""}</div></div>`;
 }
 function bindPrehlad(){
   document.querySelectorAll("[data-tgt]").forEach(cb=>cb.onchange=()=>{ const i=+cb.dataset.tgt; jPatch(today(),j=>{ if(j.targets[i]) j.targets[i].done=cb.checked; }); });
@@ -1453,6 +1857,7 @@ function bindPrehlad(){
     inp.onblur=()=>{ if(inp.value.trim()||S.heroEdit===+inp.dataset.tgtin) save(); };
   });
   $("#dashEditBtn")&&($("#dashEditBtn").onclick=()=>{ S.dashEdit=!S.dashEdit; renderView(); });
+  document.querySelectorAll("[data-dstyle]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); lsSet("dashStyle",b.dataset.dstyle); S.dashEdit=false; renderView(); $("#main").scrollTop=0; });
   document.querySelectorAll("[data-dmove]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const {order,hidden}=dashCfg(); const i=order.indexOf(b.dataset.dmove), j=i+(+b.dataset.dir); if(j<0||j>=order.length) return; [order[i],order[j]]=[order[j],order[i]]; saveDash(order,hidden); });
   document.querySelectorAll("[data-dhide]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const {order,hidden}=dashCfg(); const id=b.dataset.dhide; hidden.has(id)?hidden.delete(id):hidden.add(id); saveDash(order,hidden); });
 }
@@ -3145,7 +3550,7 @@ function bindPohyby(){
 /* Udalosti z Google Kalendára (kolekcia gcal – zapisuje ranný agent) */
 const GCAL_CAL=c=>CALS[c]?c:"osobne";
 function gcalEvents(from,to){ const out=[]; for(const g of C.gcal){ if(!ISO_RE.test(g.date||"")||g.status==="cancelled") continue; const end=ISO_RE.test(g.endDate||"")&&g.endDate>=g.date?g.endDate:g.date;
-  if(end<from||g.date>to) continue; let d=g.date<from?from:g.date, k=0; while(d<=end&&d<=to&&k<62){ out.push({d,it:{id:"gc-"+g.id+"-"+d,type:"udalost",title:(g.title||"Udalosť")+(g.location?" · "+String(g.location).split(",")[0]:""),cal:GCAL_CAL(g.cal),area:g.cal==="rodina"?"rodina":"",time:d===g.date?(g.time||""):"",_go:"kalendar",_gcal:true}}); d=addDays(d,1); k++; } }
+  if(end<from||g.date>to) continue; let d=g.date<from?from:g.date, k=0; while(d<=end&&d<=to&&k<62){ out.push({d,it:{id:"gc-"+g.id+"-"+d,type:"udalost",title:(g.title||"Udalosť")+(g.location?" · "+String(g.location).split(",")[0]:""),cal:GCAL_CAL(g.cal),area:g.cal==="rodina"?"rodina":"",time:d===g.date?(g.time||""):"",_end:d===g.date&&(!g.endDate||g.endDate===g.date)?(g.endTime||""):"",_go:"kalendar",_gcal:true}}); d=addDays(d,1); k++; } }
   return out; }
 
 function bindFinancie(){
