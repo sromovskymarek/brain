@@ -2141,7 +2141,7 @@ function mailLine(x){
     </div>
     <div class="ml-act">${st
       ?`<button type="button" class="ml-b" data-mst="${esc(x.id)}" data-v="">↺ Vrátiť</button>`
-      :`<button type="button" class="ml-b" data-mst="${esc(x.id)}" data-v="nepodstatne" title="Nepodstatné – skryť">Nepodstatné</button><button type="button" class="ml-b ok" data-mst="${esc(x.id)}" data-v="vybavene">✓ Vybavené</button><button type="button" class="ml-b pri" data-mtask="${esc(x.id)}">+ Úloha</button>`}
+      :`<button type="button" class="ml-b" data-mst="${esc(x.id)}" data-v="nepodstatne" title="Nepodstatné – skryť">Nepodstatné</button><button type="button" class="ml-b ok" data-mst="${esc(x.id)}" data-v="vybavene">✓ Vybavené</button>${task?"":`<button type="button" class="ml-b pri" data-mtask="${esc(x.id)}">+ Úloha</button>`}`}
       ${link?`<a class="ml-b ic" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Otvoriť v Gmaile" title="Otvoriť v Gmaile">↗</a>`:""}</div>
     ${form}</div>`;
 }
