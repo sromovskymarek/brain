@@ -1394,6 +1394,12 @@ a.btn{text-decoration:none;color:inherit}
 .view-posta .ds-ct{color:var(--muted)}
 .view-posta .cc-ax{fill:var(--muted)}
 @media (max-width:600px){ .view-posta .ml{grid-template-columns:minmax(0,1fr)} .view-posta .ml-act{justify-content:flex-start} }
+.pm-mute{display:flex;flex-direction:column;gap:10px}
+.pm-mlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pm-mlist li{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--surface-2);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+.pm-mlist small{color:var(--muted);font-size:12px}
+.pm-cand{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.pm-empty{margin:0;font-size:13px;color:var(--muted)}
 </style>
 
 <div class="app">
@@ -2104,6 +2110,23 @@ async function mailSet(x,patch){
   try{ await S.db.doc("mail/"+x.id).update(patch); return true; }
   catch(e){ Object.assign(x,old); renderView(); toast("Zmena sa neuložila. Skús to znova."); return false; }
 }
+/* Stlmení odosielatelia: 2× „Nepodstatné“ → mailový agent ďalšie maily od nich zaradí medzi reklamy (settings/mailmute) */
+const muteKey=e=>String(e||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"_").slice(0,80);
+const muteCfg=()=>{ const s=setting("mailmute"); return s&&s.senders&&typeof s.senders==="object"?s.senders:{}; };
+const muteOk=email=>/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)&&!/@(?:[a-z0-9-]+\.)*tatrabanka\.sk$/i.test(email);
+const muteOwn=email=>/@(?:[a-z0-9-]+\.)*(?:efektra\.sk|safetyelectric\.sk)$/i.test(email)||/sromovsk/i.test(email);
+async function muteSave(all){ return put("settings","mailmute",{senders:all,updated:nowIso()}); }
+async function muteBump(x,mode){
+  const email=String(x.fromEmail||"").toLowerCase().trim(); if(!muteOk(email)) return;
+  const all=JSON.parse(JSON.stringify(muteCfg())), k=muteKey(email), was=!!all[k]?.muted;
+  if(mode==="reset"){ if(!all[k]) return; all[k]={...all[k],n:0,muted:false,manual:false,at:nowIso()}; }
+  else { const o={email,name:mailWho(x),n:0,muted:false,...(all[k]||{})}; o.n=Math.max(0,(+o.n||0)+(mode==="up"?1:-1)); if(!o.manual) o.muted=o.n>=2&&!muteOwn(email); o.name=mailWho(x); o.at=nowIso(); all[k]=o; }
+  if(await muteSave(all)&&all[k].muted&&!was) toast(`Ďalšie maily od ${all[k].name} pôjdu rovno medzi reklamy`);
+}
+document.addEventListener("click",async e=>{
+  const u=e.target.closest("[data-unmute]"); if(u){ const all=JSON.parse(JSON.stringify(muteCfg())), k=u.dataset.unmute; if(!all[k]) return; all[k]={...all[k],n:0,muted:false,manual:false,at:nowIso()}; if(await muteSave(all)) toast("Odosielateľ znova chodí do pošty"); return; }
+  const m=e.target.closest("[data-mute]"); if(m){ const email=m.dataset.mute.toLowerCase(); if(!muteOk(email)) return; const all=JSON.parse(JSON.stringify(muteCfg())), k=muteKey(email); all[k]={email,n:0,...(all[k]||{}),name:m.dataset.name||email,muted:true,manual:true,at:nowIso()}; if(await muteSave(all)) toast(`Maily od ${all[k].name} pôjdu medzi reklamy`); }
+});
 /* Riadok mailu s akciami: Nepodstatné · Vybavené · Úloha (+ Gmail) */
 function mailLine(x){
   const st=mailState(x), link=/^https:\/\/mail\.google\.com\//.test(String(x.link||""))?x.link:"";
@@ -2126,8 +2149,10 @@ function mailLine(x){
 document.addEventListener("click",async e=>{
   const s=e.target.closest("[data-mst]");
   if(s){ e.stopPropagation(); const x=S.mail.find(m=>m.id===s.dataset.mst); if(!x) return; const v=s.dataset.v;
+    const prev=mailState(x);
     const ok=await mailSet(x,v?{handled:true,status:v,handledAt:nowIso()}:{handled:false,status:null,handledAt:null});
-    if(ok) toast(v==="nepodstatne"?"Označené ako nepodstatné":v==="vybavene"?"Vybavené":"Vrátené medzi nevybavené"); return; }
+    if(ok){ toast(v==="nepodstatne"?"Označené ako nepodstatné":v==="vybavene"?"Vybavené":"Vrátené medzi nevybavené");
+      if(v==="nepodstatne") muteBump(x,"up"); else if(!v&&prev==="nepodstatne") muteBump(x,"down"); else if(v==="vybavene") muteBump(x,"reset"); } return; }
   const t=e.target.closest("[data-mtask]");
   if(t){ e.stopPropagation(); S.mailTask=t.dataset.mtask; renderView(); const el=$("#mtT"); if(el){ el.focus(); el.select(); } return; }
   if(e.target.closest("[data-mtaskx]")){ S.mailTask=null; renderView(); return; }
@@ -2138,7 +2163,7 @@ document.addEventListener("click",async e=>{
     k.disabled=true; const id=newId();
     const ok=await saveItem(id,{type:"uloha",title:title.slice(0,120),body:`Z mailu od ${mailWho(x)}${x.fromEmail?" <"+x.fromEmail+">":""}\nPredmet: ${x.subject||""}${x.summary?"\n\n"+x.summary:""}${link?"\n\nGmail: "+link:""}`,tags:["mail"],links:[],status:"otvorena",due:ISO_RE.test(due)?due:"",area:x.account&&/efektra|safety/i.test(x.account)?"biznis":"",url:link,source:"mail"});
     if(!ok){ k.disabled=false; return; }
-    S.mailTask=null; if(await mailSet(x,{handled:true,status:"uloha",taskId:id,handledAt:nowIso()})) toast("Úloha vytvorená z mailu"); }
+    S.mailTask=null; if(await mailSet(x,{handled:true,status:"uloha",taskId:id,handledAt:nowIso()})){ toast("Úloha vytvorená z mailu"); muteBump(x,"reset"); } }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="mtT"){ e.preventDefault(); $("[data-mtaskok]")?.click(); } else if(e.key==="Escape"&&(e.target.id==="mtT"||e.target.id==="mtD")){ S.mailTask=null; renderView(); } });
 
@@ -2147,7 +2172,7 @@ function mailStats(days){
   const td=today(), from=addDays(td,-(days-1)), L=S.mail.filter(x=>{ const d=mailDay(x); return d&&d>=from&&d<=td; });
   const cnt=f=>L.filter(f).length;
   const per=[]; for(let i=days-1;i>=0;i--){ const d=addDays(td,-i); const D=L.filter(x=>mailDay(x)===d); per.push({d,imp:D.filter(x=>x.cat==="dolezite").length,ved:D.filter(x=>x.cat!=="dolezite").length}); }
-  const sm=new Map(); for(const x of L){ const k=(x.fromEmail||mailWho(x)).toLowerCase(); const o=sm.get(k)||{n:0,imp:0,nep:0,name:mailWho(x)}; o.n++; if(x.cat==="dolezite") o.imp++; if(mailState(x)==="nepodstatne") o.nep++; sm.set(k,o); }
+  const sm=new Map(); for(const x of L){ const k=(x.fromEmail||mailWho(x)).toLowerCase(); const o=sm.get(k)||{n:0,imp:0,nep:0,name:mailWho(x),email:String(x.fromEmail||"").toLowerCase().trim()}; o.n++; if(x.cat==="dolezite") o.imp++; if(mailState(x)==="nepodstatne") o.nep++; sm.set(k,o); }
   const am=new Map(); for(const x of L){ const a=x.account||"—"; am.set(a,(am.get(a)||0)+1); }
   const handled=L.filter(x=>mailState(x)), withT=handled.filter(x=>x.handledAt&&x.received).map(x=>(new Date(x.handledAt)-new Date(x.received))/36e5).filter(h=>h>=0&&h<24*60);
   return {L,days,n:L.length,imp:cnt(x=>x.cat==="dolezite"),ved:cnt(x=>x.cat!=="dolezite"),vyb:cnt(x=>mailState(x)==="vybavene"),nep:cnt(x=>mailState(x)==="nepodstatne"),ul:cnt(x=>mailState(x)==="uloha"),
@@ -2254,20 +2279,26 @@ function bindDs(){
 /* ---- Pošta: prehľad, štatistika a zoznamy ---- */
 function viewPosta(){
   const mm=S.mailMeta, tab=S.mailTab||"dolezite", per=S.mailPer||7, MS=mailStats(per);
-  const lr=mm?.lastRun?new Date(mm.lastRun):null, ads=mm&&mm.adsDate===today()?(+mm.adsToday||0):0;
+  const lr=mm?.lastRun?new Date(mm.lastRun):null, ads=mm&&mm.adsDate===today()?(+mm.adsToday||0):0, muN=mm&&mm.stlmeneDate===today()?(+mm.stlmeneToday||0):0;
+  const MU=muteCfg(), muted=Object.entries(MU).filter(([,o])=>o&&o.muted).sort((a,b)=>String(a[1].name).localeCompare(String(b[1].name),"sk"));
+  const mutedSet=new Set(muted.map(([,o])=>String(o.email||"").toLowerCase()));
   const groups={dolezite:x=>x.cat==="dolezite"&&!mailState(x),vedomie:x=>x.cat!=="dolezite"&&!mailState(x),vybavene:x=>["vybavene","uloha"].includes(mailState(x)),nepodstatne:x=>mailState(x)==="nepodstatne"};
   const list=S.mail.filter(groups[tab]||groups.dolezite).sort((a,b)=>String(b.received||"").localeCompare(String(a.received||"")));
   const cntG=k=>S.mail.filter(groups[k]).length;
   const doneN=MS.vyb+MS.ul+MS.nep, rate=MS.imp?Math.round(MS.L.filter(x=>x.cat==="dolezite"&&mailState(x)).length/MS.imp*100):null;
   const st=(k,v,s,tone)=>`<div class="pm-st ${tone||""}"><span class="k">${k}</span><b>${v}</b>${s?`<span class="s">${s}</span>`:""}</div>`;
-  return `<div class="view view-posta">${band("wi","Mailový agent · každú hodinu Po–Pi 7–18","Pošta","",lr&&!isNaN(lr)?`Posledná kontrola ${fmtDate(mm.lastRun)} ${String(lr.getHours()).padStart(2,"0")}:${String(lr.getMinutes()).padStart(2,"0")} · dnes odfiltrovaných reklám: ${ads}`:"Agent ešte nebežal.")}
+  return `<div class="view view-posta">${band("wi","Mailový agent · každú hodinu Po–Pi 7–18","Pošta","",lr&&!isNaN(lr)?`Posledná kontrola ${fmtDate(mm.lastRun)} ${String(lr.getHours()).padStart(2,"0")}:${String(lr.getMinutes()).padStart(2,"0")} · dnes odfiltrovaných reklám: ${ads}${muN?` (z toho od stlmených odosielateľov ${muN})`:""}`:"Agent ešte nebežal.")}
   <section class="panel panel-b pm-sum">
     <div class="pm-h"><h2>Štatistika</h2><span class="sp"></span><div class="filters">${[7,30].map(n=>`<button type="button" data-mper="${n}" aria-pressed="${per===n}">${n} dní</button>`).join("")}</div></div>
     <div class="pm-stats">${st("Prijaté",MS.n,`za ${per} dní`)}${st("Dôležité",MS.imp,rate==null?"":`vybavených ${rate} %`,"imp")}${st("Na vedomie",MS.ved,"")}${st("Čaká",MS.open,MS.dl?`${MS.dl} s termínom`:"dôležité nevybavené",MS.open?"warn":"ok")}${st("Vybavené",MS.vyb,MS.react!=null?`medián reakcie ${MS.react<1?Math.round(MS.react*60)+" min":fmtN(MS.react,1)+" h"}`:"")}${st("Úlohy z mailov",MS.ul,"")}${st("Nepodstatné",MS.nep,doneN?Math.round(MS.nep/doneN*100)+" % spracovaných":"")}</div>
     <div class="pm-grid"><div><div class="ds-ct">Maily po dňoch</div>${mailDayBars(MS.per)}<div class="ds-leg"><span><i style="background:#ff8a6b"></i>dôležité</span><span><i style="background:#4aa8ff;opacity:.55"></i>na vedomie</span></div></div>
       <div><div class="ds-ct">Najčastejší odosielatelia</div>${senderBars(MS.senders)}</div>
       ${MS.accounts.length>1||(MS.accounts[0]&&MS.accounts[0][0]!=="—")?`<div><div class="ds-ct">Podľa schránky</div><ul class="ds-hb">${MS.accounts.map(([a,n])=>`<li><span class="n">${esc(a)}</span><span class="b"><i style="width:${(n/Math.max(1,MS.n)*100).toFixed(1)}%"></i></span><b>${n}</b></li>`).join("")}</ul></div>`:""}</div>
-    ${MS.senders.some(s=>s.nep>=2)?`<p class="pm-tip">Často označuješ ako nepodstatné: ${MS.senders.filter(s=>s.nep>=2).map(s=>`<b>${esc(s.name)}</b> (${s.nep}×)`).join(", ")}. Mailový agent ich môže zaradiť rovno medzi reklamy.</p>`:""}
+  </section>
+  <section class="panel panel-b pm-mute"><div class="pm-h"><h2>Stlmení odosielatelia</h2><span class="count">${muted.length}</span></div>
+    <p class="pm-tip">Keď mail od toho istého odosielateľa označíš 2× ako <b>Nepodstatné</b>, mailový agent ďalšie maily od neho zaradí rovno medzi reklamy (do Brain sa neuložia). Bankové maily a podozrenie na phishing spracuje vždy. Adresy z EFEKTRA a Safety Electric sa automaticky nestlmia, len ručne. Keď mail od neho označíš ako Vybavené alebo z neho urobíš úlohu, počítadlo sa vynuluje.</p>
+    ${muted.length?`<ul class="pm-mlist">${muted.map(([k,o])=>`<li><span><b>${esc(o.name||o.email)}</b> <small>${esc(o.email||"")}${o.manual?" · stlmené ručne":` · ${o.n||2}× nepodstatné`}</small></span><button type="button" class="btn sm" data-unmute="${esc(k)}">Zrušiť stlmenie</button></li>`).join("")}</ul>`:""}
+    ${(()=>{ const cand=MS.senders.filter(s=>s.nep>=1&&s.email&&!mutedSet.has(s.email)&&muteOk(s.email)); return cand.length?`<div class="pm-cand"><span>Označené ako nepodstatné:</span>${cand.map(s=>`<button type="button" class="btn sm ghost" data-mute="${esc(s.email)}" data-name="${esc(s.name)}">Stlmiť ${esc(s.name)} (${s.nep}×)</button>`).join("")}</div>`:(!muted.length?`<p class="pm-empty">Zatiaľ nikto.</p>`:""); })()}
   </section>
   <div class="mtabs">${[["dolezite","Dôležité","var(--crit)"],["vedomie","Na vedomie","var(--accent)"],["vybavene","Vybavené","var(--ok)"],["nepodstatne","Nepodstatné","var(--muted)"]].map(([k,l,c])=>`<button type="button" data-mtab="${k}" aria-pressed="${tab===k}"><span class="dot" style="background:${c}"></span>${l} ${cntG(k)}</button>`).join("")}</div>
   <div class="ds-mails pm-list">${list.slice(0,80).map(mailLine).join("")||`<div class="panel panel-b" style="color:var(--muted)">${tab==="dolezite"?"Žiadne dôležité maily na vybavenie.":tab==="vedomie"?"Nič na vedomie.":tab==="vybavene"?"Zatiaľ nič vybavené.":"Nič označené ako nepodstatné."}</div>`}</div></div>`;
