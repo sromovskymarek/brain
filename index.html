@@ -1420,6 +1420,7 @@ a.btn{text-decoration:none;color:inherit}
 .pm-mlist small{color:var(--muted);font-size:12px}
 .pm-cand{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
 .pm-empty{margin:0;font-size:13px;color:var(--muted)}
+.ds-legacy{background:#ffc24a;color:#2a1a00;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600}.ds-legacy a{color:#2a1a00;text-decoration:underline}
 </style>
 
 <div class="app">
@@ -2212,6 +2213,8 @@ function mailDayBars(per){
 }
 const senderBars=S2=>{ const mx=Math.max(1,...S2.map(s=>s.n)); return `<ul class="ds-hb">${S2.map(s=>`<li><span class="n" title="${esc(s.name)}">${esc(s.name)}</span><span class="b"><i style="width:${(s.n/mx*100).toFixed(1)}%"></i>${s.imp?`<i class="imp" style="width:${(s.imp/mx*100).toFixed(1)}%"></i>`:""}</span><b>${s.n}</b></li>`).join("")||`<li class="e">Zatiaľ bez mailov.</li>`}</ul>`; };
 
+const isDomainApp=()=>/(^|\.)sromovskymarek\.sk$/i.test(location.hostname)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&!window.claude;
+const legacyNote=()=>isDomainApp()?"":`<div class="ds-legacy">Toto je stará kópia Brain v Claude. Maily, banku a ostatné dáta od agentov nájdeš v appke <a href="https://brain.sromovskymarek.sk" target="_blank" rel="noopener">brain.sromovskymarek.sk</a> (od 13. 11. 2026).</div>`;
 /* ---- Nástenka ---- */
 const dsSec=(id,ic,title,meta,go,goL,body)=>`<section class="ds-sec ds-${id}"><header class="ds-sh"><span class="ds-ic">${ic}</span><div class="ds-ht"><h2>${title}</h2>${meta?`<span class="ds-meta">${meta}</span>`:""}</div><span class="sp"></span>${go?`<button type="button" class="ds-more" data-go="${esc(go)}">${goL||"Otvoriť"} <span aria-hidden="true">→</span></button>`:""}</header>${body}</section>`;
 const dsStat=(k,v,s,tone,go)=>`<button type="button" class="ds-stat ${tone||""}" ${go?`data-go="${esc(go)}"`:""}><span class="k">${k}</span><b>${v}</b>${s?`<span class="s">${s}</span>`:""}</button>`;
@@ -2282,7 +2285,7 @@ function dsView(){
       ${dsStat("Úvery",D.debt?"−"+eur0(D.debt):eur0(0),D.payM?`splátky ${eur0(D.payM)}/mes.`:"",D.debt?"":"ok","financie/uvery")}
     </div>
     <div class="ds-cols ds-detail ds-fch"><div class="ds-col"><div class="ds-ct">Príjmy a výdavky ${D.y}</div>${ccYearBars(D.months,D.m0)}</div><div class="ds-col"><div class="ds-ct">Kam idú peniaze · ${mN}</div>${ccDonut(D.st.catArr,EXPCAT,eur0(D.st.total),"výdavky")}</div></div>`;
-  return `<div class="view view-dash ds">${stateBanner()}
+  return `<div class="view view-dash ds">${stateBanner()}${legacyNote()}
     ${hero}
     ${dsSec("ulohy",ICO.check,"Úlohy na dnes",D.late.length?`${D.dueToday.length} dnes · <span class="neg">${D.late.length} mešká</span>`:`${D.dueToday.length} dnes · ${D.tasks.length} otvorených`,"lib/uloha","Všetky úlohy",tasksB)}
     ${dsSec("posta",ICO.mail,"Pošta",`${imp.length} čaká · ${newToday} ${plural(newToday,"nový","nové","nových")} dnes`,"posta","Štatistika a všetky maily",mailB)}
@@ -2309,7 +2312,7 @@ function viewPosta(){
   const cntG=k=>S.mail.filter(groups[k]).length;
   const doneN=MS.vyb+MS.ul+MS.nep, rate=MS.imp?Math.round(MS.L.filter(x=>x.cat==="dolezite"&&mailState(x)).length/MS.imp*100):null;
   const st=(k,v,s,tone)=>`<div class="pm-st ${tone||""}"><span class="k">${k}</span><b>${v}</b>${s?`<span class="s">${s}</span>`:""}</div>`;
-  return `<div class="view view-posta">${band("wi","Mailový agent · každú hodinu Po–Pi 7–18","Pošta","",lr&&!isNaN(lr)?`Posledná kontrola ${fmtDate(mm.lastRun)} ${String(lr.getHours()).padStart(2,"0")}:${String(lr.getMinutes()).padStart(2,"0")} · dnes odfiltrovaných reklám: ${ads}${muN?` (z toho od stlmených odosielateľov ${muN})`:""}`:"Agent ešte nebežal.")}
+  return `<div class="view view-posta">${legacyNote()}${band("wi","Mailový agent · každú hodinu Po–Pi 7–18","Pošta","",lr&&!isNaN(lr)?`Posledná kontrola ${fmtDate(mm.lastRun)} ${String(lr.getHours()).padStart(2,"0")}:${String(lr.getMinutes()).padStart(2,"0")} · dnes odfiltrovaných reklám: ${ads}${muN?` (z toho od stlmených odosielateľov ${muN})`:""}`:"Agent ešte nebežal.")}
   <section class="panel panel-b pm-sum">
     <div class="pm-h"><h2>Štatistika</h2><span class="sp"></span><div class="filters">${[7,30].map(n=>`<button type="button" data-mper="${n}" aria-pressed="${per===n}">${n} dní</button>`).join("")}</div></div>
     <div class="pm-stats">${st("Prijaté",MS.n,`za ${per} dní`)}${st("Dôležité",MS.imp,rate==null?"":`vybavených ${rate} %`,"imp")}${st("Na vedomie",MS.ved,"")}${st("Čaká",MS.open,MS.dl?`${MS.dl} s termínom`:"dôležité nevybavené",MS.open?"warn":"ok")}${st("Vybavené",MS.vyb,MS.react!=null?`medián reakcie ${MS.react<1?Math.round(MS.react*60)+" min":fmtN(MS.react,1)+" h"}`:"")}${st("Úlohy z mailov",MS.ul,"")}${st("Nepodstatné",MS.nep,doneN?Math.round(MS.nep/doneN*100)+" % spracovaných":"")}</div>
