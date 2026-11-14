@@ -1431,12 +1431,13 @@ a.btn{text-decoration:none;color:inherit}
 .vb-tools .seg button{border:0;background:var(--surface);color:var(--muted);padding:7px 13px;font:600 13px var(--f-body);cursor:pointer}
 .vb-tools .seg button.on{background:var(--surface-2);color:var(--fg)}
 /* korková tabuľa */
-.vb-board{column-count:5;column-gap:22px;padding:30px 26px 34px;border-radius:16px;
+.vb-board{display:flex;align-items:flex-start;gap:22px;overflow:hidden;padding:30px 26px 34px;border-radius:16px;
   background-color:#b98c5e;
   background-image:radial-gradient(rgba(90,55,25,.35) 1px,transparent 1.6px),radial-gradient(rgba(255,230,190,.25) 1px,transparent 1.8px),radial-gradient(rgba(70,40,15,.22) 1.4px,transparent 2px),linear-gradient(135deg,#c79a69,#a87a4c);
   background-size:9px 9px,13px 13px,17px 17px,100% 100%;background-position:0 0,4px 7px,9px 3px,0 0;
   box-shadow:inset 0 0 0 10px #6e4a2a,inset 0 0 0 12px #8a6038,inset 0 0 40px rgba(60,30,10,.45),0 14px 40px rgba(0,0,0,.45)}
-.vb-card,.vb-note{break-inside:avoid;display:inline-block;vertical-align:top;box-sizing:border-box;position:relative;margin:var(--dy,0px) 0 26px;transform:rotate(var(--rot,0deg));transition:transform .2s ease,box-shadow .2s ease;width:100%}
+.vb-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
+.vb-card,.vb-note{display:block;box-sizing:border-box;position:relative;margin:var(--dy,0px) 0 26px;transform:rotate(var(--rot,0deg));transition:transform .2s ease,box-shadow .2s ease;width:100%}
 .vb-card{background:#fdfcf7;padding:9px 9px 10px;border-radius:2px;box-shadow:0 2px 3px rgba(0,0,0,.25),0 10px 22px rgba(40,20,5,.35);cursor:pointer;color:#1d2433;text-align:left;border:0;font:inherit}
 .vb-card:hover,.vb-card:focus-visible{transform:rotate(0) scale(1.04);z-index:3;box-shadow:0 4px 6px rgba(0,0,0,.25),0 22px 40px rgba(40,20,5,.45);outline:none}
 .vb-ph{position:relative;overflow:hidden;background:#dfe6f0;border-radius:1px}
@@ -1450,7 +1451,7 @@ a.btn{text-decoration:none;color:inherit}
 .vb-done{position:absolute;left:8px;top:8px;background:#2fa86a;color:#fff;font:700 12px var(--f-body);padding:4px 9px;border-radius:999px}
 .vb-card.done .vb-ph{filter:saturate(.75)}
 .vb-pin{position:absolute;left:50%;top:-8px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,transparent 40%),var(--pc,#e63946);box-shadow:0 3px 4px rgba(0,0,0,.4);z-index:2}
-.vb-tape{position:absolute;left:50%;top:-11px;width:84px;height:22px;margin-left:-42px;transform:rotate(var(--tr,0deg));background:rgba(255,250,225,.62);box-shadow:0 1px 2px rgba(0,0,0,.15);z-index:2;backdrop-filter:blur(1px)}
+.vb-tape{position:absolute;left:50%;top:-11px;width:84px;height:22px;margin-left:-42px;transform:rotate(var(--tr,0deg));background:rgba(255,250,225,.62);box-shadow:0 1px 2px rgba(0,0,0,.15);z-index:2}
 .vb-note{--nc:#fff3a8;background:var(--nc);color:#3a2f12;padding:22px 18px 16px;box-shadow:0 3px 5px rgba(0,0,0,.2),0 12px 20px rgba(40,20,5,.3);border-radius:2px 2px 14px 2px}
 .vb-note q{display:block;font-family:"Bradley Hand","Segoe Print","Marker Felt","Comic Sans MS",cursive;font-size:19px;line-height:1.25;font-weight:700;quotes:"„" "“"}
 .vb-note cite{display:block;margin-top:8px;font:italic 600 12.5px var(--f-body);opacity:.75}
@@ -1460,10 +1461,8 @@ a.btn{text-decoration:none;color:inherit}
 .vb-foot span{flex:1;min-width:200px}
 .vb-lsec .panel-h small{font-weight:500;color:var(--muted);font-size:12px;margin-left:6px}
 .vb-lsec .th svg{width:100%;height:100%;display:block}
-@container vb (max-width:1100px){.vb-board{column-count:4}}
-@container vb (max-width:880px){.vb-board{column-count:3;column-gap:18px;padding:26px 18px 28px}}
-@container vb (max-width:600px){.vb-board{column-count:2;column-gap:14px;padding:22px 12px 22px;box-shadow:inset 0 0 0 6px #6e4a2a,inset 0 0 30px rgba(60,30,10,.45),0 10px 26px rgba(0,0,0,.4)}.vb-cap b{font-size:14.5px}.vb-note q{font-size:15.5px}.vb-note{padding:18px 12px 12px}.vb-card{padding:6px 6px 8px}.vb-meta{font-size:12px}.vb-tags,.vb-bar1>.vb-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;max-width:100%}.vb-bar1{flex-direction:column;align-items:stretch}.vb-tools{justify-content:space-between}.vb-mission{padding:14px 48px 14px 16px}}
-@container vb (max-width:300px){.vb-board{column-count:1}}
+@container vb (max-width:880px){.vb-board{gap:18px;padding:26px 18px 28px}}
+@container vb (max-width:600px){.vb-board{gap:14px;padding:22px 12px 22px;box-shadow:inset 0 0 0 6px #6e4a2a,inset 0 0 30px rgba(60,30,10,.45),0 10px 26px rgba(0,0,0,.4)}.vb-cap b{font-size:14.5px}.vb-note q{font-size:15.5px}.vb-note{padding:18px 12px 12px}.vb-card{padding:6px 6px 8px}.vb-meta{font-size:12px}.vb-tags,.vb-bar1>.vb-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;max-width:100%}.vb-bar1{flex-direction:column;align-items:stretch}.vb-tools{justify-content:space-between}.vb-mission{padding:14px 48px 14px 16px}}
 /* modálne okná */
 html.vb-lock,html.vb-lock body{overflow:hidden}
 .vb-ov{position:fixed;inset:0;z-index:200;background:rgba(2,6,14,.72);display:flex;align-items:flex-start;justify-content:center;padding:4vh 14px;overflow:auto;backdrop-filter:blur(3px)}
@@ -1504,6 +1503,7 @@ html.vb-lock,html.vb-lock body{overflow:hidden}
 .ds-pol .vb-cap b{font-size:15px}
 @container dash (max-width:760px){.ds-pol{grid-template-columns:repeat(2,1fr);gap:12px}}
 .vb-match{font-size:12px;font-weight:700;color:#5fe3a8}
+.vb-view{min-width:0;overflow-x:clip}
 
 /* ===== Téma v2 pre všetky sekcie – rovnaký vzhľad ako hlavná nástenka (od 14. 11. 2026) ===== */
 .main.th2{--line:rgba(130,185,255,.17);--line-2:rgba(130,185,255,.30);--surface:#0e2662;--surface-2:#133074;--fg:#eef5ff;--muted:#a9c3ea;--faint:#7d9bcc;--accent:#5aa8ff;--accent-soft:rgba(90,168,255,.18);--accent-fg:#041530;
@@ -2586,6 +2586,8 @@ function vbCard(g,r){
 }
 function vbQuote(q,r){ const col=["#fff3a8","#ffd6e0","#d4f1ff","#d9f7c8","#ffe4c2"][Math.floor(r()*5)];
   return `<div class="vb-note" style="--rot:${((r()*2-1)*5).toFixed(1)}deg;--nc:${col}"><i class="vb-tape" style="--tr:${((r()*2-1)*10).toFixed(0)}deg"></i><q>${esc(q[0])}</q>${q[1]?`<cite>— ${esc(q[1])}</cite>`:""}</div>`; }
+function vbCols(){ const m=document.getElementById("main"); const w=Math.min((m&&m.clientWidth)||window.innerWidth,1240)-56; return w>1050?5:w>820?4:w>540?3:w>250?2:1; }
+let vbRsT=0; window.addEventListener("resize",()=>{ clearTimeout(vbRsT); vbRsT=setTimeout(()=>{ if(typeof S!=="undefined"&&S.view==="ciele"&&S.vbMode!=="list"&&vbCols()!==S.vbColsN&&!S.vbEd&&!S.vbImp) renderView(); },200); });
 function vbBoard(L){
   const seed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5)), r=vbRnd(seed*7919+13);
   const order=L.map(g=>({g,k:vbRnd(vbHash(g.id)^seed)()})).sort((a,b)=>a.k-b.k).map(x=>x.g);
@@ -2595,7 +2597,11 @@ function vbBoard(L){
   order.forEach((g,i)=>{ if(i===1||(i>1&&(i-1)%every===0)) out.push(vbQuote(qs[qi++%qs.length],r)); out.push(vbCard(g,vbRnd(vbHash(g.id)+seed))); });
   if(order.length<2) out.push(vbQuote(qs[qi++%qs.length],r));
   out.push(`<button type="button" class="vb-card vb-add" style="--rot:${((r()*2-1)*3).toFixed(1)}deg;--dy:0px" data-vbnew="1"><span>＋</span><b>Pridať sen</b><small>alebo nahraj fotku či sken diára</small></button>`);
-  return `<div class="vb-board">${out.join("")}</div>`;
+  /* Masonry do stĺpcov (bez CSS columns – Safari na iPade pri nich počas skrolovania stráca obrázky) */
+  const n=vbCols(); S.vbColsN=n; const cols=Array.from({length:n},()=>[]), hs=new Array(n).fill(0);
+  const est=h=>{ const m=h.match(/aspect-ratio:(\d+)\/(\d+)/); if(m) return (+m[2])/(+m[1])+.42; if(h.includes("vb-note")) return .55+((h.match(/<q>([\s\S]*?)<\/q>/)||[,""])[1].length)/160; return .8; };
+  for(const h of out){ let k=0; for(let i=1;i<n;i++) if(hs[i]<hs[k]-.05) k=i; cols[k].push(h); hs[k]+=est(h); }
+  return `<div class="vb-board" style="--vbn:${n}">${cols.map(c=>`<div class="vb-col">${c.join("")}</div>`).join("")}</div>`;
 }
 function viewCiele(){
   const active=C.goals.filter(g=>g.status!=="splneny"), done=C.goals.filter(g=>g.status==="splneny"), L=vbFiltered();
