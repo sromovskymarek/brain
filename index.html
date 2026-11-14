@@ -1425,6 +1425,16 @@ a.btn{text-decoration:none;color:inherit}
 .ds-goal-svg{position:absolute;inset:0}.ds-goal-svg svg{width:100%;height:100%;display:block}
 .ds-mis{font-size:13px;color:var(--cc-mut);margin:0 0 10px}.ds-mis b{color:var(--cc-ink)}
 
+/* Ciele na Prehľade – celý obrázok bez orezania, popis pod ním */
+.ds-goal.v2{display:flex;flex-direction:column;align-items:stretch;min-height:0;padding:0;text-align:left;background:rgba(3,12,40,.35)}
+.ds-goal.v2 .ds-gimg{position:relative;display:block;aspect-ratio:4/3;overflow:hidden;background:#0a1d4d}
+.ds-goal.v2 .ds-gimg i{position:absolute;inset:-20px;background-size:cover;background-position:center;filter:blur(18px) brightness(.7);transform:scale(1.1)}
+.ds-goal.v2 .ds-gimg img{position:relative;inset:auto;width:100%;height:100%;object-fit:contain;display:block}
+.ds-goal.v2 .ds-goal-svg{position:absolute;inset:0}
+.ds-goal.v2 .cap{position:static;background:none;padding:12px 14px 14px;flex:1}
+.ds-goal.v2 b{font-size:15.5px}
+@container dash (max-width:600px){.ds-goal.v2{flex:0 0 82%;min-height:0}}
+
 /* ===== Nástenka cieľov (vision board) ===== */
 .vb-view{max-width:1240px;gap:16px;container-type:inline-size;container-name:vb}
 .vb-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -1461,7 +1471,8 @@ a.btn{text-decoration:none;color:inherit}
 .vb-card{background:#fdfcf7;padding:9px 9px 10px;border-radius:2px;box-shadow:0 2px 3px rgba(0,0,0,.25),0 10px 22px rgba(40,20,5,.35);cursor:pointer;color:#1d2433;text-align:left;border:0;font:inherit}
 .vb-card:hover,.vb-card:focus-visible{transform:rotate(0) scale(1.04);z-index:3;box-shadow:0 4px 6px rgba(0,0,0,.25),0 22px 40px rgba(40,20,5,.45);outline:none}
 .vb-ph{position:relative;overflow:hidden;background:#dfe6f0;border-radius:1px}
-.vb-ph img,.vb-ph svg{display:block;width:100%;height:100%;object-fit:cover}
+.vb-ph svg{display:block;width:100%;height:100%}
+.vb-ph img{display:block;width:100%;height:auto;min-height:90px;object-fit:contain}
 .vb-cap{display:flex;flex-direction:column;gap:5px;padding:9px 3px 1px}
 .vb-cap b{font-family:"Bradley Hand","Segoe Print","Marker Felt","Comic Sans MS",cursive;font-size:17px;line-height:1.15;font-weight:700;color:#1b2232}
 .vb-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
@@ -2448,8 +2459,10 @@ function dsView(){
   /* 4 · Priority */
   const P=ccPriorities();
   /* 5 · Ciele a sny */
-  const gs=C.goals.filter(g=>g.status!=="splneny").sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"));
-  const goalsB=`<div class="ds-mis">🛡️ Moje poslanie: <b>${esc(vbMission())}</b></div>`+(gs.length?`<div class="ds-goals">${gs.slice(0,4).map(g=>{ const p=Math.max(0,Math.min(100,num(g.progress)||0)), f=goalFin(g); return `<button type="button" class="ds-goal" data-go="ciele">${vbImg(g)?`<img src="${esc(vbImg(g))}" alt="" loading="lazy">`:`<span class="ds-goal-svg">${vbScene(g)}</span>`}<span class="cap"><span class="h">${esc(HORIZON[hz(g)]||"Cieľ")}${g.due?" · do "+fmtDate(g.due):""}</span><b>${esc(g.title)}</b><span class="bar"><i style="width:${p}%"></i></span><span class="s">${p} %${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span></span></button>`; }).join("")}</div>`
+  const gs=C.goals.filter(g=>g.status!=="splneny");
+  /* pri každom otvorení appky iné ciele – prednostne s fotkou */
+  const gPick=(()=>{ const rk=g=>vbRnd(vbHash(g.id)^VB_OPEN_SEED)(); const A=gs.filter(g=>vbImg(g)).sort((a,b)=>rk(a)-rk(b)), B=gs.filter(g=>!vbImg(g)).sort((a,b)=>rk(a)-rk(b)); return [...A,...B].slice(0,4); })();
+  const goalsB=`<div class="ds-mis">🛡️ Moje poslanie: <b>${esc(vbMission())}</b></div>`+(gs.length?`<div class="ds-goals">${gPick.map(g=>{ const p=Math.max(0,Math.min(100,num(g.progress)||0)), f=goalFin(g), src=vbImg(g); return `<button type="button" class="ds-goal v2" data-go="ciele"><span class="ds-gimg">${src?`<i style="background-image:url('${esc(src)}')"></i><img src="${esc(src)}" alt="" loading="lazy">`:`<span class="ds-goal-svg">${vbScene(g)}</span>`}</span><span class="cap"><span class="h">${esc(HORIZON[hz(g)]||"Cieľ")}${g.due?" · do "+fmtDate(g.due):""}</span><b>${esc(g.title)}</b><span class="bar"><i style="width:${p}%"></i></span><span class="s">${p} %${f?` · ${eur0(f.saved)} z ${eur0(f.t)}`:""}</span></span></button>`; }).join("")}</div>`
     :`<div class="ds-empty">Pridaj si sen alebo cieľ s fotkou. <button type="button" class="ds-link" data-go="ciele">Ciele a sny →</button></div>`);
   /* 6 · Výlety */
   const trips=C.trips.filter(t=>t.start&&(t.end||t.start)>=td).sort(tripSort);
@@ -2514,6 +2527,8 @@ function viewPosta(){
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-mper]"); if(b){ S.mailPer=+b.dataset.mper; renderView(); } });
 
 /* ========== NÁSTENKA CIEĽOV (vision board): polaroidy, citáty, poslanie, horizonty, tagy, import fotiek a skenu diára ========== */
+/* náhodné poradie pri každom otvorení appky (počas jednej návštevy sa nemení) */
+const VB_OPEN_SEED = Math.floor(Math.random()*1e9);
 const VB_TAGS = {
   biznis:{l:"Biznis",e:"💼",c:"#3b6fd8"}, peniaze:{l:"Peniaze",e:"💰",c:"#1f9d6b"}, rodina:{l:"Rodina",e:"👨‍👩‍👧",c:"#e0784a"},
   viera:{l:"Viera",e:"✝️",c:"#8a5cd1"}, zdravie:{l:"Šport a zdravie",e:"🏃",c:"#20a3b5"}, vztahy:{l:"Vzťahy",e:"❤️",c:"#d9466b"},
@@ -2603,7 +2618,7 @@ function vbCard(g,r){
   const src=vbImg(g), p=Math.max(0,Math.min(100,num(g.progress)||0)), tg=gTags(g), done=g.status==="splneny";
   return `<div class="vb-card${done?" done":""}" style="--rot:${rot}deg;--dy:${dy}px" data-vbgoal="${esc(g.id)}" role="button" tabindex="0">
     ${pin?`<i class="vb-pin" style="--pc:${["#e63946","#3b6fd8","#f2c94c","#2c8f4e"][Math.floor(r()*4)]}"></i>`:`<i class="vb-tape" style="--tr:${((r()*2-1)*8).toFixed(0)}deg"></i>`}
-    <div class="vb-ph" style="aspect-ratio:${ar}">${src?`<img src="${esc(src)}" alt="${esc(g.title)}" loading="lazy">`:vbScene(g)}${done?`<span class="vb-done">✓ Splnené</span>`:""}</div>
+    <div class="vb-ph"${src?"":` style="aspect-ratio:${ar}"`}>${src?`<img src="${esc(src)}" alt="${esc(g.title)}" loading="lazy">`:vbScene(g)}${done?`<span class="vb-done">✓ Splnené</span>`:""}</div>
     <div class="vb-cap"><b>${esc(g.title)}</b><span class="vb-meta"><span class="vb-hz vb-hz-${hz(g)}">${esc(HORIZON[hz(g)])}</span>${tg.map(t=>`<span title="${esc(VB_TAGS[t].l)}">${VB_TAGS[t].e}</span>`).join("")}</span>${p>0&&!done?`<span class="vb-bar"><i style="width:${p}%"></i></span>`:""}</div></div>`;
 }
 function vbQuote(q,r){ const col=["#fff3a8","#ffd6e0","#d4f1ff","#d9f7c8","#ffe4c2"][Math.floor(r()*5)];
@@ -2611,7 +2626,7 @@ function vbQuote(q,r){ const col=["#fff3a8","#ffd6e0","#d4f1ff","#d9f7c8","#ffe4
 function vbCols(){ const m=document.getElementById("main"); const w=Math.min((m&&m.clientWidth)||window.innerWidth,1240)-56; return w>1050?5:w>820?4:w>540?3:w>250?2:1; }
 let vbRsT=0; window.addEventListener("resize",()=>{ clearTimeout(vbRsT); vbRsT=setTimeout(()=>{ if(typeof S!=="undefined"&&S.view==="ciele"&&S.vbMode!=="list"&&vbCols()!==S.vbColsN&&!S.vbEd&&!S.vbImp) renderView(); },200); });
 function vbBoard(L){
-  const seed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5)), r=vbRnd(seed*7919+13);
+  const seed=(S.vbSeed!=null?S.vbSeed:VB_OPEN_SEED), r=vbRnd(seed*7919+13);
   const order=L.map(g=>({g,k:vbRnd(vbHash(g.id)^seed)()})).sort((a,b)=>a.k-b.k).map(x=>x.g);
   const vs=setting("vision"), own=(Array.isArray(vs&&vs.quotes)?vs.quotes:[]).map(q=>Array.isArray(q)?[String(q[0]||""),String(q[1]||"")]:[String(q.t||q||""),String(q.a||"")]).filter(q=>q[0]);
   const qs=[...own.map(q=>({q,k:r()*.35})),...VB_QUOTES.map(q=>({q,k:r()}))].sort((a,b)=>a.k-b.k).map(x=>x.q);
@@ -2621,7 +2636,7 @@ function vbBoard(L){
   out.push(`<button type="button" class="vb-card vb-add" style="--rot:${((r()*2-1)*3).toFixed(1)}deg;--dy:0px" data-vbnew="1"><span>＋</span><b>Pridať sen</b><small>alebo nahraj fotku či sken diára</small></button>`);
   /* Masonry do stĺpcov (bez CSS columns – Safari na iPade pri nich počas skrolovania stráca obrázky) */
   const n=vbCols(); S.vbColsN=n; const cols=Array.from({length:n},()=>[]), hs=new Array(n).fill(0);
-  const est=h=>{ const m=h.match(/aspect-ratio:(\d+)\/(\d+)/); if(m) return (+m[2])/(+m[1])+.42; if(h.includes("vb-note")) return .55+((h.match(/<q>([\s\S]*?)<\/q>/)||[,""])[1].length)/160; return .8; };
+  const est=h=>{ const m=h.match(/aspect-ratio:(\d+)\/(\d+)/); if(m) return (+m[2])/(+m[1])+.42; if(h.includes("vb-ph\"><img")) return 1.17; if(h.includes("vb-note")) return .55+((h.match(/<q>([\s\S]*?)<\/q>/)||[,""])[1].length)/160; return .8; };
   for(const h of out){ let k=0; for(let i=1;i<n;i++) if(hs[i]<hs[k]-.05) k=i; cols[k].push(h); hs[k]+=est(h); }
   return `<div class="vb-board" style="--vbn:${n}">${cols.map(c=>`<div class="vb-col">${c.join("")}</div>`).join("")}</div>`;
 }
@@ -2657,7 +2672,7 @@ function bindCiele(){
   m.querySelectorAll("[data-vbhz]").forEach(b=>b.onclick=()=>{ S.vbHz=b.dataset.vbhz; renderView(); });
   m.querySelectorAll("[data-vbtag]").forEach(b=>b.onclick=()=>{ S.vbTag=b.dataset.vbtag; renderView(); });
   m.querySelectorAll("[data-vbmode]").forEach(b=>b.onclick=()=>{ S.vbMode=b.dataset.vbmode; renderView(); });
-  $("#vbShuffle")&&($("#vbShuffle").onclick=()=>{ S.vbSeed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5))+1+Math.floor(Math.random()*997); renderView(); });
+  $("#vbShuffle")&&($("#vbShuffle").onclick=()=>{ S.vbSeed=(S.vbSeed!=null?S.vbSeed:VB_OPEN_SEED)+1+Math.floor(Math.random()*997); renderView(); });
   $("#goalDoneT")&&($("#goalDoneT").onclick=()=>{ S.goalShowDone=!S.goalShowDone; renderView(); });
   $("#vbMisEdit")&&($("#vbMisEdit").onclick=()=>{ S.vbMisEdit=true; renderView(); setTimeout(()=>$("#vbMisTa")?.focus(),30); });
   $("#vbMisX")&&($("#vbMisX").onclick=()=>{ S.vbMisEdit=false; renderView(); });
