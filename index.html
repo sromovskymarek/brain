@@ -1523,6 +1523,7 @@ html.vb-lock,html.vb-lock body{overflow:hidden}
 .ds-pol .vb-card{margin:0}
 .ds-pol .vb-cap b{font-size:15px}
 @container dash (max-width:760px){.ds-pol{grid-template-columns:repeat(2,1fr);gap:12px}}
+.vb-match{font-size:12px;font-weight:700;color:#5fe3a8}
 
 /* ===== Téma v2 pre všetky sekcie – rovnaký vzhľad ako hlavná nástenka (od 14. 11. 2026) ===== */
 .main.th2{--line:rgba(130,185,255,.17);--line-2:rgba(130,185,255,.30);--surface:#0e2662;--surface-2:#133074;--fg:#eef5ff;--muted:#a9c3ea;--faint:#7d9bcc;--accent:#5aa8ff;--accent-soft:rgba(90,168,255,.18);--accent-fg:#041530;
@@ -2610,7 +2611,8 @@ function vbQuote(q,r){ const col=["#fff3a8","#ffd6e0","#d4f1ff","#d9f7c8","#ffe4
 function vbBoard(L){
   const seed=(S.vbSeed!=null?S.vbSeed:Math.floor(Date.now()/864e5)), r=vbRnd(seed*7919+13);
   const order=L.map(g=>({g,k:vbRnd(vbHash(g.id)^seed)()})).sort((a,b)=>a.k-b.k).map(x=>x.g);
-  const qs=[...VB_QUOTES].map(q=>({q,k:r()})).sort((a,b)=>a.k-b.k).map(x=>x.q);
+  const vs=setting("vision"), own=(Array.isArray(vs&&vs.quotes)?vs.quotes:[]).map(q=>Array.isArray(q)?[String(q[0]||""),String(q[1]||"")]:[String(q.t||q||""),String(q.a||"")]).filter(q=>q[0]);
+  const qs=[...own.map(q=>({q,k:r()*.35})),...VB_QUOTES.map(q=>({q,k:r()}))].sort((a,b)=>a.k-b.k).map(x=>x.q);
   const out=[]; let qi=0; const every=4+Math.floor(r()*2);
   order.forEach((g,i)=>{ if(i===1||(i>1&&(i-1)%every===0)) out.push(vbQuote(qs[qi++%qs.length],r)); out.push(vbCard(g,vbRnd(vbHash(g.id)+seed))); });
   if(order.length<2) out.push(vbQuote(qs[qi++%qs.length],r));
@@ -2700,7 +2702,10 @@ function vbGuess(name){ const g={id:"x",title:name||""}; const t=vbNorm(name)+" 
 
 async function vbImportPhotos(files){
   const items=[]; toast(`Pripravujem ${files.length} ${plural(files.length,"fotku","fotky","fotiek")}…`);
-  for(const f of files.slice(0,24)){ try{ const img=await vbLoad(f); const c=vbCrop(img,null,1400); const t=f.name.replace(/\.[a-z0-9]+$/i,"").replace(/^(img|dsc|photo|pxl|image)[-_ ]?\d.*$/i,"").replace(/[_-]+/g," ").trim().slice(0,80); items.push({c,url:c.toDataURL("image/jpeg",.7),title:t,horizon:S.vbHz||"rok",tags:S.vbTag?[S.vbTag]:vbGuess(t),keep:true}); }catch(e){ toast(`${f.name}: fotku sa nepodarilo načítať.`); } }
+  for(const f of files.slice(0,60)){ try{ const img=await vbLoad(f); const c=vbCrop(img,null,1400); const base=f.name.replace(/\.[a-z0-9]+$/i,"");
+      const km=base.match(/^([A-Z]\d{2})(?=[\s_-]|$)/), g=km?C.goals.find(x=>x.importKey===km[1]):null;
+      if(g){ items.push({c,url:c.toDataURL("image/jpeg",.7),title:g.title,horizon:hz(g),tags:gTags(g),keep:true,goalId:g.id}); continue; }
+      const t=base.replace(/^[A-Z]\d{2}[\s_-]+/,"").replace(/^(img|dsc|photo|pxl|image)[-_ ]?\d.*$/i,"").replace(/[_]+/g," ").trim().slice(0,80); items.push({c,url:c.toDataURL("image/jpeg",.7),title:t,horizon:S.vbHz||"rok",tags:S.vbTag?[S.vbTag]:vbGuess(t),keep:true}); }catch(e){ toast(`${f.name}: fotku sa nepodarilo načítať.`); } }
   if(items.length){ S.vbImp={kind:"photos",items}; vbImpRender(); }
 }
 async function vbImportScan(file){
@@ -2726,9 +2731,9 @@ function vbImpRender(){
     ${I.kind==="scan"?`<div class="vb-split"><span>Rozdelenie:</span>${[["auto","Automaticky"],["2x2","Mriežka 2×2"],["2x3","2×3"],["3x3","3×3"],["3x4","3×4"],["full","Celá strana"]].map(([k,l])=>`<button type="button" class="vb-chip${I.mode===k?" on":""}" data-vbsplit="${k}">${l}</button>`).join("")}</div>${I.note?`<div class="vb-note2">${esc(I.note)}</div>`:""}`:""}
     ${S.sample?`<div class="vb-split"><button class="btn sm" type="button" id="vbAi" ${I.busy?"disabled":""}>${I.busy?'<span class="spin"></span> Claude navrhuje…':"✨ Navrhnúť názvy a tagy (AI)"}</button></div>`:""}
     <div class="vb-imp">${I.items.map((x,i)=>`<div class="vb-ii${x.keep?"":" off"}"><div class="vb-ii-img"><img src="${x.url}" alt=""><button type="button" class="vb-ii-rm" data-vbkeep="${i}" aria-label="${x.keep?"Vynechať":"Vrátiť"}">${x.keep?"✕":"↺"}</button></div>
-      <input type="text" data-vbit="${i}" value="${esc(x.title)}" placeholder="Názov cieľa, napr. Dom pri jazere" maxlength="160">
+      ${x.goalId?`<span class="vb-match">✓ pripojí sa k cieľu na nástenke</span>`:""}<input type="text" data-vbit="${i}" value="${esc(x.title)}" placeholder="Názov cieľa, napr. Dom pri jazere" maxlength="160">
       ${vbHzSel(x.horizon,`data-vbih="${i}"`)}<div class="vb-tchips">${vbTagChips(x.tags,"data-vbitag",i+":")}</div></div>`).join("")}</div>
-    <div class="vb-mf"><span>${n} ${plural(n,"cieľ","ciele","cieľov")} pribudne na nástenku${S.assets?"":" (fotky sa uložia zmenšené priamo do záznamu)"}</span><button class="btn ghost" type="button" data-vbclose>Zrušiť</button><button class="btn primary" type="button" id="vbImpSave" ${n&&!I.saving?"":"disabled"}>${I.saving?'<span class="spin"></span> Ukladám…':"Pridať na nástenku"}</button></div>
+    <div class="vb-mf"><span>${(()=>{ const m=I.items.filter(x=>x.keep&&x.goalId).length, nw=n-m; return [nw?`${nw} ${plural(nw,"nový cieľ","nové ciele","nových cieľov")}`:"",m?`${m} ${plural(m,"fotka","fotky","fotiek")} k existujúcim cieľom`:""].filter(Boolean).join(" · ")||"nič"; })()}${S.assets?"":" (fotky sa uložia zmenšené priamo do záznamu)"}</span><button class="btn ghost" type="button" data-vbclose>Zrušiť</button><button class="btn primary" type="button" id="vbImpSave" ${n&&!I.saving?"":"disabled"}>${I.saving?'<span class="spin"></span> Ukladám…':"Pridať na nástenku"}</button></div>
   </div></div>`;
   const R=vbRoot();
   R.querySelectorAll("[data-vbclose]").forEach(b=>b.onclick=vbClose);
@@ -2754,9 +2759,11 @@ async function vbImpSave(){ const I=S.vbImp; if(!I||I.saving) return; const K=I.
   I.saving=true; vbImpRender(); let ok=0, i=0; const now=new Date().toISOString();
   for(const x of K){ i++; const st=await vbStore(x.c); if(!st){ continue; }
     const tags=x.tags.filter(t=>VB_TAGS[t]), h=HORIZON[x.horizon]?x.horizon:"rok";
+    const ex=x.goalId?byId("goals",x.goalId):null;
+    if(ex){ const {id:_i,...rest}=ex; if(await put("goals",ex.id,{...rest,title:(x.title.trim()||ex.title).slice(0,160),horizon:h,tags,image:st.image,img:st.img,updated:now})) ok++; continue; }
     const rec={title:(x.title.trim()||`Sen ${i}`).slice(0,160),horizon:h,tags,area:VB_TAG2AREA[tags[0]]||"",due:vbDueDef(h),progress:0,image:st.image,img:st.img,why:"",steps:"",target:null,saved:null,monthly:null,assetId:"",status:"aktivny",source:I.kind==="scan"?"sken-diara":"fotka",updated:now,created:now};
     if(await put("goals",rid(),rec)) ok++; }
-  vbClose(); toast(ok?`Na nástenke ${plural(ok,"pribudol","pribudli","pribudlo")} ${ok} ${plural(ok,"cieľ","ciele","cieľov")}`:"Uloženie zlyhalo."); S.vbHz=""; S.vbTag=""; renderView(); }
+  vbClose(); toast(ok?`Uložené: ${ok} ${plural(ok,"obrázok","obrázky","obrázkov")} na nástenke`:"Uloženie zlyhalo."); S.vbHz=""; S.vbTag=""; renderView(); }
 
 /* ---------- Editor cieľa ---------- */
 function goalForm(g,def){
